@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import maplibregl, { NavigationControl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import neighborhoodPolygons from "../assets/neighborhood_boundaries.json";
+// import neighborhoodPolygons from "../assets/neighborhood_boundaries.json";
+import neighborhoodPolygons from "../assets/nbrhd22.json";
 
 export default function MapComponent() {
   const mapContainer = useRef(null);
@@ -50,7 +51,17 @@ export default function MapComponent() {
         paint: {
           "fill-color": "#dc559f",
           "fill-opacity": 0.2,
-          "fill-outline-color": "#000000",
+          "fill-outline-color": "#4622a7",
+        },
+      });
+
+      map.addLayer({
+        id: "polygon-border",
+        type: "line",
+        source: "polygons",
+        paint: {
+          "line-color": "#be4efb", // Blue border
+          "line-width": 4, // Adjust thickness
         },
       });
     });
