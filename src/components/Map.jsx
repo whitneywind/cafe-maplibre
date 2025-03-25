@@ -1,217 +1,145 @@
-import { useEffect, useRef } from "react";
-// import maplibregl, { NavigationControl } from "maplibre-gl";
-import { Map, Source, Layer, NavigationControl } from "@vis.gl/react-maplibre";
+import { useEffect, useRef, useState } from "react";
+import maplibregl, { NavigationControl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import neighborhoodPolygons from "../assets/nbrhd22.json";
 import coffeeshopPoints from "../assets/coffeeshops.json";
-// import cafeIcon from "../assets/cafe.png";
+import coffeeIcon from "../assets/coffee2.svg";
 
 export default function MapComponent() {
-  const mapRef = useRef(null);
+  const [markersLoaded, setMarkersLoaded] = useState(false);
+  const mapContainer = useRef(null);
 
   useEffect(() => {
-    console.log("mapref: ", mapRef);
-    if (!mapRef.current) return;
+    if (!mapContainer.current) return;
 
-    const map = mapRef.current.getMap();
-    console.log("hi");
+    const style = {
+      version: 8,
+      sources: {
+        osm: {
+          type: "raster",
+          tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tileSize: 256,
+          attribution: "&copy; OpenStreetMap Contributors",
+          maxzoom: 19,
+        },
+      },
+      layers: [
+        {
+          id: "osm",
+          type: "raster",
+          source: "osm",
+        },
+      ],
+    };
 
-    map.on("load", async () => {
-      try {
-        console.log("hi");
-
-        const response = await fetch(cafeIconUrl);
-        const blob = await response.blob();
-        const imageBitmap = await createImageBitmap(blob);
-        console.log("hi");
-
-        // Check if the image is already added
-        if (!map.hasImage("cafe-icon")) {
-          map.addImage("cafe-icon", imageBitmap);
-        }
-      } catch (error) {
-        console.error("error loading it", error);
-      }
+    const map = new maplibregl.Map({
+      container: mapContainer.current,
+      style: "https://demotiles.maplibre.org/style.json", // 'https://api.maptiler.com/maps/bright/style.json?key=insert_your_key_here',
+      // style: style,
+      center: [-118, 34],
+      zoom: 8,
     });
 
-    return () => map.off("load");
-  }, [mapRef]);
+    map.on("load", async () => {
+      const icon = new Image();
+      const svgString = await fetch(coffeeIcon) // Fetch your SVG
+        .then((res) => res.text()) // Convert to text (SVG content)
+        .then((svgContent) => svgContent); // Now you have the SVG string
 
-  const mapStyle = {
-    version: 8,
-    sources: {
-      osm: {
-        type: "raster",
-        tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
-        tileSize: 256,
-        attribution: "&copy; OpenStreetMap Contributors",
-        maxzoom: 19,
-      },
-    },
-    layers: [{ id: "osm", type: "raster", source: "osm" }],
-  };
+      const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+      const svgURL = URL.createObjectURL(svgBlob);
 
-  const polygonLayer = {
-    id: "polygon-layer",
-    type: "fill",
-    source: "polygons",
-    paint: {
-      "fill-color": "#dc559f",
-      "fill-opacity": 0.2,
-      "fill-outline-color": "#4622a7",
-    },
-  };
+      icon.onload = () => {
+        map.addImage("cafe-icon", icon); // Add the image to the map
+        URL.revokeObjectURL(svgURL); // Clean up URL object
+      };
 
-  const polygonBorderLayer = {
-    id: "polygon-border",
-    type: "line",
-    source: "polygons",
-    paint: {
-      "line-color": "#be4efb",
-      "line-width": 2,
-    },
-  };
+      icon.src = svgURL;
 
-  const coffeeShopLayer = {
-    id: "cafes",
-    type: "symbol",
-    source: "cafes",
-    layout: {
-      "icon-image": "cafe-icon", // Use the loaded image as an icon
-      "icon-size": 0.1, // Adjust the size of the icon
-      "icon-allow-overlap": true, // Allow icons to overlap
-    },
-  };
+      map.addSource("point", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [0, 0],
+              },
+            },
+          ],
+        },
+      });
+
+      map.addSource("polygons", {
+        type: "geojson",
+        data: neighborhoodPolygons,
+      });
+
+      map.addLayer({
+        id: "polygon-layer",
+        type: "fill",
+        source: "polygons",
+        paint: {
+          "fill-color": "#dc559f",
+          "fill-opacity": 0.2,
+          "fill-outline-color": "#4622a7",
+        },
+      });
+
+      map.addLayer({
+        id: "polygon-border",
+        type: "line",
+        source: "polygons",
+        paint: {
+          "line-color": "#be4efb",
+          "line-width": 1,
+        },
+      });
+
+      map.addSource("cafes", {
+        type: "geojson",
+        data: coffeeshopPoints,
+      });
+
+      map.addLayer({
+        id: "cafes",
+        type: "symbol",
+        source: "cafes",
+        layout: {
+          "icon-image": "cafe-icon",
+          "icon-size": 0.14,
+          "icon-allow-overlap": true,
+        },
+      });
+
+      // map.addLayer({
+      //   id: "cafes",
+      //   type: "circle",
+      //   source: "cafes",
+      //   paint: {
+      //     "circle-radius": 3,
+      //     "circle-color": "#8800ff",
+      //     "circle-stroke-width": 0.5,
+      //     "circle-stroke-color": "#fff",
+      //   },
+      // });
+    });
+
+    let nav = new NavigationControl();
+    map.addControl(nav, "top-right");
+
+    return () => map.remove();
+  }, []);
 
   return (
-    <Map
-      ref={mapRef}
-      initialViewState={{
-        longitude: -118,
-        latitude: 34,
-        zoom: 8,
-      }}
-      mapStyle={mapStyle}
+    <div
+      ref={mapContainer}
       style={{ width: "100vw", height: "100vh" }}
-    >
-      {/* Neighborhood polygons */}
-      <Source id="polygons" type="geojson" data={neighborhoodPolygons}>
-        <Layer {...polygonLayer} />
-        <Layer {...polygonBorderLayer} />
-      </Source>
-
-      {/* Coffee shop points */}
-      <Source id="cafes" type="geojson" data={coffeeshopPoints}>
-        <Layer {...coffeeShopLayer} />
-      </Source>
-
-      {/* Navigation Controls */}
-      <NavigationControl position="top-right" />
-    </Map>
+      // interactive={true}
+      // interactiveLayerIds={interactiveLayerIds}
+      // onLoad={onLoad}
+    />
   );
 }
-
-// export default function MapComponent() {
-//   const mapContainer = useRef(null);
-
-//   useEffect(() => {
-//     if (!mapContainer.current) return;
-
-//     const style = {
-//       version: 8,
-//       sources: {
-//         osm: {
-//           type: "raster",
-//           tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
-//           tileSize: 256,
-//           attribution: "&copy; OpenStreetMap Contributors",
-//           maxzoom: 19,
-//         },
-//       },
-//       layers: [
-//         {
-//           id: "osm",
-//           type: "raster",
-//           source: "osm",
-//         },
-//       ],
-//     };
-
-//     const map = new maplibregl.Map({
-//       container: mapContainer.current,
-//       // style: "https://demotiles.maplibre.org/style.json", // 'https://api.maptiler.com/maps/bright/style.json?key=insert_your_key_here',
-//       style: style,
-//       center: [-118, 34],
-//       zoom: 8,
-//     });
-
-//     map.on("load", async () => {
-//       // map.loadImage("../assets/cafe.png", (error, image) => {
-//       //   if (error) throw error;
-//       //   console.log(image);
-//       //   map.addImage("coffeeshopImg", image);
-//       // });
-
-//       map.addSource("polygons", {
-//         type: "geojson",
-//         data: neighborhoodPolygons,
-//       });
-
-//       map.addLayer({
-//         id: "polygon-layer",
-//         type: "fill",
-//         source: "polygons",
-//         paint: {
-//           "fill-color": "#dc559f",
-//           "fill-opacity": 0.2,
-//           "fill-outline-color": "#4622a7",
-//         },
-//       });
-
-//       map.addLayer({
-//         id: "polygon-border",
-//         type: "line",
-//         source: "polygons",
-//         paint: {
-//           "line-color": "#be4efb", // Blue border
-//           "line-width": 4, // Adjust thickness
-//         },
-//       });
-
-//       map.addSource("cafes", {
-//         type: "geojson",
-//         data: coffeeshopPoints,
-//       });
-
-//       // map.addLayer({
-//       //   id: "cafes",
-//       //   type: "circle",
-//       //   source: "cafes",
-//       //   paint: {
-//       //     "circle-radius": 6,
-//       //     "circle-color": "#ff6600",
-//       //     "circle-stroke-width": 1,
-//       //     "circle-stroke-color": "#fff",
-//       //   },
-//       // });
-//     });
-
-//     let nav = new NavigationControl();
-//     map.addControl(nav, "top-right");
-
-//     return () => map.remove();
-//   }, []);
-
-//   return (
-//     // <Map ref={mapContainer} style={{ width: "100vw", height: "100vh" }} />
-//     <Map
-//       initialViewState={{
-//         longitude: -100,
-//         latitude: 40,
-//         zoom: 3.5,
-//       }}
-//       style={style}
-//       mapStyle="https://demotiles.maplibre.org/style.json"
-//     />
-//   );
-// }
