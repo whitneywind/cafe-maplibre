@@ -17,7 +17,7 @@ const WavyMenu = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: "#8839bd" }}>
+      <AppBar position="static" sx={{ backgroundColor: "#3fa977" }}>
         <Toolbar>
           <Button color="inherit">Home</Button>
           <Button color="inherit">About</Button>

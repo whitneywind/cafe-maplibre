@@ -52,6 +52,22 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "way/44546478",
+        "amenity": "cafe",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.1776618,
+          33.8730218
+        ]
+      },
+      "id": "way/44546478"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "way/139855979",
         "amenity": "cafe",
         "building": "yes",
@@ -196,6 +212,37 @@
         ]
       },
       "id": "way/259256113"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/262639019",
+        "access": "yes",
+        "addr:city": "South Gate",
+        "addr:housenumber": "9615",
+        "addr:postcode": "90280",
+        "addr:state": "CA",
+        "addr:street": "Pinehurst Avenue",
+        "amenity": "cafe",
+        "building": "yes",
+        "ele": "36.0",
+        "golf": "clubhouse",
+        "height": "3.4",
+        "lacounty:ain": "6222023900",
+        "lacounty:bld_id": "505986802301",
+        "opening_hours": "Mo-Su 08:00-16:00",
+        "phone": "+1-323-357-9658",
+        "website": "https://www.cityofsouthgate.org/Government/Departments/Parks-and-Recreation/Search-Programs-Activities/Golf-Course",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.183599,
+          33.9446852
+        ]
+      },
+      "id": "way/262639019"
     },
     {
       "type": "Feature",
@@ -576,6 +623,24 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "node/368174024",
+        "addr:state": "CA",
+        "amenity": "cafe",
+        "ele": "47",
+        "gnis:feature_id": "1693161"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.4517456,
+          34.0175106
+        ]
+      },
+      "id": "node/368174024"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/369505468",
         "amenity": "cafe",
         "name": "Motto Tea Cafe"
@@ -905,6 +970,28 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "way/426371999",
+        "amenity": "cafe",
+        "building": "yes",
+        "ele": "112.9",
+        "height": "10.4",
+        "lacounty:ain": "5143022011",
+        "lacounty:bld_id": "481438841679",
+        "start_date": "1904",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.2648471,
+          34.0527367
+        ]
+      },
+      "id": "way/426371999"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "way/426393363",
         "addr:housenumber": "3050",
         "addr:street": "Los Angeles River Bike Path",
@@ -1161,6 +1248,29 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "way/430100533",
+        "amenity": "cafe",
+        "building": "yes",
+        "building:units": "2",
+        "ele": "194.0",
+        "height": "6.7",
+        "lacounty:ain": "2417001025",
+        "lacounty:bld_id": "452378884570",
+        "start_date": "1950",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.3613028,
+          34.1703679
+        ]
+      },
+      "id": "way/430100533"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "way/430104468",
         "amenity": "cafe",
         "building": "retail",
@@ -1185,6 +1295,29 @@
         ]
       },
       "id": "way/430104468"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/431159610",
+        "amenity": "cafe",
+        "building": "yes",
+        "building:units": "1",
+        "ele": "252.7",
+        "height": "5.2",
+        "lacounty:ain": "2162005068",
+        "lacounty:bld_id": "402594882953",
+        "start_date": "1948",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.5259042,
+          34.1652571
+        ]
+      },
+      "id": "way/431159610"
     },
     {
       "type": "Feature",
@@ -1600,6 +1733,25 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "way/458796575",
+        "amenity": "cafe",
+        "cuisine": "coffee_shop",
+        "landuse": "retail",
+        "source": "bing",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.1471384,
+          34.1340301
+        ]
+      },
+      "id": "way/458796575"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/464745074",
         "amenity": "cafe",
         "name": "Barbara's",
@@ -1636,6 +1788,27 @@
         ]
       },
       "id": "way/470563781"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/470599247",
+        "amenity": "cafe",
+        "building": "yes",
+        "ele": "92.3",
+        "height": "13.4",
+        "lacounty:ain": "8125027908",
+        "lacounty:bld_id": "549300828087",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.0408303,
+          34.0156635
+        ]
+      },
+      "id": "way/470599247"
     },
     {
       "type": "Feature",
@@ -2066,6 +2239,28 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "node/594171613",
+        "addr:city": "Los Angeles",
+        "addr:housenumber": "5000",
+        "addr:postcode": "90042",
+        "addr:street": "York Boulevard",
+        "amenity": "cafe",
+        "cuisine": "coffee_shop",
+        "phone": "+1 323 551-6828",
+        "website": "https://www.cafedeleche.net/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.206804,
+          34.121259
+        ]
+      },
+      "id": "node/594171613"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/595747755",
         "addr:city": "Studio City",
         "addr:country": "US",
@@ -2387,6 +2582,23 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "way/894091355",
+        "amenity": "cafe",
+        "building": "yes",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.2959338,
+          34.0985667
+        ]
+      },
+      "id": "way/894091355"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "way/909681689",
         "amenity": "cafe",
         "building": "yes",
@@ -2569,6 +2781,24 @@
         ]
       },
       "id": "node/1069655015"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1074865482",
+        "amenity": "cafe",
+        "building": "yes",
+        "cuisine": "bubble_tea",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.133124,
+          34.0619406
+        ]
+      },
+      "id": "way/1074865482"
     },
     {
       "type": "Feature",
@@ -3235,6 +3465,21 @@
         ]
       },
       "id": "node/1564094000"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1715711914",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.405292,
+          34.0682957
+        ]
+      },
+      "id": "node/1715711914"
     },
     {
       "type": "Feature",
@@ -4407,6 +4652,26 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "node/2956297787",
+        "addr:city": "Redondo Beach",
+        "addr:housenumber": "100B",
+        "addr:postcode": "90277",
+        "addr:street": "Fishermans Wharf",
+        "amenity": "cafe",
+        "cuisine": "bubble_tea"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.390671,
+          33.8389369
+        ]
+      },
+      "id": "node/2956297787"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/2956298232",
         "addr:city": "Hermosa Beach",
         "addr:housenumber": "509",
@@ -5132,6 +5397,22 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "node/3733661255",
+        "amenity": "cafe",
+        "cuisine": "donut"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.448527,
+          34.1523875
+        ]
+      },
+      "id": "node/3733661255"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/3758329250",
         "amenity": "cafe",
         "name": "Water Tower Market & Cafe"
@@ -5144,6 +5425,21 @@
         ]
       },
       "id": "node/3758329250"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3761026370",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.2488846,
+          34.229955
+        ]
+      },
+      "id": "node/3761026370"
     },
     {
       "type": "Feature",
@@ -5382,6 +5678,38 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "node/4064539864",
+        "amenity": "cafe",
+        "cuisine": "donut"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.5880537,
+          34.2498324
+        ]
+      },
+      "id": "node/4064539864"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4064539865",
+        "amenity": "cafe",
+        "cuisine": "donut"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.5891888,
+          34.250146
+        ]
+      },
+      "id": "node/4064539865"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/4084455197",
         "amenity": "cafe",
         "cuisine": "american",
@@ -5414,6 +5742,23 @@
         ]
       },
       "id": "node/4089377353"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4089377367",
+        "amenity": "cafe",
+        "cuisine": "ice_cream",
+        "ice_cream": "shave ice"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.5549665,
+          34.1879518
+        ]
+      },
+      "id": "node/4089377367"
     },
     {
       "type": "Feature",
@@ -5780,6 +6125,22 @@
         ]
       },
       "id": "node/4213575695"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4226703189",
+        "addr:street": "East 41st Street",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.2601032,
+          34.0090826
+        ]
+      },
+      "id": "node/4226703189"
     },
     {
       "type": "Feature",
@@ -6709,6 +7070,36 @@
         ]
       },
       "id": "node/4735441172"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4740824822",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.1678778,
+          33.8053912
+        ]
+      },
+      "id": "node/4740824822"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4740836521",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.2331057,
+          33.824839
+        ]
+      },
+      "id": "node/4740836521"
     },
     {
       "type": "Feature",
@@ -8534,6 +8925,21 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "node/5644514767",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.3448754,
+          34.1519423
+        ]
+      },
+      "id": "node/5644514767"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/5655206375",
         "amenity": "cafe",
         "cuisine": "coffee_shop;cafe",
@@ -8926,6 +9332,21 @@
         ]
       },
       "id": "node/5901148885"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/6047237632",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.2818547,
+          34.0254979
+        ]
+      },
+      "id": "node/6047237632"
     },
     {
       "type": "Feature",
@@ -9650,6 +10071,21 @@
         ]
       },
       "id": "node/6770736551"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/6772059301",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.3837795,
+          34.0627524
+        ]
+      },
+      "id": "node/6772059301"
     },
     {
       "type": "Feature",
@@ -10874,6 +11310,22 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "node/8014492660",
+        "amenity": "cafe",
+        "cuisine": "bubble_tea"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.5365507,
+          34.2212533
+        ]
+      },
+      "id": "node/8014492660"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/8014613566",
         "amenity": "cafe",
         "brand": "Sharetea",
@@ -10892,6 +11344,22 @@
         ]
       },
       "id": "node/8014613566"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/8014688377",
+        "amenity": "cafe",
+        "cuisine": "bubble_tea"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.5354823,
+          34.2434847
+        ]
+      },
+      "id": "node/8014688377"
     },
     {
       "type": "Feature",
@@ -12374,6 +12842,21 @@
         ]
       },
       "id": "node/8830476553"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/8846617717",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.2044757,
+          34.1208908
+        ]
+      },
+      "id": "node/8846617717"
     },
     {
       "type": "Feature",
@@ -14484,6 +14967,24 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "node/9873396787",
+        "amenity": "cafe",
+        "cuisine": "coffee_shop",
+        "indoor_seating": "yes",
+        "outdoor_seating": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.3275852,
+          33.803641
+        ]
+      },
+      "id": "node/9873396787"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/9891237617",
         "addr:housenumber": "1001",
         "addr:postcode": "90015",
@@ -14747,6 +15248,21 @@
         ]
       },
       "id": "node/9982479964"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/9987041149",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.4178486,
+          34.0449151
+        ]
+      },
+      "id": "node/9987041149"
     },
     {
       "type": "Feature",
@@ -17940,6 +18456,22 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "node/11609834951",
+        "amenity": "cafe",
+        "cuisine": "bubble_tea"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.567726,
+          34.1713985
+        ]
+      },
+      "id": "node/11609834951"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/11638566469",
         "addr:housenumber": "3570",
         "addr:postcode": "90034",
@@ -18511,6 +19043,21 @@
         ]
       },
       "id": "node/11779074952"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11781538464",
+        "amenity": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.1316226,
+          34.1884192
+        ]
+      },
+      "id": "node/11781538464"
     },
     {
       "type": "Feature",
@@ -19801,6 +20348,22 @@
     {
       "type": "Feature",
       "properties": {
+        "@id": "node/12364265812",
+        "amenity": "cafe",
+        "shop": "bakery"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.4694834,
+          34.0651589
+        ]
+      },
+      "id": "node/12364265812"
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "@id": "node/12372861463",
         "addr:housenumber": "3300",
         "addr:street": "West 6th Street",
@@ -19996,6 +20559,22 @@
         ]
       },
       "id": "node/12505762146"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12513644855",
+        "amenity": "cafe",
+        "cuisine": "coffee_shop"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.3921922,
+          33.8388395
+        ]
+      },
+      "id": "node/12513644855"
     },
     {
       "type": "Feature",

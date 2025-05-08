@@ -1,145 +1,216 @@
 import { useEffect, useRef, useState } from "react";
-import maplibregl, { NavigationControl } from "maplibre-gl";
+import maplibregl, { NavigationControl, Popup } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import neighborhoodPolygons from "../assets/nbrhd22.json";
+import neighborhoodPolygons from "../assets/nbrs.json";
 import coffeeshopPoints from "../assets/coffeeshops.json";
 import coffeeIcon from "../assets/coffee2.svg";
 
 export default function MapComponent() {
+  const [map, setMap] = useState(null);
   const [markersLoaded, setMarkersLoaded] = useState(false);
+  const [neighborhoodLayerVisible, setNeighborhoodLayerVisible] =
+    useState(true);
   const mapContainer = useRef(null);
+  const popupRef = useRef(
+    new Popup({ closeButton: false, closeOnClick: false })
+  );
 
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    const style = {
-      version: 8,
-      sources: {
-        osm: {
-          type: "raster",
-          tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
-          tileSize: 256,
-          attribution: "&copy; OpenStreetMap Contributors",
-          maxzoom: 19,
+    const initializeMap = async () => {
+      const style = {
+        version: 8,
+        sources: {
+          osm: {
+            type: "raster",
+            tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tileSize: 256,
+            attribution: "&copy; OpenStreetMap Contributors",
+            maxzoom: 19,
+          },
         },
-      },
-      layers: [
-        {
-          id: "osm",
-          type: "raster",
-          source: "osm",
-        },
-      ],
-    };
-
-    const map = new maplibregl.Map({
-      container: mapContainer.current,
-      style: "https://demotiles.maplibre.org/style.json", // 'https://api.maptiler.com/maps/bright/style.json?key=insert_your_key_here',
-      // style: style,
-      center: [-118, 34],
-      zoom: 8,
-    });
-
-    map.on("load", async () => {
-      const icon = new Image();
-      const svgString = await fetch(coffeeIcon) // Fetch your SVG
-        .then((res) => res.text()) // Convert to text (SVG content)
-        .then((svgContent) => svgContent); // Now you have the SVG string
-
-      const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
-      const svgURL = URL.createObjectURL(svgBlob);
-
-      icon.onload = () => {
-        map.addImage("cafe-icon", icon); // Add the image to the map
-        URL.revokeObjectURL(svgURL); // Clean up URL object
+        layers: [
+          {
+            id: "osm",
+            type: "raster",
+            source: "osm",
+          },
+        ],
       };
 
-      icon.src = svgURL;
+      const newMap = new maplibregl.Map({
+        container: mapContainer.current,
+        style: "https://demotiles.maplibre.org/style.json", // 'https://api.maptiler.com/maps/bright/style.json?key=insert_your_key_here',
+        style: style,
+        center: [-118, 34],
+        zoom: 8,
+      });
 
-      map.addSource("point", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [0, 0],
+      newMap.on("load", async () => {
+        const icon = new Image();
+        const svgString = await fetch(coffeeIcon) // fetch SVG
+          .then((res) => res.text()) // convert to text (SVG content)
+          .then((svgContent) => svgContent); // this is the SVG string
+
+        const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+        const svgURL = URL.createObjectURL(svgBlob);
+
+        icon.onload = () => {
+          newMap.addImage("cafe-icon", icon); // add image to map
+          URL.revokeObjectURL(svgURL); // clean up URL object
+        };
+
+        icon.src = svgURL;
+
+        newMap.addSource("point", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                geometry: {
+                  type: "Point",
+                  coordinates: [0, 0],
+                },
               },
-            },
-          ],
-        },
+            ],
+          },
+        });
+
+        newMap.addSource("polygons", {
+          type: "geojson",
+          data: neighborhoodPolygons,
+        });
+
+        newMap.addLayer({
+          id: "polygon-layer",
+          type: "fill",
+          source: "polygons",
+          paint: {
+            "fill-color": "#3fa977",
+            "fill-opacity": 0.2,
+            "fill-outline-color": "#3fa977",
+          },
+        });
+
+        newMap.addLayer({
+          id: "polygon-border",
+          type: "line",
+          source: "polygons",
+          paint: {
+            "line-color": "#3fa977",
+            "line-width": 1,
+          },
+        });
+
+        newMap.addSource("cafes", {
+          type: "geojson",
+          data: coffeeshopPoints,
+        });
+
+        newMap.addLayer({
+          id: "cafes",
+          type: "symbol",
+          source: "cafes",
+          layout: {
+            "icon-image": "cafe-icon",
+            "icon-size": 0.14,
+            "icon-allow-overlap": true,
+          },
+        });
+
+        setMap(newMap);
+
+        // Popup on click for cafes layer
+        newMap.on("click", "cafes", (e) => {
+          if (e.features.length > 0) {
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            const properties = e.features[0].properties;
+
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+              coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            const popupNode = document.createElement("div");
+            let popupHTML = "<b>Cafe Details:</b><br>";
+            for (const key in properties) {
+              if (
+                key === "name" ||
+                key === "addr" ||
+                key === "website" ||
+                key.startsWith("payment") ||
+                key.includes("seating")
+              ) {
+                popupHTML += `${key}: ${properties[key]}<br>`;
+              }
+            }
+            popupNode.innerHTML = popupHTML;
+
+            popupRef.current
+              .setLngLat(coordinates)
+              .setDOMContent(popupNode)
+              .addTo(newMap);
+          }
+        });
+
+        // Change the cursor to a pointer when entering a feature
+        newMap.on("mouseenter", "cafes", () => {
+          newMap.getCanvas().style.cursor = "pointer";
+        });
+
+        // Change it back to a grabber when leaving
+        newMap.on("mouseleave", "cafes", () => {
+          newMap.getCanvas().style.cursor = "";
+        });
       });
 
-      map.addSource("polygons", {
-        type: "geojson",
-        data: neighborhoodPolygons,
-      });
+      let nav = new NavigationControl();
+      newMap.addControl(nav, "top-right");
 
-      map.addLayer({
-        id: "polygon-layer",
-        type: "fill",
-        source: "polygons",
-        paint: {
-          "fill-color": "#dc559f",
-          "fill-opacity": 0.2,
-          "fill-outline-color": "#4622a7",
-        },
-      });
+      return () => map.remove();
+    };
 
-      map.addLayer({
-        id: "polygon-border",
-        type: "line",
-        source: "polygons",
-        paint: {
-          "line-color": "#be4efb",
-          "line-width": 1,
-        },
-      });
-
-      map.addSource("cafes", {
-        type: "geojson",
-        data: coffeeshopPoints,
-      });
-
-      map.addLayer({
-        id: "cafes",
-        type: "symbol",
-        source: "cafes",
-        layout: {
-          "icon-image": "cafe-icon",
-          "icon-size": 0.14,
-          "icon-allow-overlap": true,
-        },
-      });
-
-      // map.addLayer({
-      //   id: "cafes",
-      //   type: "circle",
-      //   source: "cafes",
-      //   paint: {
-      //     "circle-radius": 3,
-      //     "circle-color": "#8800ff",
-      //     "circle-stroke-width": 0.5,
-      //     "circle-stroke-color": "#fff",
-      //   },
-      // });
-    });
-
-    let nav = new NavigationControl();
-    map.addControl(nav, "top-right");
-
-    return () => map.remove();
+    initializeMap();
   }, []);
 
+  const toggleNeighborhoodLayer = () => {
+    if (map) {
+      const visibility = neighborhoodLayerVisible ? "none" : "visible";
+      map.setLayoutProperty("polygon-layer", "visibility", visibility);
+      map.setLayoutProperty("polygon-border", "visibility", visibility);
+      setNeighborhoodLayerVisible(!neighborhoodLayerVisible);
+    }
+  };
+
   return (
-    <div
-      ref={mapContainer}
-      style={{ width: "100vw", height: "100vh" }}
-      // interactive={true}
-      // interactiveLayerIds={interactiveLayerIds}
-      // onLoad={onLoad}
-    />
+    <>
+      <div
+        ref={mapContainer}
+        style={{ width: "100vw", height: "100vh" }}
+        // interactive={true}
+        // interactiveLayerIds={interactiveLayerIds}
+        // onLoad={onLoad}
+      />
+      <button
+        onClick={toggleNeighborhoodLayer}
+        style={{
+          position: "absolute",
+          bottom: "20px",
+          right: "20px",
+          padding: "6px 8px",
+          backgroundColor: "rgb(255, 255, 255)",
+          color: "#111",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontSize: "0.9em",
+          zIndex: 1000,
+        }}
+      >
+        {neighborhoodLayerVisible ? "Hide Neighborhoods" : "Show Neighborhoods"}
+      </button>
+    </>
   );
 }
