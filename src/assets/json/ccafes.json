@@ -11697,32 +11697,6 @@
     },
     {
       "type": "Feature",
-      "id": "node/9350130980",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -118.3059826,
-          34.0913832
-        ]
-      },
-      "properties": {
-        "@id": "node/9350130980",
-        "amenity": "cafe",
-        "name": "Cafe Paris",
-        "address": "",
-        "roaster": [],
-        "inHouseRoast": false,
-        "outdoorSeating": false,
-        "wifi": false,
-        "takeaway": false,
-        "wheelchairAccessible": false,
-        "specialItems": [],
-        "vibeTags": [],
-        "specialty": false
-      }
-    },
-    {
-      "type": "Feature",
       "id": "node/9350170178",
       "geometry": {
         "type": "Point",
@@ -17801,40 +17775,6 @@
         "wifi": false,
         "takeaway": false,
         "wheelchairAccessible": false,
-        "specialItems": [],
-        "vibeTags": [],
-        "specialty": false
-      }
-    },
-    {
-      "type": "Feature",
-      "id": "node/12596451758",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -118.0453387,
-          33.8727532
-        ]
-      },
-      "properties": {
-        "@id": "node/12596451758",
-        "addr:housenumber": "17416",
-        "addr:state": "CA",
-        "addr:street": "Carmenita Road",
-        "amenity": "cafe",
-        "brand": "Paris Baguette",
-        "name": "Paris Baguette",
-        "outdoor_seating": "yes",
-        "panoramax": "db47026e-98cd-4cfe-ade7-e01f2e81c447",
-        "shop": "bakery",
-        "takeaway": true,
-        "wheelchair": "yes",
-        "address": "17416, Carmenita Road, CA",
-        "roaster": [],
-        "inHouseRoast": false,
-        "outdoorSeating": true,
-        "wifi": false,
-        "wheelchairAccessible": true,
         "specialItems": [],
         "vibeTags": [],
         "specialty": false
