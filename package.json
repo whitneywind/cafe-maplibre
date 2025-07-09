@@ -15,11 +15,13 @@
     "@mui/material": "^6.4.8",
     "@vis.gl/react-maplibre": "^8.0.1",
     "maplibre-gl": "^5.2.0",
+    "pmtiles": "^4.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/node": "^24.0.12",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",

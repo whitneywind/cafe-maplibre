@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { NavigationControl, Popup } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import neighborhoodPolygons from "../assets/nbrs.json";
-import coffeeshopPoints from "../assets/coffeeshops.json";
+import neighborhoodPolygons from "../assets/neighborhoods/nbrs.json";
+import coffeeshopPoints from "../assets/json/ccafes.json";
 import coffeeIcon from "../assets/coffee2.svg";
+
 
 export default function MapComponent() {
   const [map, setMap] = useState(null);
-  const [markersLoaded, setMarkersLoaded] = useState(false);
+  // const [markersLoaded, setMarkersLoaded] = useState(false);
   const [neighborhoodLayerVisible, setNeighborhoodLayerVisible] =
-    useState(true);
+    useState(false);
   const mapContainer = useRef(null);
   const popupRef = useRef(
     new Popup({ closeButton: false, closeOnClick: false })
@@ -41,10 +42,10 @@ export default function MapComponent() {
 
       const newMap = new maplibregl.Map({
         container: mapContainer.current,
-        style: "https://demotiles.maplibre.org/style.json", // 'https://api.maptiler.com/maps/bright/style.json?key=insert_your_key_here',
+        // style: "https://demotiles.maplibre.org/style.json", // 'https://api.maptiler.com/maps/bright/style.json?key=insert_your_key_here',
         style: style,
-        center: [-118, 34],
-        zoom: 8,
+        center: [-118.3226, 34.0750],
+        zoom: 12,
       });
 
       newMap.on("load", async () => {
@@ -62,22 +63,6 @@ export default function MapComponent() {
         };
 
         icon.src = svgURL;
-
-        newMap.addSource("point", {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [0, 0],
-                },
-              },
-            ],
-          },
-        });
 
         newMap.addSource("polygons", {
           type: "geojson",
@@ -105,6 +90,9 @@ export default function MapComponent() {
           },
         });
 
+        newMap.setLayoutProperty("polygon-layer", "visibility", "none");
+        newMap.setLayoutProperty("polygon-border", "visibility", "none");
+
         newMap.addSource("cafes", {
           type: "geojson",
           data: coffeeshopPoints,
@@ -123,7 +111,7 @@ export default function MapComponent() {
 
         setMap(newMap);
 
-        // Popup on click for cafes layer
+        // popup on click for cafes layer
         newMap.on("click", "cafes", (e) => {
           if (e.features.length > 0) {
             const coordinates = e.features[0].geometry.coordinates.slice();
@@ -138,14 +126,24 @@ export default function MapComponent() {
             for (const key in properties) {
               if (
                 key === "name" ||
-                key === "addr" ||
-                key === "website" ||
-                key.startsWith("payment") ||
-                key.includes("seating")
+                key === "cuisine" ||
+                key === "address" ||
+                key === "website"
               ) {
                 popupHTML += `${key}: ${properties[key]}<br>`;
               }
             }
+
+            const cafeName = properties.name;
+            const [lng, lat] = coordinates;
+            let googleMapsURL = cafeName
+              ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cafeName)}`
+              : `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+
+            popupHTML += `<a href="${googleMapsURL}" target="_blank" rel="noopener noreferrer" 
+              style="display:inline-block;margin-top:8px;padding:4px 8px;background:#4285F4;color:white;
+              border-radius:4px;text-decoration:none;font-size:0.85em;">View on Google Maps</a>`;
+
             popupNode.innerHTML = popupHTML;
 
             popupRef.current
@@ -155,14 +153,23 @@ export default function MapComponent() {
           }
         });
 
-        // Change the cursor to a pointer when entering a feature
+        // change cursor to a pointer when entering a feature
         newMap.on("mouseenter", "cafes", () => {
           newMap.getCanvas().style.cursor = "pointer";
         });
 
-        // Change it back to a grabber when leaving
+        // change back to a grabber when leaving
         newMap.on("mouseleave", "cafes", () => {
           newMap.getCanvas().style.cursor = "";
+        });
+
+        newMap.on("click", (e) => {
+          const features = newMap.queryRenderedFeatures(e.point, {
+            layers: ["cafes"],
+          });
+          if (features.length === 0) {
+            popupRef.current.remove();
+          }
         });
       });
 
@@ -189,7 +196,7 @@ export default function MapComponent() {
       <div
         ref={mapContainer}
         style={{ width: "100vw", height: "100vh" }}
-        // interactive={true}
+        interactive="true"
         // interactiveLayerIds={interactiveLayerIds}
         // onLoad={onLoad}
       />
