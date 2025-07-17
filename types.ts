@@ -7,6 +7,7 @@ export type VibeTag =
   | "plants"
   | "study-friendly"
   | "aesthetic"
+  | "matcha-specialty"
 
 
 export interface CoffeeShop {

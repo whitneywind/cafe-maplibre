@@ -2,12 +2,14 @@ import { useState } from "react";
 import { AppBar, Toolbar, Button, Menu, MenuItem } from "@mui/material";
 import "../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog"
+import useMapStore from "../store/useMapStore";
 
 
 const WavyMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const map = useMapStore((state) => state.map);
 
 
   const handleClick = (event) => {
@@ -58,24 +60,36 @@ const handleNewCafeSubmit = (newCafe) => {
     },
   };
 
-  // 🔥 Append to your local GeoJSON array or POST to server here
+  // append to your local GeoJSON array or POST to server here
   console.log("GeoJSON Feature ready to save:", geoJsonFeature);
 };
-
 
   return (
     <>
       <AppBar position="static" sx={{ backgroundColor: "#3fa977" }}>
         <Toolbar>
-          <Button color="inherit">Home</Button>
-          <Button color="inherit">About</Button>
+          {/* a coffeecup or something */}
+          <Button
+            color="inherit"
+            onClick={() => {
+              if (map) {
+                map.flyTo({
+                  center: [-118.3226, 34.075],
+                  zoom: 12,
+                  speed: 1.2,
+                });
+              }
+            }}
+          >
+            Home
+          </Button>
+          <Button color="inherit">Filter</Button>
           <Button color="inherit" onClick={handleClick}>
-            Contribute
+            Suggest New
           </Button>
           <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleClose}>
             <MenuItem onClick={handleDialogOpen}>Suggest New Cafe</MenuItem>
           </Menu>
-          <Button color="inherit">Contact</Button>
         </Toolbar>
       </AppBar>
       <NewCafeDialog

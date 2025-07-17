@@ -163,44 +163,6 @@
     },
     {
       "type": "Feature",
-      "id": "way/205868737",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -118.126231,
-          34.1420902
-        ]
-      },
-      "properties": {
-        "@id": "way/205868737",
-        "addr:city": "Pasadena",
-        "addr:country": "US",
-        "addr:housenumber": "217",
-        "addr:postcode": "91106",
-        "addr:state": "CA",
-        "addr:street": "Michigan Avenue",
-        "amenity": "cafe",
-        "building": "yes",
-        "name": "Ginger Corner Market",
-        "opening_hours": "Mo-Fr 08:00-18:00, Sa-Su 10:00-17:00",
-        "phone": "+1 626-795-2447",
-        "shop": "convenience",
-        "website": "http://gingercornermarket.com",
-        "@geometry": "center",
-        "address": "217, Michigan Avenue, Pasadena, CA, 91106",
-        "roaster": [],
-        "inHouseRoast": false,
-        "outdoorSeating": false,
-        "wifi": false,
-        "takeaway": false,
-        "wheelchairAccessible": false,
-        "specialItems": [],
-        "vibeTags": [],
-        "specialty": false
-      }
-    },
-    {
-      "type": "Feature",
       "id": "way/218147438",
       "geometry": {
         "type": "Point",
@@ -4335,32 +4297,6 @@
     },
     {
       "type": "Feature",
-      "id": "node/3758329250",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -118.32084,
-          34.0857687
-        ]
-      },
-      "properties": {
-        "@id": "node/3758329250",
-        "amenity": "cafe",
-        "name": "Water Tower Market & Cafe",
-        "address": "",
-        "roaster": [],
-        "inHouseRoast": false,
-        "outdoorSeating": false,
-        "wifi": false,
-        "takeaway": false,
-        "wheelchairAccessible": false,
-        "specialItems": [],
-        "vibeTags": [],
-        "specialty": false
-      }
-    },
-    {
-      "type": "Feature",
       "id": "node/3812008265",
       "geometry": {
         "type": "Point",
@@ -4461,32 +4397,6 @@
         "@id": "node/3827585044",
         "amenity": "cafe",
         "name": "Yonada",
-        "address": "",
-        "roaster": [],
-        "inHouseRoast": false,
-        "outdoorSeating": false,
-        "wifi": false,
-        "takeaway": false,
-        "wheelchairAccessible": false,
-        "specialItems": [],
-        "vibeTags": [],
-        "specialty": false
-      }
-    },
-    {
-      "type": "Feature",
-      "id": "node/3849945976",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -118.343201,
-          34.0835725
-        ]
-      },
-      "properties": {
-        "@id": "node/3849945976",
-        "amenity": "cafe",
-        "name": "Hot Wings",
         "address": "",
         "roaster": [],
         "inHouseRoast": false,
@@ -4854,40 +4764,6 @@
         "specialItems": [],
         "vibeTags": [],
         "specialty": false
-      }
-    },
-    {
-      "type": "Feature",
-      "id": "node/4125794783",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -118.293793,
-          34.1183593
-        ]
-      },
-      "properties": {
-        "@id": "node/4125794783",
-        "addr:housenumber": "2650",
-        "addr:street": "Vermont Canyon Road",
-        "amenity": "cafe",
-        "cuisine": "bar&grill;coffee_shop;market",
-        "internet_access": "yes",
-        "internet_access:fee": "no",
-        "name": "Franklin's Cafe & Market - Griffith Park",
-        "outdoor_seating": "yes",
-        "phone": "+13235450444",
-        "website": "http://franklinsatgriffithpark.com/",
-        "address": "2650, Vermont Canyon Road",
-        "roaster": [],
-        "inHouseRoast": false,
-        "outdoorSeating": true,
-        "wifi": true,
-        "takeaway": false,
-        "wheelchairAccessible": false,
-        "specialItems": [],
-        "vibeTags": [],
-        "specialty": true
       }
     },
     {
@@ -7779,43 +7655,6 @@
     },
     {
       "type": "Feature",
-      "id": "node/5891848886",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -118.3285152,
-          34.0831706
-        ]
-      },
-      "properties": {
-        "@id": "node/5891848886",
-        "addr:city": "Los Angeles",
-        "addr:housenumber": "5870",
-        "addr:postcode": "90038",
-        "addr:state": "CA",
-        "addr:street": "Melrose Avenue",
-        "addr:unit": "6",
-        "amenity": "cafe",
-        "contact:yelp": "https://www.yelp.com/biz/andreas-coffee-shop-los-angeles-2",
-        "cuisine": "coffee_shop;sandwich",
-        "name": "Andreas Coffee Shop",
-        "opening_hours": "Mo-Fr 07:30-17:00",
-        "outdoor_seating": "no",
-        "phone": "+1-323-848-4271",
-        "address": "5870, Melrose Avenue, Los Angeles, CA, 90038",
-        "roaster": [],
-        "inHouseRoast": false,
-        "outdoorSeating": false,
-        "wifi": false,
-        "takeaway": false,
-        "wheelchairAccessible": false,
-        "specialItems": [],
-        "vibeTags": [],
-        "specialty": true
-      }
-    },
-    {
-      "type": "Feature",
       "id": "node/5901148885",
       "geometry": {
         "type": "Point",
@@ -9698,32 +9537,6 @@
         "@id": "node/8346283476",
         "amenity": "cafe",
         "name": "Super Domestic",
-        "address": "",
-        "roaster": [],
-        "inHouseRoast": false,
-        "outdoorSeating": false,
-        "wifi": false,
-        "takeaway": false,
-        "wheelchairAccessible": false,
-        "specialItems": [],
-        "vibeTags": [],
-        "specialty": false
-      }
-    },
-    {
-      "type": "Feature",
-      "id": "node/8356082440",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -118.4453323,
-          34.0469362
-        ]
-      },
-      "properties": {
-        "@id": "node/8356082440",
-        "amenity": "cafe",
-        "name": "Market Cafe",
         "address": "",
         "roaster": [],
         "inHouseRoast": false,

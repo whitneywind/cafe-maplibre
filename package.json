@@ -13,11 +13,14 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.4.8",
+    "@turf/boolean-point-in-polygon": "^7.2.0",
+    "@turf/helpers": "^7.2.0",
     "@vis.gl/react-maplibre": "^8.0.1",
     "maplibre-gl": "^5.2.0",
     "pmtiles": "^4.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

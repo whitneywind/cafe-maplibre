@@ -27,7 +27,6 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
     latitude: "",
     longitude: "",
     website: "",
-    phone: "",
     opening_hours: "",
   });
   
@@ -87,7 +86,6 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
       name,
       address,
       coordinates: [parseFloat(longitude), parseFloat(latitude)],
-      phone: formData.phone || "",
       website: formData.website || "",
       openingHours: formData.opening_hours || "",
       specialty: true,
@@ -107,7 +105,6 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
       latitude: "",
       longitude: "",
       website: "",
-      phone: "",
       opening_hours: "",
     });
   };
@@ -188,14 +185,6 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
           fullWidth
           margin="dense"
           value={formData.website}
-          onChange={handleChange}
-        />
-        <TextField
-          label="Phone"
-          name="phone"
-          fullWidth
-          margin="dense"
-          value={formData.phone}
           onChange={handleChange}
         />
         <TextField
