@@ -84,12 +84,15 @@ const handleNewCafeSubmit = (newCafe) => {
             Home
           </Button>
           <Button color="inherit">Filter</Button>
-          <Button color="inherit" onClick={handleClick}>
+          <Button color="inherit" onClick={handleDialogOpen}>
+            Suggest New
+          </Button>
+          {/* <Button color="inherit" onClick={handleClick}>
             Suggest New
           </Button>
           <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleClose}>
             <MenuItem onClick={handleDialogOpen}>Suggest New Cafe</MenuItem>
-          </Menu>
+          </Menu> */}
         </Toolbar>
       </AppBar>
       <NewCafeDialog

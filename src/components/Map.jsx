@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { NavigationControl, Popup, GeolocateControl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Box, Card, CardContent, Typography, Link } from "@mui/material";
+import CafeScroller from "./mapHelpers/CafeScroller.tsx"
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import neighborhoodPolygons from "../assets/neighborhoods/nbrs.json";
 import coffeeshopPoints from "../assets/json/ccafes.json";
@@ -11,12 +11,10 @@ import useMapStore from "../store/useMapStore";
 
 
 export default function MapComponent() {
-  // const [map, setMap] = useState(null);
   const setMap = useMapStore((state) => state.setMap);
   const map = useMapStore((state) => state.map);
 
   const [visibleCafes, setVisibleCafes] = useState([]);
-  // const [markersLoaded, setMarkersLoaded] = useState(false);
   const [neighborhoodLayerVisible, setNeighborhoodLayerVisible] =
     useState(false);
   const mapContainer = useRef(null);
@@ -36,14 +34,12 @@ export default function MapComponent() {
       },
     };
 
-    // Iterate through each neighborhood polygon
     for (const feature of neighborhoodPolygons.features) {
       if (booleanPointInPolygon(cafePoint, feature)) {
-        // Assuming your neighborhood GeoJSON features have a 'name' property
         return feature.name;
       }
     }
-    return null; // Return null if no neighborhood is found
+    return null;
   };
 
 
@@ -152,31 +148,18 @@ export default function MapComponent() {
             return bounds.contains([lng, lat]);
           });
 
-          // const unique = Array.from(
-          //   new Map(
-          //     visible.map((f) => [
-          //       f.properties.id || f.properties.name,
-          //       {
-          //         ...f.properties,
-          //         coordinates: f.geometry.coordinates,
-          //       },
-          //     ])
-          //   ).values()
-          // );
-          // setVisibleCafes(unique);
-                 // Process visible cafes to add neighborhood information
           const processedCafes = Array.from(
             new Map(
               visible.map((f) => {
                 const coordinates = f.geometry.coordinates;
-                const neighborhood = getNeighborhoodForCafe(coordinates); // Get neighborhood here
+                const neighborhood = getNeighborhoodForCafe(coordinates);
 
                 return [
                   f.properties.id || f.properties.name,
                   {
                     ...f.properties,
                     coordinates: coordinates,
-                    neighborhood: neighborhood, // Add neighborhood to cafe properties
+                    neighborhood: neighborhood,
                   },
                 ];
               })
@@ -316,110 +299,10 @@ export default function MapComponent() {
       >
         {neighborhoodLayerVisible ? "Hide Neighborhoods" : "Show Neighborhoods"}
       </button>
-      {/* <div
-        style={{
-          position: "absolute",
-          bottom: "0",
-          left: 0,
-          right: 0,
-          height: "120px",
-          backgroundColor: "rgba(255,255,255,0.9)",
-          overflowX: "auto",
-          whiteSpace: "nowrap",
-          zIndex: 999,
-          padding: "10px",
-          boxShadow: "0 -2px 5px rgba(0,0,0,0.2)",
-        }}
-      >
-        {visibleCafes.map((cafe, index) => (
-          <div
-            key={index}
-            style={{
-              display: "inline-block",
-              width: "250px",
-              marginRight: "12px",
-              background: "#fff",
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              padding: "8px",
-              boxSizing: "border-box",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-            }}
-            onClick={() => {
-              map?.flyTo({ center: cafe.coordinates, zoom: 15 });
-            }}
-          >
-            <strong>{cafe.name || "Unnamed Cafe"}</strong>
-            <br />
-            <span>{cafe.address || "No address"}</span>
-            <br />
-            {cafe.website && (
-              <a href={cafe.website} target="_blank" rel="noopener noreferrer">
-                Website
-              </a>
-            )}
-          </div>
-        ))}
-      </div> */}
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 120,
-          bgcolor: "rgba(255,255,255,0.9)",
-          overflowX: "auto",
-          whiteSpace: "nowrap",
-          zIndex: 999,
-          p: 1.25,
-          boxShadow: "0 -2px 5px rgba(0,0,0,0.2)",
-        }}
-      >
-        {visibleCafes.map((cafe, index) => (
-          <Card
-            key={index}
-            onClick={() => {
-              map?.flyTo({ center: cafe.coordinates, zoom: 15 });
-            }}
-            sx={{
-              display: "inline-block",
-              width: 250,
-              mr: 1.5,
-              cursor: "pointer",
-              borderRadius: 2,
-              boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-              ":hover": {
-                boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                transform: "scale(1.02)",
-                transition: "all 0.2s ease-in-out",
-              },
-            }}
-            elevation={3}
-          >
-            <CardContent>
-              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                {cafe.name || "Unnamed Cafe"}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {cafe.neighborhood ? `${cafe.neighborhood}` : cafe.address || ""}
-              </Typography>
-              {cafe.website && (
-                <Link
-                  href={cafe.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  variant="body2"
-                  underline="hover"
-                  color="primary"
-                >
-                  Website
-                </Link>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+      <CafeScroller map={map} visibleCafes={visibleCafes} />
     </>
   );
 }
+
+
+

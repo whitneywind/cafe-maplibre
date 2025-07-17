@@ -15,6 +15,7 @@ export interface CoffeeShop {
   name: string;
   address: string;
   coordinates: [number, number]; // [lng, lat]
+  neighborhood?: string;
 
   roaster: string[];
   inHouseRoast: boolean;
