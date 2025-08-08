@@ -5,7 +5,8 @@ import CafeScroller from "./mapHelpers/CafeScroller.tsx"
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import neighborhoodPolygons from "../assets/neighborhoods/nbrs.json";
 import coffeeshopPoints from "../assets/json/ccafes.json";
-import coffeeIcon from "../assets/coffee2.svg";
+import coffeeSVG from "../assets/coffee2.svg";
+import specialtySVG from "../assets/specialty.svg";
 import useMapStore from "../store/useMapStore";
 
 
@@ -76,20 +77,65 @@ export default function MapComponent() {
       });
 
       newMap.on("load", async () => {
-        const icon = new Image();
-        const svgString = await fetch(coffeeIcon) // fetch SVG
+        // load regular coffee icon
+        const regularIcon = new Image();
+        const regularSvgString = await fetch(coffeeSVG) // fetch SVG
           .then((res) => res.text()) // convert to text (SVG content)
           .then((svgContent) => svgContent); // this is the SVG string
+        const regularSvgBlob = new Blob([regularSvgString], { type: "image/svg+xml" });
+        const regularSvgURL = URL.createObjectURL(regularSvgBlob);
 
-        const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
-        const svgURL = URL.createObjectURL(svgBlob);
-
-        icon.onload = () => {
-          newMap.addImage("cafe-icon", icon); // add image to map
-          URL.revokeObjectURL(svgURL); // clean up URL object
+        regularIcon.onload = () => {
+          newMap.addImage("cafe-icon", regularIcon); // add image to map
+          URL.revokeObjectURL(regularSvgURL); // clean up URL object
         };
+        regularIcon.src = regularSvgURL;
 
-        icon.src = svgURL;
+        // load specialty coffee icon
+        const specialtyIcon = new Image();
+        const specialtySvgString = await fetch(specialtySVG) // fetch SVG
+          .then((res) => res.text()) // convert to text (SVG content)
+          .then((svgContentS) => svgContentS); // this is the SVG string
+        const specialtySvgBlob = new Blob([specialtySvgString], { type: "image/svg+xml" });
+        const specialtySvgURL = URL.createObjectURL(specialtySvgBlob);
+
+        specialtyIcon.onload = () => {
+          newMap.addImage("specialty-cafe-icon", specialtyIcon); // add image to map
+          URL.revokeObjectURL(specialtySvgURL); // clean up URL object
+        };
+        specialtyIcon.src = specialtySvgURL;
+
+        newMap.addSource("cafes", {
+          type: "geojson",
+          data: coffeeshopPoints,
+        });
+
+        // layer for regular cafes
+        newMap.addLayer({
+          id: "regular-cafes",
+          type: "symbol",
+          source: "cafes",
+          filter: ["!=", ["get", "specialty"], true],
+          layout: {
+            "icon-image": "cafe-icon",
+            "icon-size": 0.14,
+            "icon-allow-overlap": true,
+          },
+        });
+
+        // layer for specialty cafes
+        newMap.addLayer({
+          id: "specialty-cafes",
+          type: "symbol",
+          source: "cafes",
+          filter: ["==", ["get", "specialty"], true],
+          layout: {
+            "icon-image": "specialty-cafe-icon",
+            "icon-size": 0.34,
+            "icon-allow-overlap": true,
+          },
+        });
+
 
         newMap.addSource("polygons", {
           type: "geojson",
@@ -119,22 +165,6 @@ export default function MapComponent() {
 
         newMap.setLayoutProperty("polygon-layer", "visibility", "none");
         newMap.setLayoutProperty("polygon-border", "visibility", "none");
-
-        newMap.addSource("cafes", {
-          type: "geojson",
-          data: coffeeshopPoints,
-        });
-
-        newMap.addLayer({
-          id: "cafes",
-          type: "symbol",
-          source: "cafes",
-          layout: {
-            "icon-image": "cafe-icon",
-            "icon-size": 0.14,
-            "icon-allow-overlap": true,
-          },
-        });
 
         setMap(newMap);
 
@@ -173,7 +203,7 @@ export default function MapComponent() {
 
 
         // popup on click for cafes layer
-        newMap.on("click", "cafes", (e) => {
+        newMap.on("click", ["specialty-cafes", "regular-cafes"], (e) => {
           if (e.features.length > 0) {
             const coordinates = e.features[0].geometry.coordinates.slice();
             const properties = e.features[0].properties;
@@ -215,18 +245,18 @@ export default function MapComponent() {
         });
 
         // change cursor to a pointer when entering a feature
-        newMap.on("mouseenter", "cafes", () => {
+        newMap.on("mouseenter", ["specialty-cafes", "regular-cafes"], () => {
           newMap.getCanvas().style.cursor = "pointer";
         });
 
         // change back to a grabber when leaving
-        newMap.on("mouseleave", "cafes", () => {
+        newMap.on("mouseleave", ["specialty-cafes", "regular-cafes"], () => {
           newMap.getCanvas().style.cursor = "";
         });
 
         newMap.on("click", (e) => {
           const features = newMap.queryRenderedFeatures(e.point, {
-            layers: ["cafes"],
+            layers: ["specialty-cafes", "regular-cafes"],
           });
           if (features.length === 0) {
             popupRef.current.remove();
