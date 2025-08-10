@@ -2,13 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl, { NavigationControl, Popup, GeolocateControl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import CafeScroller from "./mapHelpers/CafeScroller.tsx"
-import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import neighborhoodPolygons from "../assets/neighborhoods/nbrs.json";
 import coffeeshopPoints from "../assets/json/ccafes.json";
-import coffeeSVG from "../assets/coffee2.svg";
-import specialtySVG from "../assets/specialty.svg";
+import coffeeSVG from "../assets/icons/coffee2.svg";
+import specialtySVG from "../assets/icons/specialty.svg";
 import useMapStore from "../store/useMapStore";
-
+import { getNeighborhoodForCafe } from "./mapHelpers/mapFns.jsx";
 
 
 export default function MapComponent() {
@@ -16,61 +15,90 @@ export default function MapComponent() {
   const map = useMapStore((state) => state.map);
 
   const [visibleCafes, setVisibleCafes] = useState([]);
-  const [neighborhoodLayerVisible, setNeighborhoodLayerVisible] =
-    useState(false);
+  const [neighborhoodLayerVisible, setNeighborhoodLayerVisible] = useState(false);
   const mapContainer = useRef(null);
   const popupRef = useRef(
     new Popup({ closeButton: false, closeOnClick: false })
   );
 
-  // fn to determine the neighborhood for a given cafe
-  const getNeighborhoodForCafe = (cafeCoordinates) => {
-    // convert cafe coordinates to a Turf.js point
-    const cafePoint = {
-      type: "Feature",
-      properties: {},
-      geometry: {
-        type: "Point",
-        coordinates: cafeCoordinates,
-      },
-    };
-
-    for (const feature of neighborhoodPolygons.features) {
-      if (booleanPointInPolygon(cafePoint, feature)) {
-        return feature.name;
-      }
-    }
-    return null;
-  };
-
-
   useEffect(() => {
     if (!mapContainer.current) return;
 
     const initializeMap = async () => {
+      // const style = {
+      //   version: 8,
+      //   sources: {
+      //     osm: {
+      //       type: "raster",
+      //       tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      //       tileSize: 256,
+      //       attribution: "&copy; OpenStreetMap Contributors",
+      //       maxzoom: 19,
+      //     },
+      //   },
+      //   layers: [
+      //     {
+      //       id: "osm",
+      //       type: "raster",
+      //       source: "osm",
+      //     },
+      //   ],
+      // };
+
+      // const style = {
+      //   version: 8,
+      //   sources: {
+      //     cartoLight: {
+      //       type: "raster",
+      //       tiles: [
+      //         "https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+      //         "https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+      //         "https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+      //         "https://cartodb-basemaps-d.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+      //       ],
+      //       tileSize: 256,
+      //       attribution:
+      //         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+      //       maxzoom: 19
+      //     }
+      //   },
+      //   layers: [
+      //     {
+      //       id: "cartoLight",
+      //       type: "raster",
+      //       source: "cartoLight"
+      //     }
+      //   ]
+      // };
+
       const style = {
         version: 8,
         sources: {
-          osm: {
+          cartoVoyager: {
             type: "raster",
-            tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tiles: [
+              "https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
+              "https://cartodb-basemaps-b.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
+              "https://cartodb-basemaps-c.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
+              "https://cartodb-basemaps-d.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png"
+            ],
             tileSize: 256,
-            attribution: "&copy; OpenStreetMap Contributors",
-            maxzoom: 19,
-          },
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+            maxzoom: 19
+          }
         },
         layers: [
           {
-            id: "osm",
+            id: "cartoVoyager",
             type: "raster",
-            source: "osm",
-          },
-        ],
+            source: "cartoVoyager"
+          }
+        ]
       };
-
+      
       const newMap = new maplibregl.Map({
         container: mapContainer.current,
-        // style: "https://demotiles.maplibre.org/style.json", // 'https://api.maptiler.com/maps/bright/style.json?key=insert_your_key_here',
         style: style,
         center: [-118.3226, 34.0750],
         zoom: 12,

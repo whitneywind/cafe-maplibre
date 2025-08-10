@@ -11,9 +11,9 @@ interface CafeScrollerProps {
 }
 
 const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
-  const scrollRef = useRef<HTMLDivElement>(null); // Specify the type of the ref
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const scrollAmount = 300; // How many pixels to scroll per click
+  const scrollAmount = 300; // pixels to scroll per click
 
   const scrollLeft = () => {
     if (scrollRef.current) {
@@ -49,8 +49,10 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
         alignItems: 'center',
         justifyContent: 'center',
         gap: 0.5,
+        overflow: "hidden",
       }}
     >
+      {/* left scroll button */}
       <IconButton
         onClick={scrollLeft}
         sx={{
@@ -94,6 +96,7 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
               flexShrink: 0,
               cursor: "pointer",
               borderRadius: 2,
+              height: "100%",
               boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
               ":hover": {
                 boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
@@ -105,9 +108,10 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
           >
             <CardContent
               sx={{
-                height: 60,
                 display: 'flex',
+                flex: 1,
                 flexDirection: 'column',
+                overflowY: "auto",
               }}
             >
               <Typography
@@ -155,7 +159,7 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
         ))}
       </Box>
 
-      {/* Right Scroll Button */}
+      {/* right scroll button */}
       <IconButton
         onClick={scrollRight}
         sx={{

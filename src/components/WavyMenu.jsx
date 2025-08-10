@@ -66,7 +66,11 @@ const handleNewCafeSubmit = (newCafe) => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: "#3fa977" }}>
+      <AppBar
+        position="static"
+        sx={{ backgroundColor: "#b23a48" }}
+        className="wavy-menu"
+      >
         <Toolbar>
           {/* a coffeecup or something */}
           <Button

@@ -1,6 +1,5 @@
 import "./App.css";
 import MapComponent from "./components/Map";
-import MapComponent2 from "./components/Map copy";
 import WavyMenu from "./components/WavyMenu";
 
 function App() {

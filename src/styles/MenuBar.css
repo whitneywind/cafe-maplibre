@@ -1,4 +1,19 @@
 .wavy-menu {
   position: relative;
-  /* clip-path: polygon(0% 88%, 10% 92%, 20% 88%, 30% 92%, 40% 88%, 50% 92%, 60% 88%, 70% 92%, 80% 88%, 90% 92%, 100% 88%, 100% 0%, 0% 0%); */
+  /* clip-path: polygon(
+    0% 88%, 10% 92%, 20% 88%, 30% 92%, 40% 88%,
+    50% 92%, 60% 88%, 70% 92%, 80% 88%, 90% 92%,
+    100% 88%, 100% 0%, 0% 0%
+  ); */
+}
+
+.wavy-menu .MuiToolbar-root {
+  min-height: 48px !important; /* shorter than default 64px */
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.wavy-menu .MuiButton-root {
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
