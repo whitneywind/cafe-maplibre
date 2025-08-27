@@ -7,13 +7,12 @@ import coffeeshopPoints from "../assets/json/ccafes.json";
 import coffeeSVG from "../assets/icons/coffee2.svg";
 import specialtySVG from "../assets/icons/specialty.svg";
 import useMapStore from "../store/useMapStore";
-import { getNeighborhoodForCafe } from "./mapHelpers/mapFns.jsx";
+import { flyToCafe, getNeighborhoodForCafe } from "./mapHelpers/mapFns.jsx";
 
 
 export default function MapComponent() {
   const setMap = useMapStore((state) => state.setMap);
   const map = useMapStore((state) => state.map);
-
   const [visibleCafes, setVisibleCafes] = useState([]);
   const [neighborhoodLayerVisible, setNeighborhoodLayerVisible] = useState(false);
   const mapContainer = useRef(null);
@@ -25,52 +24,6 @@ export default function MapComponent() {
     if (!mapContainer.current) return;
 
     const initializeMap = async () => {
-      // const style = {
-      //   version: 8,
-      //   sources: {
-      //     osm: {
-      //       type: "raster",
-      //       tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
-      //       tileSize: 256,
-      //       attribution: "&copy; OpenStreetMap Contributors",
-      //       maxzoom: 19,
-      //     },
-      //   },
-      //   layers: [
-      //     {
-      //       id: "osm",
-      //       type: "raster",
-      //       source: "osm",
-      //     },
-      //   ],
-      // };
-
-      // const style = {
-      //   version: 8,
-      //   sources: {
-      //     cartoLight: {
-      //       type: "raster",
-      //       tiles: [
-      //         "https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-      //         "https://cartodb-basemaps-b.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-      //         "https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-      //         "https://cartodb-basemaps-d.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
-      //       ],
-      //       tileSize: 256,
-      //       attribution:
-      //         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-      //       maxzoom: 19
-      //     }
-      //   },
-      //   layers: [
-      //     {
-      //       id: "cartoLight",
-      //       type: "raster",
-      //       source: "cartoLight"
-      //     }
-      //   ]
-      // };
-
       const style = {
         version: 8,
         sources: {
@@ -146,7 +99,14 @@ export default function MapComponent() {
           filter: ["!=", ["get", "specialty"], true],
           layout: {
             "icon-image": "cafe-icon",
-            "icon-size": 0.14,
+            "icon-size": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              0, 0.1,
+              12, 0.14,
+              16, 0.45
+            ],
             "icon-allow-overlap": true,
           },
         });
@@ -159,11 +119,17 @@ export default function MapComponent() {
           filter: ["==", ["get", "specialty"], true],
           layout: {
             "icon-image": "specialty-cafe-icon",
-            "icon-size": 0.34,
+            "icon-size": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              0, 0.2,
+              12, 0.34,
+              16, 1.1
+            ],
             "icon-allow-overlap": true,
           },
         });
-
 
         newMap.addSource("polygons", {
           type: "geojson",
@@ -239,6 +205,14 @@ export default function MapComponent() {
             while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
               coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
             }
+
+            const feature = e.features[0];
+            const cafe = {
+              ...feature.properties,
+              coordinates: feature.geometry.coordinates,
+            };
+
+            flyToCafe(newMap, cafe, 13);
 
             const popupNode = document.createElement("div");
             let popupHTML = "<b>Cafe Details:</b><br>";

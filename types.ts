@@ -11,7 +11,7 @@ export type VibeTag =
 
 
 export interface CoffeeShop {
-  id: string; // OSM ID or internal ID
+  id: string;
   name: string;
   address: string;
   coordinates: [number, number]; // [lng, lat]
@@ -32,13 +32,32 @@ export interface CoffeeShop {
   // Metadata / UX enhancements
   parking?: string; // e.g., "street", "lot behind shop", "limited"
   closestMetro?: string; 
-  openingHours?: string; // OSM-style format
+  openingHours?: string;
   website?: string;
   phone?: string;
   instagram?: string;
 
   // Manual enrichment
-  specialty: boolean; // manually flagged
+  specialty: boolean; 
   notes?: string;
-  sourceTags?: Record<string, string>; // raw OSM props (optional for debugging)
+  sourceTags?: Record<string, string>;
+}
+
+export type Coordinates = [number, number];
+
+export interface MultiPolygonFeature {
+  type: "Feature";
+  id?: number | string;
+  name?: string;
+  typeFeature?: "Feature";
+  geometry: {
+    type: "MultiPolygon";
+    coordinates: number[][][][]; 
+    // Structure: [ [ [ [lng, lat], ... ] ] ] for multi-polygons
+  };
+}
+
+export interface MultiPolygonFeatureCollection {
+  type: "FeatureCollection";
+  features: MultiPolygonFeature[];
 }

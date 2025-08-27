@@ -4,6 +4,7 @@ import { ChevronLeft } from '@mui/icons-material';
 import { ChevronRight } from '@mui/icons-material';
 import { CoffeeShop } from '../../../types';
 import { Map } from 'maplibre-gl';
+import { flyToCafe } from './mapFns';
 
 interface CafeScrollerProps {
   visibleCafes: CoffeeShop[];
@@ -88,7 +89,8 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
           <Card
             key={index}
             onClick={() => {
-              map?.flyTo({ center: cafe.coordinates, zoom: 15 });
+              // map?.flyTo({ center: cafe.coordinates, zoom: 15 });
+              if (map) flyToCafe(map, cafe, 15)
             }}
             sx={{
               width: 270,
@@ -130,23 +132,6 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
               >
                 {cafe.neighborhood ? `${cafe.neighborhood}` : "Los Angeles"}
               </Typography>
-              {/* {cafe.website ? (
-                <Link
-                  href={cafe.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  variant="body2"
-                  underline="hover"
-                  color="primary"
-                  sx={{
-                    textAlign: 'center',
-                  }}
-                >
-                  Website
-                </Link>
-              ) : (
-                <Box sx={{ minHeight: '1.2em', visibility: 'hidden' }} />
-              )} */}
               <Typography
                 sx={{
                   textAlign: 'center',
