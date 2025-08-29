@@ -7,7 +7,7 @@ import coffeeshopPoints from "../assets/json/ccafes.json";
 import coffeeSVG from "../assets/icons/coffee2.svg";
 import specialtySVG from "../assets/icons/specialty.svg";
 import useMapStore from "../store/useMapStore";
-import { flyToCafe, getNeighborhoodForCafe } from "./mapHelpers/mapFns.jsx";
+import { flyToCafe, getNeighborhoodForCafe, showCafePopup } from "./mapHelpers/mapFns.jsx";
 
 
 export default function MapComponent() {
@@ -198,53 +198,25 @@ export default function MapComponent() {
 
         // popup on click for cafes layer
         newMap.on("click", ["specialty-cafes", "regular-cafes"], (e) => {
-          if (e.features.length > 0) {
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            const properties = e.features[0].properties;
+          if (!e.features.length) return;
 
-            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-              coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-            }
+          const feature = e.features[0];
+          const coordinates = e.features[0].geometry.coordinates.slice();
+          const properties = e.features[0].properties;
 
-            const feature = e.features[0];
-            const cafe = {
-              ...feature.properties,
-              coordinates: feature.geometry.coordinates,
-            };
-
-            flyToCafe(newMap, cafe, 13);
-
-            const popupNode = document.createElement("div");
-            let popupHTML = "<b>Cafe Details:</b><br>";
-            for (const key in properties) {
-              if (
-                key === "name" ||
-                key === "cuisine" ||
-                key === "address" ||
-                key === "website"
-              ) {
-                popupHTML += `${key}: ${properties[key]}<br>`;
-              }
-            }
-
-            const cafeName = properties.name;
-            const [lng, lat] = coordinates;
-            let googleMapsURL = cafeName
-              ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cafeName)}`
-              : `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-
-            popupHTML += `<a href="${googleMapsURL}" target="_blank" rel="noopener noreferrer" 
-              style="display:inline-block;margin-top:8px;padding:4px 8px;background:#4285F4;color:white;
-              border-radius:4px;text-decoration:none;font-size:0.85em;">View on Google Maps</a>`;
-
-            popupNode.innerHTML = popupHTML;
-
-            popupRef.current
-              .setLngLat(coordinates)
-              .setDOMContent(popupNode)
-              .addTo(newMap);
+          while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
           }
+
+          const cafe = {
+            ...feature.properties,
+            coordinates: feature.geometry.coordinates,
+          };
+
+          showCafePopup(newMap, popupRef, cafe);
+          flyToCafe(newMap, cafe, 14);
         });
+
 
         // change cursor to a pointer when entering a feature
         newMap.on("mouseenter", ["specialty-cafes", "regular-cafes"], () => {
@@ -331,7 +303,7 @@ export default function MapComponent() {
       >
         {neighborhoodLayerVisible ? "Hide Neighborhoods" : "Show Neighborhoods"}
       </button>
-      <CafeScroller map={map} visibleCafes={visibleCafes} />
+      <CafeScroller map={map} visibleCafes={visibleCafes} popupRef={popupRef} />
     </>
   );
 }

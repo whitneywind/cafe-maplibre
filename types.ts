@@ -45,6 +45,7 @@ export interface CoffeeShop {
 
 export type Coordinates = [number, number];
 
+// neighborhood polygons
 export interface MultiPolygonFeature {
   type: "Feature";
   id?: number | string;
@@ -60,4 +61,23 @@ export interface MultiPolygonFeature {
 export interface MultiPolygonFeatureCollection {
   type: "FeatureCollection";
   features: MultiPolygonFeature[];
+}
+
+export interface User {
+  id: number;
+  email: string;
+  passwordHash: string;
+  createdAt: string; // or Date if parse timestamps
+
+  name?: string;
+  homeNeighborhood?: string;
+  bio?: string;
+  lastLogin?: string; // or Date
+  isAdmin: boolean;
+}
+
+export interface UserFavorite {
+  userId: number;
+  cafeId: string;
+  createdAt: string;
 }

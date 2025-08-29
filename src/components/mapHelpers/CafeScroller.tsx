@@ -3,15 +3,16 @@ import { Box, Card, CardContent, Typography, IconButton } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import { ChevronRight } from '@mui/icons-material';
 import { CoffeeShop } from '../../../types';
-import { Map } from 'maplibre-gl';
-import { flyToCafe } from './mapFns';
+import { Map, Popup } from 'maplibre-gl';
+import { flyToCafe, showCafePopup } from './mapFns';
 
 interface CafeScrollerProps {
   visibleCafes: CoffeeShop[];
   map: Map | null;
-}
+  popupRef: React.RefObject<Popup>;
+};
 
-const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
+const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scrollAmount = 300; // pixels to scroll per click
@@ -89,8 +90,10 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
           <Card
             key={index}
             onClick={() => {
-              // map?.flyTo({ center: cafe.coordinates, zoom: 15 });
-              if (map) flyToCafe(map, cafe, 15)
+              if (map) {
+                flyToCafe(map, cafe, 14);
+                showCafePopup(map, popupRef, cafe);
+              }
             }}
             sx={{
               width: 270,

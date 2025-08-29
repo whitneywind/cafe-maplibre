@@ -1,8 +1,10 @@
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import neighborhoodPolygonsJson from "../../assets/neighborhoods/nbrs.json";
 import { Map, LngLatLike, Popup } from "maplibre-gl";
+import { createRoot } from "react-dom/client";
 import { CoffeeShop, Coordinates, MultiPolygonFeatureCollection } from "../../../types";
 import { Feature, MultiPolygon, Point } from "geojson";
+import CafePopup from "./CafePopup";
 
 const neighborhoodPolygons: MultiPolygonFeatureCollection = neighborhoodPolygonsJson as MultiPolygonFeatureCollection;
 
@@ -29,8 +31,8 @@ export const getNeighborhoodForCafe = (cafeCoordinates: Coordinates) => {
     return null;
 };
 
-
-export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 16, popupRef?: Popup) {
+// fn to center and zoom to the cafe
+export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 14, popupRef?: Popup) {
   if (!map) return;
 
   const coordinates: LngLatLike = cafe.coordinates;
@@ -39,8 +41,8 @@ export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 16, popupRef?: Popu
   map.flyTo({
     center: cafe.coordinates,
     zoom,
-    speed: 0.7,
-    curve: 2.0,
+    speed: 0.6,
+    curve: 1.8,
     essential: true,
   });
 
@@ -64,4 +66,30 @@ export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 16, popupRef?: Popu
   popupNode.innerHTML = popupHTML;
 
   popupRef?.setLngLat(coordinates).setDOMContent(popupNode).addTo(map);
+}
+
+// fn to show popup associated with cafe
+export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Popup>, cafe: any) {
+  if (!map || !cafe) return;
+
+  const coordinates = cafe.coordinates.slice();
+  const properties = cafe;
+
+  const popupNode = document.createElement("div");
+  const root = createRoot(popupNode);
+  root.render(
+    <CafePopup
+      name={properties.name}
+      cuisine={properties.cuisine}
+      address={properties.address}
+      website={properties.website}
+      coordinates={coordinates}
+      specialty={properties.specialty}
+    />
+  );
+
+  popupRef.current
+    .setLngLat(coordinates)
+    .setDOMContent(popupNode)
+    .addTo(map);
 }
