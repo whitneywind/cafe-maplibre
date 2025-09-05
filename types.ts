@@ -18,29 +18,28 @@ export interface CoffeeShop {
   neighborhood?: string;
 
   roaster: string[];
-  inHouseRoast: boolean;
+  in_house_roast: boolean;
 
-  vibeTags: VibeTag[];
-  specialItems: string[];
+  vibe_tags?: VibeTag[];
+  special_items?: string[];
 
-  // Boolean filters
-  outdoorSeating: boolean;
+  outdoor_seating: boolean;
   wifi?: boolean;
   outlets?: boolean;
-  laptopFriendly?: boolean;
+  laptop_friendly?: boolean;
 
-  // Metadata / UX enhancements
-  parking?: string; // e.g., "street", "lot behind shop", "limited"
-  closestMetro?: string; 
-  openingHours?: string;
+  parking?: string;
+  closest_metro?: string;
+  opening_hours?: string;
   website?: string;
   phone?: string;
   instagram?: string;
 
-  // Manual enrichment
-  specialty: boolean; 
+  specialty: boolean;
   notes?: string;
-  sourceTags?: Record<string, string>;
+  source_tags?: Record<string, string>; // JSONB
+
+  status?: "approved" | "pending" | "rejected";
 }
 
 export type Coordinates = [number, number];

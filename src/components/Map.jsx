@@ -3,7 +3,7 @@ import maplibregl, { NavigationControl, Popup, GeolocateControl } from "maplibre
 import "maplibre-gl/dist/maplibre-gl.css";
 import CafeScroller from "./mapHelpers/CafeScroller.tsx"
 import neighborhoodPolygons from "../assets/neighborhoods/nbrs.json";
-import coffeeshopPoints from "../assets/json/ccafes.json";
+// import coffeeshopPoints from "../assets/json/ccafes.json";
 import coffeeSVG from "../assets/icons/coffee2.svg";
 import specialtySVG from "../assets/icons/specialty.svg";
 import useMapStore from "../store/useMapStore";
@@ -85,6 +85,11 @@ export default function MapComponent() {
           URL.revokeObjectURL(specialtySvgURL); // clean up URL object
         };
         specialtyIcon.src = specialtySvgURL;
+
+        // testing pulling from db
+        // const response = await fetch("/api/cafes.geojson");
+        const response = await fetch("http://localhost:3000/api/cafes.geojson");
+        const coffeeshopPoints = await response.json();
 
         newMap.addSource("cafes", {
           type: "geojson",
