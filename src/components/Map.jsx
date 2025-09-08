@@ -7,7 +7,7 @@ import neighborhoodPolygons from "../assets/neighborhoods/nbrs.json";
 import coffeeSVG from "../assets/icons/coffee2.svg";
 import specialtySVG from "../assets/icons/specialty.svg";
 import useMapStore from "../store/useMapStore";
-import { flyToCafe, getNeighborhoodForCafe, showCafePopup } from "./mapHelpers/mapFns.jsx";
+import { fetchCafes, flyToCafe, getNeighborhoodForCafe, showCafePopup } from "./mapHelpers/mapFns.jsx";
 
 
 export default function MapComponent() {
@@ -86,15 +86,12 @@ export default function MapComponent() {
         };
         specialtyIcon.src = specialtySvgURL;
 
-        // testing pulling from db
-        // const response = await fetch("/api/cafes.geojson");
-        const response = await fetch("http://localhost:3000/api/cafes.geojson");
-        const coffeeshopPoints = await response.json();
-
         newMap.addSource("cafes", {
           type: "geojson",
-          data: coffeeshopPoints,
+          data: { type: "FeatureCollection", features: [] },
         });
+
+        await fetchCafes(newMap);
 
         // layer for regular cafes
         newMap.addLayer({
@@ -307,6 +304,24 @@ export default function MapComponent() {
         }}
       >
         {neighborhoodLayerVisible ? "Hide Neighborhoods" : "Show Neighborhoods"}
+      </button>
+      <button
+        onClick={() => fetchCafes(map)}
+        style={{
+          position: "absolute",
+          bottom: "125px",
+          right: "20px",
+          padding: "6px 8px",
+          backgroundColor: "rgb(255, 255, 255)",
+          color: "#111",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontSize: "0.9em",
+          zIndex: 1000,
+        }}
+      >
+        Refresh
       </button>
       <CafeScroller map={map} visibleCafes={visibleCafes} popupRef={popupRef} />
     </>

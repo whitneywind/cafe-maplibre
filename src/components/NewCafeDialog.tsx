@@ -73,7 +73,44 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
     setSearchInput("");
   };
 
-  const handleSubmit = () => {
+  // const handleSubmit = () => {
+  //   const { name, address, latitude, longitude } = formData;
+
+  //   if (!name || !address || !latitude || !longitude) {
+  //     alert("Please fill out all required fields and select a location.");
+  //     return;
+  //   }
+
+  //   const newCafe: CoffeeShop = {
+  //     id: `user-${Date.now()}`,
+  //     name,
+  //     address,
+  //     coordinates: [parseFloat(longitude), parseFloat(latitude)],
+  //     website: formData.website || "",
+  //     opening_hours: formData.opening_hours || "",
+  //     specialty: true,
+  //     roaster: [],
+  //     in_house_roast: false,
+  //     outdoor_seating: false,
+  //     wifi: false,
+  //     special_items: [],
+  //     vibe_tags: [],
+  //   };
+
+  //   onSubmit(newCafe);
+  //   onClose();
+  //   setFormData({
+  //     name: "",
+  //     address: "",
+  //     latitude: "",
+  //     longitude: "",
+  //     website: "",
+  //     opening_hours: "",
+  //   });
+  // };
+
+
+  const handleSubmit = async () => {
     const { name, address, latitude, longitude } = formData;
 
     if (!name || !address || !latitude || !longitude) {
@@ -87,27 +124,49 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
       address,
       coordinates: [parseFloat(longitude), parseFloat(latitude)],
       website: formData.website || "",
-      openingHours: formData.opening_hours || "",
+      opening_hours: formData.opening_hours || "",
       specialty: true,
       roaster: [],
-      inHouseRoast: false,
-      outdoorSeating: false,
+      in_house_roast: false,
+      outdoor_seating: false,
       wifi: false,
-      specialItems: [],
-      vibeTags: [],
+      special_items: [],
+      vibe_tags: [],
     };
 
-    onSubmit(newCafe);
-    onClose();
-    setFormData({
-      name: "",
-      address: "",
-      latitude: "",
-      longitude: "",
-      website: "",
-      opening_hours: "",
-    });
+    try {
+      const res = await fetch("http://localhost:3000/api/cafes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCafe),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to add cafe");
+      }
+
+      const result = await res.json();
+      console.log("Cafe added:", result);
+
+      // Optionally refresh cafes in parent
+      onSubmit(newCafe);
+      onClose();
+
+      // reset form
+      setFormData({
+        name: "",
+        address: "",
+        latitude: "",
+        longitude: "",
+        website: "",
+        opening_hours: "",
+      });
+    } catch (error) {
+      console.error(error);
+      alert("There was a problem adding the cafe. Try again.");
+    }
   };
+
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>

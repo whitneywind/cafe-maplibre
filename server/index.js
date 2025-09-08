@@ -1,29 +1,21 @@
 import express from "express";
 import dotenv from "dotenv";
-import path from "path";
 import cors from "cors";
-import { fileURLToPath } from "url";
 import cafesRouter from "./routes/cafes.js";
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
 
 const app = express();
 
 // enable CORS for all origins (restrict this later)
 app.use(cors());
 
-// Basic middleware
+// basic middleware
 app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 
 // API routes
-app.use("/api", cafesRouter);
-
-// Serve the React app (optional for now)
-// app.use(express.static(path.join(__dirname, "../src")));
+app.use("/api/cafes", cafesRouter);
 
 // Simple health check
 app.get("/health", (req, res) => {

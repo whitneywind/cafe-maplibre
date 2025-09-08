@@ -1,4 +1,5 @@
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+import maplibregl from "maplibre-gl";
 import neighborhoodPolygonsJson from "../../assets/neighborhoods/nbrs.json";
 import { Map, LngLatLike, Popup } from "maplibre-gl";
 import { createRoot } from "react-dom/client";
@@ -93,3 +94,23 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
     .setDOMContent(popupNode)
     .addTo(map);
 }
+
+// fetch cafes from the backend and update the "cafes" GeoJSON source on the map
+export const fetchCafes = async (map: maplibregl.Map | null) => {
+  if (!map) return;
+
+  try {
+    const response = await fetch("http://localhost:3000/api/cafes");
+    if (!response.ok) {
+      throw new Error(`Failed to fetch cafes: ${response.statusText}`);
+    }
+    const cafesGeoJSON = await response.json();
+    const source = map.getSource("cafes") as maplibregl.GeoJSONSource;
+
+    if (source) {
+      source.setData(cafesGeoJSON);
+    }
+  } catch (error) {
+    console.error("Error fetching cafes:", error);
+  }
+};
