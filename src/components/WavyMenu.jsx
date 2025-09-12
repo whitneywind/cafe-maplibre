@@ -1,29 +1,25 @@
 import { useState } from "react";
-import { AppBar, Toolbar, Button, Menu, MenuItem } from "@mui/material";
+import { AppBar, Toolbar, Button, TextField, Autocomplete } from "@mui/material";
 import "../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog"
 import useMapStore from "../store/useMapStore";
+import neighborhoodPolygons from "../assets/neighborhoods/nbrs.json";
 
 
 const WavyMenu = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const map = useMapStore((state) => state.map);
 
+  const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
+  const neighborhoods = neighborhoodPolygons.features.filter(f => f.name);  
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-    setMenuOpen(true);
-  };
-
-  const handleClose = () => {
-    setMenuOpen(false);
+  const handleNeighborhoodSelect = (event, value) => {
+    if (!map) return;
+    setSelectedNeighborhood(value);
   };
 
   const handleDialogOpen = () => {
     setDialogOpen(true);
-    setMenuOpen(false);
   };
 
   const handleDialogClose = () => {
@@ -60,7 +56,7 @@ const handleNewCafeSubmit = (newCafe) => {
     },
   };
 
-  // append to your local GeoJSON array or POST to server here
+  // append to geojson array or POST to server here
   console.log("GeoJSON Feature ready to save:", geoJsonFeature);
 };
 
@@ -87,16 +83,21 @@ const handleNewCafeSubmit = (newCafe) => {
           >
             Home
           </Button>
+
+          <Autocomplete
+            options={neighborhoods}
+            getOptionLabel={(option) => option?.name || ""}
+            sx={{ width: 200, marginLeft: 2 }}
+            size="small"
+            onChange={(event, value) => handleNeighborhoodSelect(event, value)}
+            renderInput={(params) => <TextField {...params} label="Neighborhood" />}
+          />
+
           <Button color="inherit">Filter</Button>
           <Button color="inherit" onClick={handleDialogOpen}>
             Suggest New
           </Button>
-          {/* <Button color="inherit" onClick={handleClick}>
-            Suggest New
-          </Button>
-          <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleClose}>
-            <MenuItem onClick={handleDialogOpen}>Suggest New Cafe</MenuItem>
-          </Menu> */}
+
         </Toolbar>
       </AppBar>
       <NewCafeDialog

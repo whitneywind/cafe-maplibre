@@ -3,17 +3,17 @@ import maplibregl, { NavigationControl, Popup, GeolocateControl } from "maplibre
 import "maplibre-gl/dist/maplibre-gl.css";
 import CafeScroller from "./mapHelpers/CafeScroller.tsx"
 import neighborhoodPolygons from "../assets/neighborhoods/nbrs.json";
-// import coffeeshopPoints from "../assets/json/ccafes.json";
 import coffeeSVG from "../assets/icons/coffee2.svg";
 import specialtySVG from "../assets/icons/specialty.svg";
 import useMapStore from "../store/useMapStore";
-import { fetchCafes, flyToCafe, getNeighborhoodForCafe, showCafePopup } from "./mapHelpers/mapFns.jsx";
+import { fetchCafes, flyToCafe, getNeighborhoodForCafe, showCafePopup, showSelectedNeighborhood } from "./mapHelpers/mapFns.jsx";
 
 
 export default function MapComponent() {
   const setMap = useMapStore((state) => state.setMap);
   const map = useMapStore((state) => state.map);
-  const [visibleCafes, setVisibleCafes] = useState([]);
+  const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
+  const [visibleCafes, setVisibleCafes] = useState([]); // visible in the scroller
   const [neighborhoodLayerVisible, setNeighborhoodLayerVisible] = useState(false);
   const mapContainer = useRef(null);
   const popupRef = useRef(
@@ -164,7 +164,7 @@ export default function MapComponent() {
 
         setMap(newMap);
 
-        // update visible cafes when map moves
+        // update cafes visible in bottom scroller when map moves
         const updateVisibleCafes = () => {
           const bounds = newMap.getBounds();
           const features = newMap.querySourceFeatures("cafes");
@@ -204,7 +204,6 @@ export default function MapComponent() {
 
           const feature = e.features[0];
           const coordinates = e.features[0].geometry.coordinates.slice();
-          const properties = e.features[0].properties;
 
           while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
@@ -268,6 +267,12 @@ export default function MapComponent() {
 
     initializeMap();
   }, []);
+
+  useEffect(() => {
+    if (map) {
+      showSelectedNeighborhood(map, selectedNeighborhood);
+    }
+  }, [selectedNeighborhood]);
 
   const toggleNeighborhoodLayer = () => {
     if (map) {

@@ -3,11 +3,11 @@ import maplibregl from "maplibre-gl";
 import neighborhoodPolygonsJson from "../../assets/neighborhoods/nbrs.json";
 import { Map, LngLatLike, Popup } from "maplibre-gl";
 import { createRoot } from "react-dom/client";
-import { CoffeeShop, Coordinates, MultiPolygonFeatureCollection } from "../../../types";
+import { CoffeeShop, Coordinates, NeighborhoodCollection } from "../../../types";
 import { Feature, MultiPolygon, Point } from "geojson";
 import CafePopup from "./CafePopup";
 
-const neighborhoodPolygons: MultiPolygonFeatureCollection = neighborhoodPolygonsJson as MultiPolygonFeatureCollection;
+const neighborhoodPolygons: NeighborhoodCollection = neighborhoodPolygonsJson as NeighborhoodCollection;
 
 
 // fn to determine the neighborhood for a given cafe
@@ -31,6 +31,37 @@ export const getNeighborhoodForCafe = (cafeCoordinates: Coordinates) => {
     }
     return null;
 };
+
+export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
+  if (!map) return;
+
+  if (!neighborhoodFeature) {
+    // clear filter and hide polygons
+    map.setFilter("polygon-layer", null);
+    map.setFilter("polygon-border", null);
+    map.setLayoutProperty("polygon-layer", "visibility", "none");
+    map.setLayoutProperty("polygon-border", "visibility", "none");
+    console.log("Cleared neighborhood filter");
+    return;
+  }
+
+  // flatten and compute bounds
+  const coordinates = neighborhoodFeature.geometry.coordinates.flat(Infinity) as number[];
+  const lats = coordinates.filter((_, i) => i % 2 === 1);
+  const lngs = coordinates.filter((_, i) => i % 2 === 0);
+  const bounds = [
+    [Math.min(...lngs), Math.min(...lats)],
+    [Math.max(...lngs), Math.max(...lats)],
+  ] as [[number, number], [number, number]];
+  map.fitBounds(bounds, { padding: 60, maxZoom: 16 });
+
+  map.setLayoutProperty("polygon-layer", "visibility", "visible");
+  map.setLayoutProperty("polygon-border", "visibility", "visible");
+
+  // only show the selected neighborhood
+  map.setFilter("polygon-layer", ["==", ["id"], neighborhoodFeature.id]);
+  map.setFilter("polygon-border", ["==", ["id"], neighborhoodFeature.id]);
+}
 
 // fn to center and zoom to the cafe
 export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 14, popupRef?: Popup) {
@@ -89,9 +120,20 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
     />
   );
 
+  const zoom = map.getZoom();
+
+  const minZoom = 10;
+  const maxZoom = 14;
+  const minOffset = 20;
+  const maxOffset = 35;
+  const clampedZoom = Math.max(minZoom, Math.min(maxZoom, zoom));
+  const yOffset = minOffset + ((clampedZoom - minZoom) / (maxZoom - minZoom)) * (maxOffset - minOffset);
+  const offset: maplibregl.PointLike = [0, -yOffset];
+
   popupRef.current
     .setLngLat(coordinates)
     .setDOMContent(popupNode)
+    .setOffset(offset)
     .addTo(map);
 }
 
