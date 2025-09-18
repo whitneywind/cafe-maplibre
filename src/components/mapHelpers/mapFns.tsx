@@ -100,6 +100,37 @@ export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 14, popupRef?: Popu
   popupRef?.setLngLat(coordinates).setDOMContent(popupNode).addTo(map);
 }
 
+export async function deleteCafe(map: maplibregl.Map, id: string | number) {
+  try {
+    // First delete from DB
+    const res = await fetch(`http://localhost:3000/api/cafes/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to delete cafe: ${res.statusText}`);
+    }
+
+    // Then update the source in the map
+    const source = map.getSource("cafes") as any;
+    if (!source || !source._data) return;
+
+    const newData = {
+      ...source._data,
+      features: source._data.features.filter(
+        (f: any) => f.properties.id !== id
+      ),
+    };
+
+    source.setData(newData);
+
+    console.log(`Cafe ${id} removed from map + DB`);
+  } catch (error) {
+    console.error("Error deleting cafe:", error);
+    alert("Failed to delete cafe.");
+  }
+}
+
 // fn to show popup associated with cafe
 export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Popup>, cafe: any) {
   if (!map || !cafe) return;
@@ -109,14 +140,17 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
 
   const popupNode = document.createElement("div");
   const root = createRoot(popupNode);
+  
   root.render(
     <CafePopup
+      id={properties.id}
       name={properties.name}
       cuisine={properties.cuisine}
       address={properties.address}
       website={properties.website}
       coordinates={coordinates}
       specialty={properties.specialty}
+      onDelete={() => deleteCafe(map, properties.id)}
     />
   );
 

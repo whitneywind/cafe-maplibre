@@ -78,4 +78,27 @@ router.post("/", async (req, res) => {
   }
 });
 
+// DELETE /cafes/:id
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log("id in cafes.js: ", id)
+
+  try {
+    const result = await pool.query(
+      "DELETE FROM cafes WHERE id = $1 RETURNING *",
+      [id]
+    );
+    console.log("result: ", result)
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Cafe not found" });
+    }
+
+    res.json({ message: "Cafe removed successfully", cafe: result.rows[0] });
+  } catch (err) {
+    console.error("Error deleting cafe:", err.message);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
 export default router;
