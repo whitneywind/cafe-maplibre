@@ -40,7 +40,7 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
     map.setFilter("polygon-layer", null);
     map.setFilter("polygon-border", null);
     map.setLayoutProperty("polygon-layer", "visibility", "none");
-    map.setLayoutProperty("polygon-border", "visibility", "none");
+    // map.setLayoutProperty("polygon-border", "visibility", "none");
 
     // clear cafe filters to show all cafes
     map.setFilter("regular-cafes", ["!=", ["get", "specialty"], true]);
@@ -63,11 +63,9 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
   map.fitBounds(bounds, { padding: 60, maxZoom: 16 });
 
   map.setLayoutProperty("polygon-layer", "visibility", "visible");
-  map.setLayoutProperty("polygon-border", "visibility", "visible");
 
   // only show the selected neighborhood
   map.setFilter("polygon-layer", ["==", ["id"], neighborhoodFeature.id]);
-  map.setFilter("polygon-border", ["==", ["id"], neighborhoodFeature.id]);
 
   // only show cafes in selected neighborhood
   map.setFilter("regular-cafes", [
@@ -123,7 +121,11 @@ export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 14, popupRef?: Popu
   popupRef?.setLngLat(coordinates).setDOMContent(popupNode).addTo(map);
 }
 
-export async function deleteCafe(map: maplibregl.Map, id: string | number) {
+export async function deleteCafe(
+  map: maplibregl.Map,
+  id: string | number,
+  popupRef?: React.RefObject<Popup>
+) {
   try {
     // First delete from DB
     const res = await fetch(`http://localhost:3000/api/cafes/${id}`, {
@@ -146,6 +148,8 @@ export async function deleteCafe(map: maplibregl.Map, id: string | number) {
     };
 
     source.setData(newData);
+
+    popupRef?.current.remove();
 
     console.log(`Cafe ${id} removed from map + DB`);
   } catch (error) {
@@ -173,7 +177,7 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
       website={properties.website}
       coordinates={coordinates}
       specialty={properties.specialty}
-      onDelete={() => deleteCafe(map, properties.id)}
+      onDelete={() => deleteCafe(map, properties.id, popupRef)}
     />
   );
 

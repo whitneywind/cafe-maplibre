@@ -143,24 +143,13 @@ export default function MapComponent() {
           type: "fill",
           source: "polygons",
           paint: {
-            "fill-color": "#3fa977",
-            "fill-opacity": 0.2,
-            "fill-outline-color": "#3fa977",
-          },
-        });
-
-        newMap.addLayer({
-          id: "polygon-border",
-          type: "line",
-          source: "polygons",
-          paint: {
-            "line-color": "#3fa977",
-            "line-width": 1,
+            "fill-color": "#b23a48",
+            "fill-opacity": 0.1,
+            "fill-outline-color": "#020202ff",
           },
         });
 
         newMap.setLayoutProperty("polygon-layer", "visibility", "none");
-        newMap.setLayoutProperty("polygon-border", "visibility", "none");
 
         setMap(newMap);
 
@@ -178,8 +167,8 @@ export default function MapComponent() {
             new Map(
               visible.map((f) => {
                 const coordinates = f.geometry.coordinates;
-                // const neighborhood = getNeighborhoodForCafe(coordinates);
-                const neighborhood = f.properties.neighborhood;
+                // const neighborhood = getNeighborhoodForCafe(coordinates); // calculates neighborhood
+                const neighborhood = f.properties.neighborhood; // get neighborhood from cafe property
 
                 return [
                   f.properties.id || f.properties.name,
@@ -286,7 +275,6 @@ export default function MapComponent() {
     if (map) {
       const visibility = neighborhoodLayerVisible ? "none" : "visible";
       map.setLayoutProperty("polygon-layer", "visibility", visibility);
-      map.setLayoutProperty("polygon-border", "visibility", visibility);
       setNeighborhoodLayerVisible(!neighborhoodLayerVisible);
     }
   };

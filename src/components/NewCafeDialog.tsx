@@ -48,11 +48,8 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
     if (!searchInput.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          searchInput
-        )}`
-      );
+      const res = await fetch(`/api/geocode?q=${encodeURIComponent(searchInput)}`);
+      console.log("res: ", res)
       const data = await res.json();
       setSearchResults(data);
     } catch (error) {
