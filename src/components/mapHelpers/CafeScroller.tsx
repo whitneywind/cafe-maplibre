@@ -5,6 +5,8 @@ import { ChevronRight } from '@mui/icons-material';
 import { CoffeeShop } from '../../../types';
 import { Map, Popup } from 'maplibre-gl';
 import { flyToCafe, showCafePopup } from './mapFns';
+import useMapStore from '../../store/useMapStore';
+
 
 interface CafeScrollerProps {
   visibleCafes: CoffeeShop[];
@@ -14,6 +16,8 @@ interface CafeScrollerProps {
 
 const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+    const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
+  const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
 
   const scrollAmount = 300; // pixels to scroll per click
 
@@ -33,6 +37,19 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
         behavior: 'smooth',
       });
     }
+  };
+
+    const handleClickCafe = (cafe: CoffeeShop) => {
+    if (!map) return;
+
+    // Clear selected neighborhood if cafe is outside it
+    if (selectedNeighborhood && cafe.neighborhood !== selectedNeighborhood.name) {
+      setSelectedNeighborhood(null);
+    }
+
+    // Fly to and show popup
+    flyToCafe(map, cafe, 14);
+    showCafePopup(map, popupRef, cafe);
   };
 
   return (
@@ -89,12 +106,7 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
         {visibleCafes.map((cafe, index) => (
           <Card
             key={index}
-            onClick={() => {
-              if (map) {
-                flyToCafe(map, cafe, 14);
-                showCafePopup(map, popupRef, cafe);
-              }
-            }}
+            onClick={() => handleClickCafe(cafe)}
             sx={{
               width: 270,
               minWidth: 250,
@@ -133,7 +145,7 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
                   textAlign: 'center',
                 }}
               >
-                {cafe.neighborhood ? `${cafe.neighborhood}` : "Los Angeles"}
+                {(cafe.neighborhood && cafe.neighborhood !== "unknown") ? `${cafe.neighborhood}` : "Los Angeles"}
               </Typography>
               <Typography
                 sx={{

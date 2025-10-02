@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppBar, Toolbar, Button, TextField, Autocomplete } from "@mui/material";
 import "../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog"
@@ -10,7 +10,9 @@ const WavyMenu = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const map = useMapStore((state) => state.map);
 
+  const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
   const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
+
   const neighborhoods = neighborhoodPolygons.features.filter(f => f.name);  
 
   const handleNeighborhoodSelect = (event, value) => {
@@ -89,6 +91,7 @@ const handleNewCafeSubmit = (newCafe) => {
             getOptionLabel={(option) => option?.name || ""}
             sx={{ width: 200, marginLeft: 2 }}
             size="small"
+            value={selectedNeighborhood || null}
             onChange={(event, value) => handleNeighborhoodSelect(event, value)}
             renderInput={(params) => <TextField {...params} label="Neighborhood" />}
           />

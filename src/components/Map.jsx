@@ -178,7 +178,8 @@ export default function MapComponent() {
             new Map(
               visible.map((f) => {
                 const coordinates = f.geometry.coordinates;
-                const neighborhood = getNeighborhoodForCafe(coordinates);
+                // const neighborhood = getNeighborhoodForCafe(coordinates);
+                const neighborhood = f.properties.neighborhood;
 
                 return [
                   f.properties.id || f.properties.name,
@@ -191,7 +192,14 @@ export default function MapComponent() {
               })
             ).values()
           );
-          setVisibleCafes(processedCafes);
+
+          // Filter by selected neighborhood if one is chosen
+        const filteredCafes = selectedNeighborhood
+          ? processedCafes.filter((cafe) => cafe.neighborhood === selectedNeighborhood.name)
+          : processedCafes;
+
+          // setVisibleCafes(processedCafes);
+          setVisibleCafes(filteredCafes);
         };
 
         setTimeout(updateVisibleCafes, 100); // initial load

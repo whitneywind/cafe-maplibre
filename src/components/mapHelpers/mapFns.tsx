@@ -43,18 +43,14 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
     map.setLayoutProperty("polygon-border", "visibility", "none");
 
     // clear cafe filters to show all cafes
-    map.setFilter("regular-cafes", null);
-    map.setFilter("specialty-cafes", null);
+    map.setFilter("regular-cafes", ["!=", ["get", "specialty"], true]);
+    map.setFilter("specialty-cafes", ["==", ["get", "specialty"], true]);
 
     console.log("Cleared neighborhood filter");
     return;
   }
 
   const neighborhoodName = neighborhoodFeature.name;
-  console.log("name: ", neighborhoodName)
-
-  const features = map.querySourceFeatures("cafes");
-  console.log("Sample cafe properties:", features[50]?.properties);
 
   // flatten and compute bounds
   const coordinates = neighborhoodFeature.geometry.coordinates.flat(Infinity) as number[];
@@ -74,11 +70,20 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
   map.setFilter("polygon-border", ["==", ["id"], neighborhoodFeature.id]);
 
   // only show cafes in selected neighborhood
-  map.setFilter("regular-cafes", ["==", ["get", "neighborhood"], neighborhoodName]);
-  map.setFilter("specialty-cafes", ["==", ["get", "neighborhood"], neighborhoodName]);
+  map.setFilter("regular-cafes", [
+    "all",
+    ["==", ["get", "neighborhood"], neighborhoodName],
+    ["!=", ["get", "specialty"], true]
+  ]);
+
+  // specialty cafes in this neighborhood
+  map.setFilter("specialty-cafes", [
+    "all",
+    ["==", ["get", "neighborhood"], neighborhoodName],
+    ["==", ["get", "specialty"], true]
+  ]);
 
   console.log("Applied neighborhood filter:", neighborhoodName);
-
 }
 
 // fn to center and zoom to the cafe
