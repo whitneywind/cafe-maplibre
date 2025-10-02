@@ -7,7 +7,7 @@ dotenv.config();
 
 const app = express();
 
-// enable CORS for all origins (restrict this later)
+// enable CORS for all origins (i'll restrict this later)
 app.use(cors());
 
 // basic middleware
