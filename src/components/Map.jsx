@@ -2,11 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl, { NavigationControl, Popup, GeolocateControl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import CafeScroller from "./mapHelpers/CafeScroller.tsx"
-import neighborhoodPolygons from "../assets/neighborhoods/nbrs.json";
 import coffeeSVG from "../assets/icons/coffee2.svg";
 import specialtySVG from "../assets/icons/specialty.svg";
 import useMapStore from "../store/useMapStore";
-import { fetchCafes, flyToCafe, getNeighborhoodForCafe, showCafePopup, showSelectedNeighborhood } from "./mapHelpers/mapFns.jsx";
+import { fetchCafes, fetchNeighborhoods, flyToCafe, showCafePopup, showSelectedNeighborhood } from "./mapHelpers/mapFns.jsx";
 
 
 export default function MapComponent() {
@@ -133,15 +132,18 @@ export default function MapComponent() {
           },
         });
 
-        newMap.addSource("polygons", {
+        // neighborhood polygons
+        newMap.addSource("neighborhoods", {
           type: "geojson",
-          data: neighborhoodPolygons,
+          data: { type: "FeatureCollection", features: [] },
         });
+
+        await fetchNeighborhoods(newMap);
 
         newMap.addLayer({
           id: "polygon-layer",
           type: "fill",
-          source: "polygons",
+          source: "neighborhoods",
           paint: {
             "fill-color": "#b23a48",
             "fill-opacity": 0.1,

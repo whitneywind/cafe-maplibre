@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AppBar, Toolbar, Button, TextField, Autocomplete } from "@mui/material";
 import "../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog"
@@ -29,7 +29,7 @@ const WavyMenu = () => {
   };
 
 const handleNewCafeSubmit = (newCafe) => {
-  console.log("🆕 New Cafe:", newCafe);
+  console.log("New Cafe:", newCafe);
 
   const geoJsonFeature = {
     type: "Feature",

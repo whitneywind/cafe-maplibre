@@ -1,17 +1,18 @@
+import useMapStore from "../../store/useMapStore";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import maplibregl from "maplibre-gl";
-import neighborhoodPolygonsJson from "../../assets/neighborhoods/nbrs.json";
 import { Map, LngLatLike, Popup } from "maplibre-gl";
 import { createRoot } from "react-dom/client";
-import { CoffeeShop, Coordinates, NeighborhoodCollection } from "../../../types";
+import { CoffeeShop, Coordinates } from "../../../types";
 import { Feature, MultiPolygon, Point } from "geojson";
 import CafePopup from "./CafePopup";
-
-const neighborhoodPolygons: NeighborhoodCollection = neighborhoodPolygonsJson as NeighborhoodCollection;
 
 
 // fn to determine the neighborhood for a given cafe
 export const getNeighborhoodForCafe = (cafeCoordinates: Coordinates) => {
+  const neighborhoods = useMapStore.getState().neighborhoods; // get neighborhoods from Zustand
+  if (!neighborhoods) return null;
+
     // convert cafe coordinates to a Turf.js point
     const cafePoint: Feature<Point> = {
         type: "Feature",
@@ -22,11 +23,11 @@ export const getNeighborhoodForCafe = (cafeCoordinates: Coordinates) => {
         },
     };
 
-    for (const feature of neighborhoodPolygons.features) {
+    for (const feature of neighborhoods.features) {
         const turfFeature = feature as Feature<MultiPolygon, { [key: string]: any }>;
 
         if (booleanPointInPolygon(cafePoint, turfFeature)) {
-          return feature.name ?? null;
+          return turfFeature.properties?.name ?? null;
         }
     }
     return null;
@@ -38,9 +39,7 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
   if (!neighborhoodFeature) {
     // clear filter and hide polygons
     map.setFilter("polygon-layer", null);
-    map.setFilter("polygon-border", null);
     map.setLayoutProperty("polygon-layer", "visibility", "none");
-    // map.setLayoutProperty("polygon-border", "visibility", "none");
 
     // clear cafe filters to show all cafes
     map.setFilter("regular-cafes", ["!=", ["get", "specialty"], true]);
@@ -65,7 +64,7 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
   map.setLayoutProperty("polygon-layer", "visibility", "visible");
 
   // only show the selected neighborhood
-  map.setFilter("polygon-layer", ["==", ["id"], neighborhoodFeature.id]);
+  map.setFilter("polygon-layer", ["==", ["get", "name"], neighborhoodFeature.name]);
 
   // only show cafes in selected neighborhood
   map.setFilter("regular-cafes", [
@@ -215,5 +214,33 @@ export const fetchCafes = async (map: maplibregl.Map | null) => {
     }
   } catch (error) {
     console.error("Error fetching cafes:", error);
+  }
+};
+
+export const fetchNeighborhoods = async (map: maplibregl.Map | null) => {
+  if (!map) return;
+
+  const setNeighborhoods = useMapStore.getState().setNeighborhoods;
+
+  try {
+    const response = await fetch("http://localhost:3000/api/neighborhoods");
+      if (!response.ok) {
+      throw new Error(`Failed to fetch neighborhoods: ${response.statusText}`);
+    }
+
+    const neighborhoodsGeoJSON = await response.json();
+
+    // set in zustand
+    setNeighborhoods(neighborhoodsGeoJSON);
+
+    // add to map
+    const source = map.getSource("neighborhoods") as maplibregl.GeoJSONSource;
+
+    if (source) {
+      source.setData(neighborhoodsGeoJSON);
+    }
+
+  } catch (error) {
+    console.error("Error fetching neighborhoods:", error);
   }
 };

@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cafesRouter from "./routes/cafes.js";
+import neighborhoodsRouter from "./routes/neighborhoods.js";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 
 // API routes
 app.use("/api/cafes", cafesRouter);
+app.use("/api/neighborhoods", neighborhoodsRouter);
 
 // Simple health check
 app.get("/health", (req, res) => {
