@@ -10,6 +10,14 @@ import {
   ListItemButton,
   ListItemText,
   CircularProgress,
+  Box,
+  FormControlLabel,
+  Checkbox,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 import { useState, ChangeEvent } from "react";
 import { CoffeeShop } from "../../types.ts";
@@ -22,24 +30,52 @@ type NewCafeDialogProps = {
 
 export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialogProps) {
   const [formData, setFormData] = useState({
-    name: "",
-    address: "",
-    latitude: "",
-    longitude: "",
-    website: "",
-    opening_hours: "",
+  name: "",
+  address: "",
+  latitude: "",
+  longitude: "",
+  // optional:
+  neighborhood: "",
+  website: "",
+  opening_hours: "",
+  phone: "",
+  instagram: "",
+  parking: "",
+  closest_metro: "",
+  bathroom: false,
+  specialty: false,
+  in_house_roast: false,
+  outdoor_seating: false,
+  wifi: false,
+  outlets: false,
+  laptop_friendly: false,
+  roaster: [] as string[],
+  vibe_tags: [] as string[],
+  special_items: [] as string[],
+  notes: "",
   });
   
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<Array<{ display_name: string; lat: string; lon: string }>>([]);
   const [loading, setLoading] = useState(false);
+  const [showMoreDetails, setShowMoreDetails] = useState(false);
   
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: checked }));
+  };
+
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+    
   const handleSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
   };
@@ -117,18 +153,27 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
 
     const newCafe: CoffeeShop = {
       id: `user-${Date.now()}`,
-      name,
-      address,
-      coordinates: [parseFloat(longitude), parseFloat(latitude)],
-      website: formData.website || "",
-      opening_hours: formData.opening_hours || "",
-      specialty: true,
-      roaster: [],
-      in_house_roast: false,
-      outdoor_seating: false,
-      wifi: false,
-      special_items: [],
-      vibe_tags: [],
+      name: formData.name,
+      address: formData.address,
+      coordinates: [parseFloat(formData.longitude), parseFloat(formData.latitude)],
+      website: formData.website || undefined,
+      opening_hours: formData.opening_hours || undefined,
+      neighborhood: formData.neighborhood || undefined,
+      phone: formData.phone || undefined,
+      instagram: formData.instagram || undefined,
+      parking: formData.parking || undefined,
+      closest_metro: formData.closest_metro || undefined,
+      bathroom: formData.bathroom || undefined,
+      specialty: formData.specialty,
+      in_house_roast: formData.in_house_roast,
+      outdoor_seating: formData.outdoor_seating,
+      wifi: formData.wifi,
+      outlets: formData.outlets,
+      laptop_friendly: formData.laptop_friendly,
+      roaster: formData.roaster,
+      vibe_tags: formData.vibe_tags,
+      special_items: formData.special_items,
+      notes: formData.notes || undefined,
     };
 
     try {
@@ -157,7 +202,24 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
         longitude: "",
         website: "",
         opening_hours: "",
+        neighborhood: "",
+        phone: "",
+        instagram: "",
+        parking: "",
+        closest_metro: "",
+        bathroom: false,
+        specialty: false,
+        in_house_roast: false,
+        outdoor_seating: false,
+        wifi: false,
+        outlets: false,
+        laptop_friendly: false,
+        roaster: [],
+        vibe_tags: [],
+        special_items: [],
+        notes: "",
       });
+      setShowMoreDetails(false);
     } catch (error) {
       console.error(error);
       alert("There was a problem adding the cafe. Try again.");
@@ -176,7 +238,7 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
           required
           margin="dense"
           value={formData.name}
-          onChange={handleChange}
+          onChange={handleTextChange}
         />
 
         <TextField
@@ -225,7 +287,7 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
           required
           margin="dense"
           value={formData.address}
-          onChange={handleChange}
+          onChange={handleTextChange}
           disabled
         />
         {formData.latitude && formData.longitude && (
@@ -234,23 +296,72 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
             </div>
         )}
 
-
-        <TextField
-          label="Website"
-          name="website"
-          fullWidth
-          margin="dense"
-          value={formData.website}
-          onChange={handleChange}
-        />
-        <TextField
+        {/* <TextField
           label="Opening Hours"
           name="opening_hours"
           fullWidth
           margin="dense"
           value={formData.opening_hours}
-          onChange={handleChange}
-        />
+          onChange={handleTextChange}
+        /> */}
+
+        {/* Toggle for extra details */}
+        <Button size="small" onClick={() => setShowMoreDetails(prev => !prev)}>
+          {showMoreDetails ? "Hide extra details" : "Add more details"}
+        </Button>
+
+        {showMoreDetails && (
+          <Box sx={{ mt: 1 }}>
+
+            {/* boolean options */}
+            <FormControlLabel control={<Checkbox name="wifi" checked={formData.wifi} onChange={handleCheckboxChange} />} label="Wifi" />
+            <FormControlLabel control={<Checkbox name="bathroom" checked={formData.bathroom} onChange={handleCheckboxChange} />} label="Bathroom" />
+            <FormControlLabel control={<Checkbox name="outlets" checked={formData.outlets} onChange={handleCheckboxChange} />} label="Outlets" />
+            <FormControlLabel control={<Checkbox name="laptop_friendly" checked={formData.laptop_friendly} onChange={handleCheckboxChange} />} label="Laptop-friendly" />
+            <FormControlLabel control={<Checkbox name="outdoor_seating" checked={formData.outdoor_seating} onChange={handleCheckboxChange} />} label="Outdoor seating" />
+            <FormControlLabel control={<Checkbox name="specialty" checked={formData.specialty} onChange={handleCheckboxChange} />} label="Specialty Coffee" />
+
+            {/* non-boolean options */}
+            <TextField 
+              label="Instagram"
+              name="instagram"
+              fullWidth margin="dense"
+              value={formData.instagram}
+              onChange={handleTextChange}
+            />
+
+            <TextField
+              label="Website"
+              name="website"
+              fullWidth
+              margin="dense"
+              value={formData.website}
+              onChange={handleTextChange}
+            />
+            
+            <FormControl fullWidth margin="dense">
+              <InputLabel id="parking-label">Parking</InputLabel>
+              <Select
+                labelId="parking-label"
+                name="parking"
+                value={formData.parking}
+                onChange={handleSelectChange}
+              >
+                <MenuItem value="">None</MenuItem> {/* optional */}
+                <MenuItem value="parking lot">Parking lot</MenuItem>
+                <MenuItem value="street parking">Street parking</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              label="Roasters"
+              name="roaster"
+              fullWidth
+              value={formData.roaster.join(", ")}
+              onChange={(e) => setFormData(prev => ({ ...prev, roaster: e.target.value.split(",").map(s => s.trim()) }))}
+            />
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>

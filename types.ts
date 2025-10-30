@@ -10,20 +10,53 @@ export type VibeTag =
   | "matcha-specialty"
 
 
+// export interface CoffeeShop {
+//   id: string;
+//   name: string;
+//   address: string;
+//   coordinates: [number, number]; // [lng, lat]
+//   neighborhood?: string;
+
+//   roaster: string[];
+//   in_house_roast: boolean;
+
+//   vibe_tags?: VibeTag[];
+//   special_items?: string[];
+
+//   outdoor_seating: boolean;
+//   wifi?: boolean;
+//   outlets?: boolean;
+//   laptop_friendly?: boolean;
+
+//   parking?: string;
+//   closest_metro?: string;
+//   opening_hours?: string;
+//   website?: string;
+//   phone?: string;
+//   instagram?: string;
+
+//   specialty: boolean;
+//   notes?: string;
+//   source_tags?: Record<string, string>; // JSONB
+
+//   status?: "approved" | "pending" | "rejected";
+// }
+
 export interface CoffeeShop {
   id: string;
   name: string;
-  address: string;
-  coordinates: [number, number]; // [lng, lat]
+  address?: string;
+  coordinates: [number, number]; // GeoJSON-style (lng, lat)
   neighborhood?: string;
 
-  roaster: string[];
-  in_house_roast: boolean;
+  roaster?: string[];
+  in_house_roast?: boolean;
 
-  vibe_tags?: VibeTag[];
+  vibe_tags?: string[];
   special_items?: string[];
 
-  outdoor_seating: boolean;
+  bathroom?: boolean;
+  outdoor_seating?: boolean;
   wifi?: boolean;
   outlets?: boolean;
   laptop_friendly?: boolean;
@@ -37,9 +70,10 @@ export interface CoffeeShop {
 
   specialty: boolean;
   notes?: string;
-  source_tags?: Record<string, string>; // JSONB
-
+  source_tags?: Record<string, string>;
   status?: "approved" | "pending" | "rejected";
+
+  created_at?: string;
 }
 
 export type Coordinates = [number, number];
