@@ -49,22 +49,29 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
     return;
   }
 
-  const neighborhoodName = neighborhoodFeature.name;
+  const neighborhoodName = neighborhoodFeature.properties.name;
 
   // flatten and compute bounds
   const coordinates = neighborhoodFeature.geometry.coordinates.flat(Infinity) as number[];
   const lats = coordinates.filter((_, i) => i % 2 === 1);
   const lngs = coordinates.filter((_, i) => i % 2 === 0);
+  const mapHeight = map.getContainer().clientHeight;
+  const yOffset = mapHeight * 0.05;
+
   const bounds = [
     [Math.min(...lngs), Math.min(...lats)],
     [Math.max(...lngs), Math.max(...lats)],
   ] as [[number, number], [number, number]];
-  map.fitBounds(bounds, { padding: 60, maxZoom: 16 });
+  map.fitBounds(bounds, {
+    padding: 100,
+    maxZoom: 16,
+    offset: [0, -yOffset] // to account for cafe scroller on bottom
+  });
 
   map.setLayoutProperty("polygon-layer", "visibility", "visible");
 
   // only show the selected neighborhood
-  map.setFilter("polygon-layer", ["==", ["get", "name"], neighborhoodFeature.name]);
+  map.setFilter("polygon-layer", ["==", ["get", "name"], neighborhoodFeature.properties.name]);
 
   // only show cafes in selected neighborhood
   map.setFilter("regular-cafes", [

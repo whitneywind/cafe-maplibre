@@ -12,6 +12,7 @@ export default function MapComponent() {
   const setMap = useMapStore((state) => state.setMap);
   const map = useMapStore((state) => state.map);
   const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
+  const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
   const [visibleCafes, setVisibleCafes] = useState([]); // visible in the scroller
   const [neighborhoodLayerVisible, setNeighborhoodLayerVisible] = useState(false);
   const mapContainer = useRef(null);
@@ -290,6 +291,28 @@ export default function MapComponent() {
         // interactiveLayerIds={interactiveLayerIds}
         // onLoad={onLoad}
       />
+      {selectedNeighborhood ? (
+        <button
+          onClick={() => setSelectedNeighborhood(null)}
+          style={{
+          position: "absolute",
+          bottom: "150px",
+          left: "50%",
+          transform: "translateX(-50%)", // center horizontally
+          padding: "8px 16px",
+          backgroundColor: "#b23a48", // your brand color
+          color: "#fff",
+          border: "none",
+          borderRadius: "20px", // rounded
+          cursor: "pointer",
+          fontSize: "0.9em",
+          zIndex: 1000,
+          boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+          }}
+        >
+          Clear Neighborhood
+        </button>
+      ) :
       <button
         onClick={toggleNeighborhoodLayer}
         style={{
@@ -308,6 +331,7 @@ export default function MapComponent() {
       >
         {neighborhoodLayerVisible ? "Hide Neighborhoods" : "Show Neighborhoods"}
       </button>
+    }
       <button
         onClick={() => fetchCafes(map)}
         style={{

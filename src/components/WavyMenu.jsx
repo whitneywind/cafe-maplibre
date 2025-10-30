@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AppBar, Toolbar, Button, TextField, Autocomplete } from "@mui/material";
 import "../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog"
 import useMapStore from "../store/useMapStore";
-import neighborhoodPolygons from "../assets/neighborhoods/nbrs.json";
 
 
 const WavyMenu = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const map = useMapStore((state) => state.map);
+  const neighborhoods = useMapStore((state) => state.neighborhoods);
+
+  const neighborhoodOptions = useMemo(() => {
+    return neighborhoods?.features.filter((f) => f.properties?.name) || [];
+  }, [neighborhoods]);
 
   const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
   const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
-
-  const neighborhoods = neighborhoodPolygons.features.filter(f => f.name);  
 
   const handleNeighborhoodSelect = (event, value) => {
     if (!map) return;
@@ -87,8 +89,8 @@ const handleNewCafeSubmit = (newCafe) => {
           </Button>
 
           <Autocomplete
-            options={neighborhoods}
-            getOptionLabel={(option) => option?.name || ""}
+            options={neighborhoodOptions}
+            getOptionLabel={(option) => option?.properties.name || ""}
             sx={{ width: 200, marginLeft: 2 }}
             size="small"
             value={selectedNeighborhood || null}
