@@ -30,29 +30,28 @@ type NewCafeDialogProps = {
 
 export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialogProps) {
   const [formData, setFormData] = useState({
-  name: "",
-  address: "",
-  latitude: "",
-  longitude: "",
-  // optional:
-  neighborhood: "",
-  website: "",
-  opening_hours: "",
-  phone: "",
-  instagram: "",
-  parking: "",
-  closest_metro: "",
-  bathroom: false,
-  specialty: false,
-  in_house_roast: false,
-  outdoor_seating: false,
-  wifi: false,
-  outlets: false,
-  laptop_friendly: false,
-  roaster: [] as string[],
-  vibe_tags: [] as string[],
-  special_items: [] as string[],
-  notes: "",
+    name: "",
+    address: "",
+    latitude: "",
+    longitude: "",
+    // optional:
+    neighborhood: "",
+    website: "",
+    opening_hours: "",
+    phone: "",
+    instagram: "",
+    parking: "",
+    closest_metro: "",
+    bathroom: false,
+    specialty: false,
+    in_house_roast: false,
+    outdoor_seating: false,
+    wifi: false,
+    outlets: false,
+    laptop_friendly: false,
+    roaster: [] as string[],
+    special_items: [] as string[],
+    notes: "",
   });
   
   const [searchInput, setSearchInput] = useState("");
@@ -171,7 +170,6 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
       outlets: formData.outlets,
       laptop_friendly: formData.laptop_friendly,
       roaster: formData.roaster,
-      vibe_tags: formData.vibe_tags,
       special_items: formData.special_items,
       notes: formData.notes || undefined,
     };
@@ -215,7 +213,6 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
         outlets: false,
         laptop_friendly: false,
         roaster: [],
-        vibe_tags: [],
         special_items: [],
         notes: "",
       });

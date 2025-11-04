@@ -1,35 +1,32 @@
 import React from "react";
-import { Box, Typography, Link, Button, Stack, Chip } from "@mui/material";
+import { Box, Typography, Link, Button, Stack } from "@mui/material";
 import StarsIcon from '@mui/icons-material/Stars';
-// import CloseIcon from "@mui/icons-material/Close";
+import WifiIcon from "@mui/icons-material/Wifi";
+import PowerIcon from "@mui/icons-material/Power";
+import LocalParkingIcon from "@mui/icons-material/LocalParking";
+import WcIcon from "@mui/icons-material/Wc";
+import DeckIcon from "@mui/icons-material/Deck";
+import { Tooltip } from "@mui/material";
 import { CoffeeShop } from "../../../types";
 
 
 const CafePopup: React.FC<CoffeeShop> = ({ 
-      id,
       name,
-      address,
       coordinates,
       neighborhood,
-      roaster,
-      in_house_roast,
-      vibe_tags,
-      special_items,
+      bathroom,
       outdoor_seating,
       wifi,
       outlets,
-      laptop_friendly,
       parking,
-      closest_metro,
-      opening_hours,
+      // opening_hours,
       website,
       phone,
       instagram,
       specialty,
-      notes,
  }) => {
   const [lng, lat] = coordinates;
-  console.log("neigh", neighborhood)
+  console.log("outlets: ", outlets)
 
   const googleMapsURL = name
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`
@@ -73,7 +70,7 @@ const CafePopup: React.FC<CoffeeShop> = ({
             sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
         >
           {name}
-          {specialty && (
+        {specialty && (
             <StarsIcon
                 sx={{
                     color: "#F2C94C",
@@ -84,96 +81,11 @@ const CafePopup: React.FC<CoffeeShop> = ({
           )}
         </Typography>
       )}
-      {website && (
-        <Link
-          href={website}
-          target="_blank"
-          rel="noopener noreferrer"
-          underline="hover"
-          variant="body2"
-          sx={{ display: "block", mt: 0.5 }}
-        >
-          Website
-        </Link>
-      )}
       
       {/* additional info */}
-      {/* {address && (
-        <Typography variant="body2" sx={{ mt: 0.3 }}>
-          {address}
-        </Typography>
-      )} */}
       {neighborhood && neighborhood !== "unknown" && (
         <Typography variant="caption" sx={{ color: "text.secondary" }}>
           {neighborhood}
-        </Typography>
-      )}
-
-      {/* Roaster info */}
-      {roaster?.length ? (
-        <Typography variant="body2" sx={{ mt: 0.5 }}>
-          Roaster: {roaster.join(", ")}
-        </Typography>
-      ) : (
-        in_house_roast && (
-          <Typography variant="body2" sx={{ mt: 0.5 }}>
-            In-house roast
-          </Typography>
-        )
-      )}
-
-      {/* Vibe tags */}
-      {vibe_tags?.length ? (
-        <Stack
-          direction="row"
-          spacing={0.5}
-          sx={{ flexWrap: "wrap", justifyContent: "center", mt: 0.5 }}
-        >
-          {vibe_tags.map((tag) => (
-            <Chip key={tag} label={tag} size="small" sx={{ fontSize: "0.65rem" }} />
-          ))}
-        </Stack>
-      ) : null}
-
-      {/* Amenities */}
-      {/* <Box sx={{ mt: 0.5 }}>
-        {[
-          outdoor_seating && "Outdoor seating",
-          wifi && "Wi-Fi",
-          outlets && "Outlets",
-          laptop_friendly && "Laptop friendly",
-        ]
-          .filter(Boolean)
-          .map((amenity) => (
-            <Typography
-              key={amenity}
-              variant="caption"
-              sx={{ display: "block", color: "text.secondary" }}
-            >
-              • {amenity}
-            </Typography>
-          ))}
-      </Box> */}
-
-      {/* Details */}
-      {special_items?.length && (
-        <Typography variant="body2" sx={{ mt: 0.5 }}>
-          Specialties: {special_items.join(", ")}
-        </Typography>
-      )}
-      {closest_metro && (
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-          🚇 {closest_metro}
-        </Typography>
-      )}
-      {parking && (
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-          🅿 {parking}
-        </Typography>
-      )}
-      {opening_hours && (
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-          ⏰ {opening_hours}
         </Typography>
       )}
 
@@ -208,15 +120,41 @@ const CafePopup: React.FC<CoffeeShop> = ({
         </Typography>
       )}
 
-      {/* Notes */}
-      {notes && (
-        <Typography
-          variant="caption"
-          sx={{ mt: 0.6, fontStyle: "italic", color: "text.secondary" }}
-        >
-          {notes}
-        </Typography>
-      )}
+      {/* Amenities icons */}
+      <Stack
+        direction="row"
+        spacing={1}
+        justifyContent="center"
+        alignItems="center"
+        sx={{ mt: 1, flexWrap: "wrap" }}
+      >
+        {wifi && (
+          <Tooltip title="Wi-Fi" arrow>
+            <WifiIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+          </Tooltip>
+        )}
+        {outlets && (
+          <Tooltip title="Outlets" arrow>
+            <PowerIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+          </Tooltip>
+        )}
+        {parking === "Parking lot" && (
+          <Tooltip title="Parking" arrow>
+            <LocalParkingIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+          </Tooltip>
+        )}
+        {outdoor_seating && (
+          <Tooltip title="Outdoor seating" arrow>
+            <DeckIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+          </Tooltip>
+        )}
+        {/* Add when bathroom in schema */}
+        {bathroom && (
+          <Tooltip title="Bathroom" arrow>
+            <WcIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+          </Tooltip>
+        )}
+      </Stack>
 
       <Button
           variant="contained"
@@ -230,7 +168,7 @@ const CafePopup: React.FC<CoffeeShop> = ({
           target="_blank"
           rel="noopener noreferrer"
       >
-          View on Google Maps
+          Google Maps
       </Button>
     </Box>
   );

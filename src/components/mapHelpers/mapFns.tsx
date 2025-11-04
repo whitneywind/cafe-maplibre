@@ -169,19 +169,14 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
   if (!map || !cafe) return;
 
   const coordinates = cafe.coordinates.slice();
-  const properties = cafe;
-
   const popupNode = document.createElement("div");
   const root = createRoot(popupNode);
 
+  console.log("cafe props: ", cafe)
+
   root.render(
     <CafePopup
-      id={properties.id}
-      name={properties.name}
-      address={properties.address}
-      website={properties.website}
-      coordinates={coordinates}
-      specialty={properties.specialty}
+      {...cafe} coordinates={coordinates}
       // onDelete={() => deleteCafe(map, properties.id, popupRef)}
     />
   );

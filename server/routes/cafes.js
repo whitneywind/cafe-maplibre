@@ -31,43 +31,85 @@ router.post("/", async (req, res) => {
     name,
     address,
     coordinates,
+    neighborhood,
     website,
     opening_hours,
+    phone,
+    instagram,
+    parking,
+    closest_metro,
+    bathroom,
     specialty,
-    roaster,
     in_house_roast,
     outdoor_seating,
     wifi,
+    outlets,
+    laptop_friendly,
+    roaster,
     special_items,
-    vibe_tags,
+    notes,
   } = req.body;
+
+  if (!id || !name || !coordinates || coordinates.length !== 2) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
 
   try {
     await pool.query(
       `INSERT INTO cafes (
-        id, name, address, website, opening_hours, specialty,
-        roaster, in_house_roast, outdoor_seating, wifi, special_items, vibe_tags, coordinates
+        id,
+        name,
+        address,
+        neighborhood,
+        website,
+        opening_hours,
+        phone,
+        instagram,
+        parking,
+        closest_metro,
+        bathroom,
+        specialty,
+        in_house_roast,
+        outdoor_seating,
+        wifi,
+        outlets,
+        laptop_friendly,
+        roaster,
+        special_items,
+        notes,
+        coordinates
       )
       VALUES (
-        $1,$2,$3,$4,$5,$6,
-        $7,$8,$9,$10,$11,$12,ST_SetSRID(ST_MakePoint($13, $14),4326)
+        $1, $2, $3, $4, $5, $6,
+        $7, $8, $9, $10, $11, $12,
+        $13, $14, $15, $16, $17,
+        $18, $19, $20,
+        ST_SetSRID(ST_MakePoint($21, $22), 4326)
       )
       ON CONFLICT (id) DO NOTHING`,
       [
         id,
         name,
         address,
+        neighborhood,
         website,
         opening_hours,
+        phone,
+        instagram,
+        parking,
+        closest_metro,
+        bathroom,
         specialty,
-        roaster,
         in_house_roast,
         outdoor_seating,
         wifi,
+        outlets,
+        laptop_friendly,
+        roaster,
         special_items,
-        vibe_tags,
-        coordinates[0], // lng
-        coordinates[1], // lat
+        notes,
+        parseFloat(coordinates[0]),
+        parseFloat(coordinates[1]),
       ]
     );
 
@@ -78,7 +120,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// DELETE /cafes/:id
+
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   console.log("id in cafes.js: ", id)

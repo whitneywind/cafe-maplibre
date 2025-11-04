@@ -52,7 +52,6 @@ export interface CoffeeShop {
   roaster?: string[];
   in_house_roast?: boolean;
 
-  vibe_tags?: string[];
   special_items?: string[];
 
   bathroom?: boolean;
