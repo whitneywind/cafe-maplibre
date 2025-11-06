@@ -24,7 +24,6 @@ app.use((req, res, next) => {
 app.use("/api/cafes", cafesRouter);
 app.use("/api/neighborhoods", neighborhoodsRouter);
 
-// Simple health check
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });
 });
@@ -45,7 +44,6 @@ app.get("/api/geocode", async (req, res) => {
   }
     );
 
-        // Ensure you got a JSON response
     if (!response.ok) {
       console.log("Nominatim response not OK:", response.status);
       return res.status(response.status).json({ error: "Failed to fetch geocoding data" });

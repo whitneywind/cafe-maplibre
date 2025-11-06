@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import { CoffeeShop, Coordinates } from "../../../types";
 import { Feature, MultiPolygon, Point } from "geojson";
 import CafePopup from "./CafePopup";
+import UpdateCafeDialog from "./UpdateCafeDialog";
 
 
 // fn to determine the neighborhood for a given cafe
@@ -172,11 +173,10 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
   const popupNode = document.createElement("div");
   const root = createRoot(popupNode);
 
-  console.log("cafe props: ", cafe)
-
   root.render(
     <CafePopup
-      {...cafe} coordinates={coordinates}
+      cafe={cafe}
+      coordinates={coordinates}
       // onDelete={() => deleteCafe(map, properties.id, popupRef)}
     />
   );
@@ -196,6 +196,24 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
     .setDOMContent(popupNode)
     .setOffset(offset)
     .addTo(map);
+}
+
+
+export function showUpdateCafeDialog(
+  rootElement: HTMLElement,
+  cafe: CoffeeShop,
+) {
+  if (!cafe) return;
+
+  const root = createRoot(rootElement);
+
+  root.render(
+    <UpdateCafeDialog
+      open={true}
+      cafe={cafe}
+      onClose={() => root.unmount()}
+    />
+  );
 }
 
 // fetch cafes from the backend and update the "cafes" GeoJSON source on the map

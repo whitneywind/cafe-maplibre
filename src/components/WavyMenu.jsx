@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { AppBar, Toolbar, Button, TextField, Autocomplete } from "@mui/material";
+import { AppBar, Toolbar, Button, TextField, Autocomplete, Box } from "@mui/material";
+import CoffeeIcon from "@mui/icons-material/Coffee";
 import "../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog"
 import useMapStore from "../store/useMapStore";
@@ -33,39 +34,6 @@ const WavyMenu = () => {
     setDialogOpen(false);
   };
 
-const handleNewCafeSubmit = (newCafe) => {
-  console.log("New Cafe:", newCafe);
-
-  const geoJsonFeature = {
-    type: "Feature",
-    id: newCafe.id,
-    geometry: {
-      type: "Point",
-      coordinates: newCafe.coordinates,
-    },
-    properties: {
-      amenity: "cafe",
-      cuisine: "coffee_shop",
-      name: newCafe.name,
-      address: newCafe.address,
-      phone: newCafe.phone || "",
-      website: newCafe.website || "",
-      opening_hours: newCafe.openingHours || "",
-      specialty: newCafe.specialty,
-      roaster: newCafe.roaster,
-      inHouseRoast: newCafe.inHouseRoast,
-      outdoorSeating: newCafe.outdoorSeating,
-      wifi: newCafe.wifi ?? false,
-      takeaway: false,
-      wheelchairAccessible: false,
-      specialItems: newCafe.specialItems,
-      vibeTags: newCafe.vibeTags,
-    },
-  };
-
-  console.log("GeoJSON Feature ready to save:", geoJsonFeature);
-};
-
   return (
     <>
       <AppBar
@@ -74,7 +42,6 @@ const handleNewCafeSubmit = (newCafe) => {
         className="wavy-menu"
       >
         <Toolbar>
-          {/* a coffeecup or something */}
           <Button
             color="inherit"
             onClick={() => {
@@ -86,8 +53,14 @@ const handleNewCafeSubmit = (newCafe) => {
                 });
               }
             }}
+            sx={{
+              minWidth: 0,
+              marginRight: "10px",
+              color: "white",
+              "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
+            }}
           >
-            Home
+            <CoffeeIcon sx={{ fontSize: 25 }} />
           </Button>
 
           <Button color="inherit">Filter</Button>
@@ -96,7 +69,9 @@ const handleNewCafeSubmit = (newCafe) => {
             options={neighborhoodOptions}
             getOptionLabel={(option) => option?.properties.name || ""}
               sx={{
-                width: 200,
+                minWidth: 200,
+                maxWidth: "100%",
+                width: "auto",
                 mx: "10px",
                 "& .MuiInputBase-root": {
                   color: "white",
@@ -144,8 +119,23 @@ const handleNewCafeSubmit = (newCafe) => {
             )}
           />
 
+          <Box sx={{ flexGrow: 1 }} />
+
           <Button color="inherit" onClick={handleDialogOpen}>
             Suggest New
+          </Button>
+          <Button
+            color="inherit"
+            size="small"
+            sx={{
+              ml: 1,
+              px: 1.5,
+              py: 0.5,
+              fontSize: "0.6rem",
+              border: "1px solid rgba(255,255,255,0.5)",
+            }}
+          >
+            Login
           </Button>
 
         </Toolbar>
@@ -153,7 +143,6 @@ const handleNewCafeSubmit = (newCafe) => {
       <NewCafeDialog
         open={dialogOpen}
         onClose={handleDialogClose}
-        onSubmit={handleNewCafeSubmit}
       />
     </>
   );

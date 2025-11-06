@@ -1,36 +1,35 @@
 import React from "react";
-import { Box, Typography, Link, Button, Stack } from "@mui/material";
+import { Box, Typography, Link, Button, Stack, IconButton } from "@mui/material";
 import StarsIcon from '@mui/icons-material/Stars';
 import WifiIcon from "@mui/icons-material/Wifi";
 import PowerIcon from "@mui/icons-material/Power";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import WcIcon from "@mui/icons-material/Wc";
 import DeckIcon from "@mui/icons-material/Deck";
+import BuildIcon from "@mui/icons-material/Build";
 import { Tooltip } from "@mui/material";
 import { CoffeeShop } from "../../../types";
+import { showUpdateCafeDialog } from "./mapFns";
 
+interface CafePopupProps {
+  cafe: CoffeeShop;
+  coordinates: any;
+}
 
-const CafePopup: React.FC<CoffeeShop> = ({ 
-      name,
-      coordinates,
-      neighborhood,
-      bathroom,
-      outdoor_seating,
-      wifi,
-      outlets,
-      parking,
-      // opening_hours,
-      website,
-      phone,
-      instagram,
-      specialty,
- }) => {
+const CafePopup: React.FC<CafePopupProps> = ({ cafe, coordinates }) => {
+  const { name, neighborhood, bathroom, outdoor_seating, wifi, outlets, parking, website, phone, instagram, specialty } = cafe;
   const [lng, lat] = coordinates;
-  console.log("outlets: ", outlets)
 
   const googleMapsURL = name
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`
     : `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  
+  const handleUpdateClick = () => {
+    const dialogContainer = document.createElement("div");
+    document.body.appendChild(dialogContainer);
+
+    showUpdateCafeDialog(dialogContainer, cafe);
+  };
 
 
 // const handleDeleteClick = () => {
@@ -41,7 +40,8 @@ const CafePopup: React.FC<CoffeeShop> = ({
     <Box
         sx={{
             minWidth: 200,
-            display: "flex",
+            maxWidth: "calc(100vw - 40px)",
+            display: "inline-flex",
             flexDirection: "column",
             alignItems: "center",
             textAlign: "center",
@@ -62,6 +62,14 @@ const CafePopup: React.FC<CoffeeShop> = ({
       >
         <CloseIcon fontSize="small" />
       </IconButton> */}
+
+      <IconButton
+        size="small"
+        onClick={handleUpdateClick}
+        sx={{ position: "absolute", top: 2, right: 2, padding: 0, width: 20, height: 20 }}
+      >
+        <BuildIcon fontSize="small" />
+      </IconButton>
 
       {name && (
         <Typography
@@ -89,7 +97,7 @@ const CafePopup: React.FC<CoffeeShop> = ({
         </Typography>
       )}
 
-      {/* Links */}
+      {/* links */}
       {website && (
         <Link
           href={website}
@@ -120,7 +128,7 @@ const CafePopup: React.FC<CoffeeShop> = ({
         </Typography>
       )}
 
-      {/* Amenities icons */}
+      {/* amenities icons */}
       <Stack
         direction="row"
         spacing={1}
@@ -148,7 +156,6 @@ const CafePopup: React.FC<CoffeeShop> = ({
             <DeckIcon sx={{ fontSize: 18, color: "text.secondary" }} />
           </Tooltip>
         )}
-        {/* Add when bathroom in schema */}
         {bathroom && (
           <Tooltip title="Bathroom" arrow>
             <WcIcon sx={{ fontSize: 18, color: "text.secondary" }} />

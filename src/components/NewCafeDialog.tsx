@@ -25,16 +25,14 @@ import { CoffeeShop } from "../../types.ts";
 type NewCafeDialogProps = {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: CoffeeShop) => void;
 };
 
-export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialogProps) {
+export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
   const [formData, setFormData] = useState({
     name: "",
     address: "",
     latitude: "",
     longitude: "",
-    // optional:
     neighborhood: "",
     website: "",
     opening_hours: "",
@@ -84,7 +82,6 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
     setLoading(true);
     try {
       const res = await fetch(`/api/geocode?q=${encodeURIComponent(searchInput)}`);
-      console.log("res: ", res)
       const data = await res.json();
       setSearchResults(data);
     } catch (error) {
@@ -105,43 +102,6 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
     setSearchInput("");
   };
 
-  // const handleSubmit = () => {
-  //   const { name, address, latitude, longitude } = formData;
-
-  //   if (!name || !address || !latitude || !longitude) {
-  //     alert("Please fill out all required fields and select a location.");
-  //     return;
-  //   }
-
-  //   const newCafe: CoffeeShop = {
-  //     id: `user-${Date.now()}`,
-  //     name,
-  //     address,
-  //     coordinates: [parseFloat(longitude), parseFloat(latitude)],
-  //     website: formData.website || "",
-  //     opening_hours: formData.opening_hours || "",
-  //     specialty: true,
-  //     roaster: [],
-  //     in_house_roast: false,
-  //     outdoor_seating: false,
-  //     wifi: false,
-  //     special_items: [],
-  //     vibe_tags: [],
-  //   };
-
-  //   onSubmit(newCafe);
-  //   onClose();
-  //   setFormData({
-  //     name: "",
-  //     address: "",
-  //     latitude: "",
-  //     longitude: "",
-  //     website: "",
-  //     opening_hours: "",
-  //   });
-  // };
-
-
   const handleSubmit = async () => {
     const { name, address, latitude, longitude } = formData;
 
@@ -151,7 +111,7 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
     }
 
     const newCafe: CoffeeShop = {
-      id: `user-${Date.now()}`,
+      id: `cafe${Date.now()}`,
       name: formData.name,
       address: formData.address,
       coordinates: [parseFloat(formData.longitude), parseFloat(formData.latitude)],
@@ -188,8 +148,6 @@ export default function NewCafeDialog({ open, onClose, onSubmit }: NewCafeDialog
       const result = await res.json();
       console.log("Cafe added:", result);
 
-      // Optionally refresh cafes in parent
-      onSubmit(newCafe);
       onClose();
 
       // reset form
