@@ -136,6 +136,7 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
                 sx={{
                   textAlign: 'center',
                   fontFamily: '"Montserrat", sans-serif',
+                  marginBottom: "1px",
                 }}
               >
                 {cafe.name || "Unnamed Cafe"}
@@ -143,6 +144,9 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
               <Typography
                 sx={{
                   textAlign: 'center',
+                  fontSize: "0.9rem",
+                  marginTop: "2px",
+                  marginBottom: "3px",
                 }}
               >
                 {(cafe.neighborhood && cafe.neighborhood !== "unknown") ? `${cafe.neighborhood}` : "Los Angeles"}
@@ -150,9 +154,12 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
               <Typography
                 sx={{
                   textAlign: 'center',
+                  color: "#a23333ff",
+                  fontSize: "0.8rem",
+                  fontWeight: "600",
                 }}
               >
-                {`Specialty Coffee: ${cafe.specialty ? "Yes" : "No"}`}
+                {`${cafe.specialty ? "Specialty Coffee" : ""}`}
               </Typography>
             </CardContent>
           </Card>

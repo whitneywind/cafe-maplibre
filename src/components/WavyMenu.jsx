@@ -11,7 +11,10 @@ const WavyMenu = () => {
   const neighborhoods = useMapStore((state) => state.neighborhoods);
 
   const neighborhoodOptions = useMemo(() => {
-    return neighborhoods?.features.filter((f) => f.properties?.name) || [];
+    return neighborhoods?.features
+      .filter((f) => f.properties?.name)
+      .sort((a, b) => a.properties.name > b.properties.name ? 1 : -1)
+      || [];
   }, [neighborhoods]);
 
   const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
@@ -60,7 +63,6 @@ const handleNewCafeSubmit = (newCafe) => {
     },
   };
 
-  // append to geojson array or POST to server here
   console.log("GeoJSON Feature ready to save:", geoJsonFeature);
 };
 
@@ -88,17 +90,60 @@ const handleNewCafeSubmit = (newCafe) => {
             Home
           </Button>
 
+          <Button color="inherit">Filter</Button>
+
           <Autocomplete
             options={neighborhoodOptions}
             getOptionLabel={(option) => option?.properties.name || ""}
-            sx={{ width: 200, marginLeft: 2 }}
+              sx={{
+                width: 200,
+                mx: "10px",
+                "& .MuiInputBase-root": {
+                  color: "white",
+                  fontSize: "0.8rem",
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                  borderRadius: "8px",
+                  paddingRight: "4px",
+                  "& fieldset": { border: "none" },
+                },
+                "& .MuiInputLabel-root": {
+                  color: "rgba(255,255,255,0.7)",
+                },
+                "& .MuiSvgIcon-root": {
+                  color: "white",
+                },
+                "& .MuiAutocomplete-popupIndicatorOpen": {
+                  transform: "rotate(180deg)",
+                },
+                "& .MuiOutlinedInput-root.Mui-focused": {
+                  backgroundColor: "rgba(255,255,255,0.15)",
+                },
+                "& .MuiAutocomplete-option": {
+                  backgroundColor: "white",
+                  color: "black",
+                  "&[aria-selected='true']": {
+                    backgroundColor: "#f3e5f5 !important",
+                  },
+                  "&:hover": {
+                    backgroundColor: "#f8bbd0",
+                  },
+                },
+              }}
             size="small"
             value={selectedNeighborhood || null}
             onChange={(event, value) => handleNeighborhoodSelect(event, value)}
-            renderInput={(params) => <TextField {...params} label="Neighborhood" />}
+            renderInput={(params) => (
+              <TextField 
+                {...params}
+                placeholder="Neighborhood"
+                sx={{
+                  "& .MuiInputBase-input": { fontSize: "0.8rem", padding: "6px 8px" },
+                  "& .MuiInputLabel-root": { fontSize: "0.75rem" },
+                }}
+              />
+            )}
           />
 
-          <Button color="inherit">Filter</Button>
           <Button color="inherit" onClick={handleDialogOpen}>
             Suggest New
           </Button>
