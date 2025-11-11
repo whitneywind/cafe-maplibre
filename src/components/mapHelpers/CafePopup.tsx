@@ -31,11 +31,6 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe, coordinates }) => {
     showUpdateCafeDialog(dialogContainer, cafe);
   };
 
-
-// const handleDeleteClick = () => {
-//   if (onDelete) onDelete(id);
-// };
-
   return (
     <Box
         sx={{
@@ -47,22 +42,6 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe, coordinates }) => {
             textAlign: "center",
         }}
     >
-      {/* TODO: move this delete functionality to the suggest changes page after accounts feature */}
-      {/* <IconButton
-        size="small"
-        onClick={handleDeleteClick}
-        sx={{
-          position: "absolute",
-          top: 2,
-          right: 2,
-          padding: 0,
-          width: 20,
-          height: 20,
-        }}
-      >
-        <CloseIcon fontSize="small" />
-      </IconButton> */}
-
       <IconButton
         size="small"
         onClick={handleUpdateClick}

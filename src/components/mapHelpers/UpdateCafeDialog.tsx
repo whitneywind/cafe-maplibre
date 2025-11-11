@@ -15,6 +15,8 @@ import {
 } from "@mui/material";
 import { useState, ChangeEvent } from "react";
 import { CoffeeShop } from "../../../types.ts";
+import { deleteCafe } from "./mapFns.tsx";
+import useMapStore from "../../store/useMapStore.ts";
 
 type UpdateCafeDialogProps = {
   open: boolean;
@@ -28,6 +30,9 @@ export default function UpdateCafeDialog({
   cafe,
 }: UpdateCafeDialogProps) {
   const [formData, setFormData] = useState({ ...cafe });
+
+  const map = useMapStore((state) => state.map);
+
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -62,19 +67,27 @@ export default function UpdateCafeDialog({
         onClose();
     } catch (error) {
         console.error(error);
-        alert("There was a problem updating the cafe. Try again.");
+        alert("There was a problem updating the cafe");
     }
     };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    if (!map) return alert("Map not initialized yet.");
+    
     if (window.confirm(`Are you sure you want to delete ${formData.name}?`)) {
-    //   onDelete(formData.id);
-      onClose();
+        try {
+            await deleteCafe(map, formData.id);
+            // close cafepopup too
+            onClose();
+        } catch (error) {
+           console.error(error); 
+           alert("Failed to delete cafe")
+        }
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth disableEnforceFocus disableRestoreFocus>
       <DialogTitle>Update Cafe</DialogTitle>
       <DialogContent>
         <TextField

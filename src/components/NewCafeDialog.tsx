@@ -183,7 +183,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
 
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth disableEnforceFocus disableRestoreFocus>
       <DialogTitle>Suggest a New Cafe</DialogTitle>
       <DialogContent>
         <TextField

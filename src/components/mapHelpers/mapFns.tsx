@@ -91,7 +91,7 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
   console.log("Applied neighborhood filter:", neighborhoodName);
 }
 
-// fn to center and zoom to the cafe
+// center and zoom to the cafe
 export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 14, popupRef?: Popup) {
   if (!map) return;
 
@@ -131,10 +131,9 @@ export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 14, popupRef?: Popu
 export async function deleteCafe(
   map: maplibregl.Map,
   id: string | number,
-  popupRef?: React.RefObject<Popup>
 ) {
   try {
-    // First delete from DB
+    // delete from DB
     const res = await fetch(`http://localhost:3000/api/cafes/${id}`, {
       method: "DELETE",
     });
@@ -143,7 +142,7 @@ export async function deleteCafe(
       throw new Error(`Failed to delete cafe: ${res.statusText}`);
     }
 
-    // Then update the source in the map
+    // update the source in the map
     const source = map.getSource("cafes") as any;
     if (!source || !source._data) return;
 
@@ -155,8 +154,9 @@ export async function deleteCafe(
     };
 
     source.setData(newData);
-
-    popupRef?.current.remove();
+    
+    const popup = useMapStore.getState().currentPopup;
+    if (popup) popup.remove();
 
     console.log(`Cafe ${id} removed from map + DB`);
   } catch (error) {
@@ -196,8 +196,10 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
     .setDOMContent(popupNode)
     .setOffset(offset)
     .addTo(map);
+  
+  // update popup globally
+  useMapStore.getState().setCurrentPopup(popupRef.current);
 }
-
 
 export function showUpdateCafeDialog(
   rootElement: HTMLElement,
