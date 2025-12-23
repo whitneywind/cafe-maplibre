@@ -2,14 +2,14 @@ import React, { useRef } from 'react';
 import { Box, Card, CardContent, Typography, IconButton } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import { ChevronRight } from '@mui/icons-material';
-import { CoffeeShop } from '../../../types';
+import { NewCoffeeShop } from '../../../types';
 import { Map, Popup } from 'maplibre-gl';
 import { flyToCafe, showCafePopup } from './mapFns';
 import useMapStore from '../../store/useMapStore';
 
 
 interface CafeScrollerProps {
-  visibleCafes: CoffeeShop[];
+  visibleCafes: NewCoffeeShop[];
   map: Map | null;
   popupRef: React.RefObject<Popup>;
 };
@@ -39,7 +39,7 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
     }
   };
 
-    const handleClickCafe = (cafe: CoffeeShop) => {
+    const handleClickCafe = (cafe: NewCoffeeShop) => {
     if (!map) return;
 
     // Clear selected neighborhood if cafe is outside it

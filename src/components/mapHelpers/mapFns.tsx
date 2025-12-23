@@ -3,7 +3,7 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import maplibregl from "maplibre-gl";
 import { Map, LngLatLike, Popup } from "maplibre-gl";
 import { createRoot } from "react-dom/client";
-import { CoffeeShop, Coordinates } from "../../../types";
+import { NewCoffeeShop, Coordinates } from "../../../types";
 import { Feature, MultiPolygon, Point } from "geojson";
 import CafePopup from "./CafePopup";
 import UpdateCafeDialog from "./UpdateCafeDialog";
@@ -92,7 +92,7 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
 }
 
 // center and zoom to the cafe
-export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 14, popupRef?: Popup) {
+export function flyToCafe(map: Map, cafe: NewCoffeeShop, zoom = 14, popupRef?: Popup) {
   if (!map) return;
 
   const coordinates: LngLatLike = cafe.coordinates;
@@ -111,7 +111,7 @@ export function flyToCafe(map: Map, cafe: CoffeeShop, zoom = 14, popupRef?: Popu
   let popupHTML = "<b>Cafe Details:</b><br>";
   for (const key in cafe) {
     if (["name", "cuisine", "address", "website"].includes(key)) {
-      popupHTML += `${key}: ${cafe[key as keyof CoffeeShop]}<br>`;
+      popupHTML += `${key}: ${cafe[key as keyof NewCoffeeShop]}<br>`;
     }
   }
 
@@ -203,7 +203,7 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
 
 export function showUpdateCafeDialog(
   rootElement: HTMLElement,
-  cafe: CoffeeShop,
+  cafe: NewCoffeeShop,
 ) {
   if (!cafe) return;
 

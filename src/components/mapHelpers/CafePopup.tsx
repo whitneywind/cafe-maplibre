@@ -8,11 +8,11 @@ import WcIcon from "@mui/icons-material/Wc";
 import DeckIcon from "@mui/icons-material/Deck";
 import BuildIcon from "@mui/icons-material/Build";
 import { Tooltip } from "@mui/material";
-import { CoffeeShop } from "../../../types";
+import { NewCoffeeShop } from "../../../types";
 import { showUpdateCafeDialog } from "./mapFns";
 
 interface CafePopupProps {
-  cafe: CoffeeShop;
+  cafe: NewCoffeeShop;
   coordinates: any;
 }
 

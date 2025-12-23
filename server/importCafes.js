@@ -28,18 +28,30 @@ function transformFeature(feature) {
     neighborhood: p.neighborhood || null,
     roaster: p.roaster || [],
     in_house_roast: p.inHouseRoast || false,
-    vibe_tags: p.vibeTags || [],
-    special_items: p.specialItems || [],
-    outdoor_seating: p.outdoorSeating || false,
-    wifi: p.wifi || false,
-    outlets: p.outlets || false,
-    laptop_friendly: p.laptopFriendly || false,
+    specialty: p.specialty || false,
+
+    matcha: p.matcha ?? null,               // boolean or null
+    matcha_brand: p.matchaBrand || null,
+    alt_milks: p.altMilks || null,          // string[] or null
+    alt_milks_cost: p.altMilksCost || null,
+    latte_price: p.lattePrice || null,
+    popular_items: p.popularItems || null,  // string[] or null
+
+    bathroom: p.bathroom ?? null,
+    bathroom_access: p.bathroomAccess || null,
+    indoor_seating: p.indoorSeating ?? null,
+    outdoor_seating: p.outdoorSeating ?? null,
+    wifi: p.wifi ?? null,
+    outlets: p.outlets ?? null,
+    laptop_friendly: p.laptopFriendly ?? null,
+
     parking: p.parking || null,
     closest_metro: p.closestMetro || null,
     opening_hours: p.opening_hours || p.openingHours || null,
     website: p.website || null,
     phone: p.phone || null,
-    specialty: p.specialty || false,
+    instagram: p.instagram || null,
+    notes: p.notes || null,
   };
 }
 
@@ -51,14 +63,20 @@ async function importCafes() {
     try {
       await pool.query(
         `INSERT INTO cafes (
-          id, name, address, neighborhood, roaster, in_house_roast, 
-          vibe_tags, special_items, outdoor_seating, wifi, outlets, laptop_friendly, 
-          parking, closest_metro, opening_hours, website, phone, specialty, coordinates
+          id, name, address, neighborhood,
+          roaster, in_house_roast, specialty,
+          matcha, matcha_brand, alt_milks, alt_milks_cost, latte_price, popular_items,
+          bathroom, bathroom_access, indoor_seating, outdoor_seating, wifi, outlets, laptop_friendly,
+          parking, closest_metro, opening_hours, website, phone, instagram, notes,
+          coordinates
         )
         VALUES (
-          $1,$2,$3,$4,$5,$6,$7,$8,
-          $9,$10,$11,$12,$13,$14,
-          $15,$16,$17,$18,ST_SetSRID(ST_MakePoint($19, $20), 4326)
+          $1,$2,$3,$4,
+          $5,$6,$7,
+          $8,$9,$10,$11,$12,$13,
+          $14,$15,$16,$17,$18,$19,$20,
+          $21,$22,$23,$24,$25,$26,$27,
+          ST_SetSRID(ST_MakePoint($28, $29), 4326)
         )
         ON CONFLICT (id) DO NOTHING`,
         [
@@ -68,8 +86,16 @@ async function importCafes() {
           cafe.neighborhood,
           cafe.roaster,
           cafe.in_house_roast,
-          cafe.vibe_tags,
-          cafe.special_items,
+          cafe.specialty,
+          cafe.matcha,
+          cafe.matcha_brand,
+          cafe.alt_milks,
+          cafe.alt_milks_cost,
+          cafe.latte_price,
+          cafe.popular_items,
+          cafe.bathroom,
+          cafe.bathroom_access,
+          cafe.indoor_seating,
           cafe.outdoor_seating,
           cafe.wifi,
           cafe.outlets,
@@ -79,7 +105,8 @@ async function importCafes() {
           cafe.opening_hours,
           cafe.website,
           cafe.phone,
-          cafe.specialty,
+          cafe.instagram,
+          cafe.notes,
           lng,
           lat
         ]

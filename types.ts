@@ -1,16 +1,23 @@
-export interface CoffeeShop {
+export interface NewCoffeeShop {
   id: string;
   name: string;
   address?: string;
   coordinates: [number, number]; // GeoJSON-style (lng, lat)
   neighborhood?: string;
 
+  specialty: boolean;
   roaster?: string[];
   in_house_roast?: boolean;
-
-  special_items?: string[];
+  matcha?: boolean;
+  matcha_brand?: string;
+  alt_milks?: string[];
+  alt_milks_cost?: string;
+  latte_price?: string;
+  popular_items?: string[];
 
   bathroom?: boolean;
+  bathroom_access?: BathroomAccess;
+  indoor_seating?: boolean;
   outdoor_seating?: boolean;
   wifi?: boolean;
   outlets?: boolean;
@@ -23,13 +30,15 @@ export interface CoffeeShop {
   phone?: string;
   instagram?: string;
 
-  specialty: boolean;
   notes?: string;
   source_tags?: Record<string, string>;
   status?: "approved" | "pending" | "rejected";
 
   created_at?: string;
 }
+
+
+export type BathroomAccess = "open" | "key" | "keypad" | "unavailable";
 
 export type Coordinates = [number, number];
 
