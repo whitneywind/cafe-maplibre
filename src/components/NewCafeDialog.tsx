@@ -51,7 +51,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
     wifi: false,
     outlets: false,
     laptop_friendly: false,
-    roaster: [] as string[],
+    roaster: "",
     matcha: false,
     matcha_brand: "",
     alt_milks: [] as string[],
@@ -122,8 +122,8 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
 
     const popularItemsArray = popularItemsInput
       .split(",")
-      .map(s => s.trim())            // remove leading/trailing spaces
-      .map(s => s.replace(/\s+/g, " "))  // condense multiple spaces to one
+      .map(s => s.trim())
+      .map(s => s.replace(/\s+/g, " "))
       .map(s => s.replace(/ /g, "_")); // storing individual items using  snake case for now (TODO: come up with a better idea for this)
 
     const newCafe: NewCoffeeShop = {
@@ -195,7 +195,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
         wifi: false,
         outlets: false,
         laptop_friendly: false,
-        roaster: [],
+        roaster: "",
         matcha: false,
         matcha_brand: "",
         alt_milks: [],
@@ -372,8 +372,8 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
               label="Roasters"
               name="roaster"
               fullWidth
-              value={formData.roaster.join(", ")}
-              onChange={(e) => setFormData(prev => ({ ...prev, roaster: e.target.value.split(",").map(s => s.trim()) }))}
+              value={formData.roaster}
+              onChange={handleTextChange}
             />
 
             <TextField label="Notes" name="notes" fullWidth margin="dense" value={formData.notes} onChange={handleTextChange} />

@@ -218,7 +218,7 @@ export function showUpdateCafeDialog(
   );
 }
 
-// fetch cafes from the backend and update the "cafes" GeoJSON source on the map
+// fetches cafes from the backend (gets GeoJSON from /api/cafes (live from db)) and updates "cafes" GeoJSON source on map
 export const fetchCafes = async (map: maplibregl.Map | null) => {
   if (!map) return;
 

@@ -6,6 +6,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import pool from "./db/pool.js";
 
+// this was used for initial db seeding and isnt part of the active site
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
