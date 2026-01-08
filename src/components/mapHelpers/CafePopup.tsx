@@ -6,88 +6,36 @@ import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import WcIcon from "@mui/icons-material/Wc";
 import DeckIcon from "@mui/icons-material/Deck";
 import { NewCoffeeShop } from "../../../types";
-import StarsIcon from "@mui/icons-material/Stars";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-// import { showUpdateCafeDialog } from "./mapFns";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import useMapStore from "../../store/useMapStore";
+import { focusCafeIfNeeded } from "./mapFns";
 
 interface CafePopupProps {
   cafe: NewCoffeeShop;
   coordinates: any;
 }
 
-const CafePopup: React.FC<CafePopupProps> = ({ cafe, coordinates }) => {
+const CafePopup: React.FC<CafePopupProps> = ({ cafe }) => {
   const { 
     name,
-    neighborhood,
     bathroom,
     outdoor_seating,
-    indoor_seating,
     wifi,
     outlets,
     laptop_friendly,
     parking,
-    website,
-    phone,
-    instagram,
     specialty,
-    in_house_roast,
     matcha,
     matcha_brand,
-    latte_price,
-    alt_milks,
-    alt_milks_cost,
-    roaster,
-    popular_items,
-    notes,
-    opening_hours,
   } = cafe;
 
-    // normalize array fields
-    // TODO: move all this to full info modal
-  // const normalizeArrayField = (field: string[] | string | null | undefined): string[] => {
-  //   if (Array.isArray(field)) {
-  //     return field.map(s => s.replace(/_/g, " ").trim());
-  //   }
-
-  //   if (typeof field === "string") {
-  //     try {
-  //       const parsed = JSON.parse(field); // try parsing JSON array
-  //       if (Array.isArray(parsed)) {
-  //         return parsed.map(s => s.replace(/_/g, " ").trim());
-  //       }
-  //     } catch {
-  //       // not JSON, fallback to comma-separated
-  //     }
-
-  //     return field.split(",").map(s => s.replace(/_/g, " ").trim());
-  //   }
-
-  //   return [];
-  // };
-
-  // const popularItemsArray: string[] = normalizeArrayField(popular_items);
-  // const altMilksArray: string[] = normalizeArrayField(alt_milks);
-
-  // const handleUpdateClick = () => {
-  //   const dialogContainer = document.createElement("div");
-  //   document.body.appendChild(dialogContainer);
-
-  //   showUpdateCafeDialog(dialogContainer, cafe);
-  // };
-
-
-  const [lng, lat] = coordinates;
-
-  const googleMapsURL = name
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`
-    : `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-  
+  const { openCafeDetails } = useMapStore();
 
   return (
     <Box
       sx={{
         minWidth: 220,
-        maxWidth: 260,
+        maxWidth: "fit-content",
         p: 0,
         display: "flex",
         flexDirection: "column",
@@ -95,23 +43,19 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe, coordinates }) => {
         gap: 1,
         position: "relative",
       }}
+      onClick={() => {
+        focusCafeIfNeeded(
+          useMapStore.getState().map,
+          cafe
+        );
+      }}
     >
-      {/* Edit button */}
-      {/* TODO: move this to the larger modal */}
-      {/* <IconButton
-        size="small"
-        onClick={handleUpdateClick}
-        sx={{ position: "absolute", top: 4, right: 4 }}
-      >
-        <BuildIcon fontSize="small" />
-      </IconButton> */}
 
-      {/* name */}
       <Typography
         sx={{
           fontWeight: 600,
-          fontSize: "1rem",
-          lineHeight: 1.8,
+          fontSize: "1.15rem",
+          lineHeight: 1.6,
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
@@ -126,7 +70,7 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe, coordinates }) => {
           <Tooltip title="Specialty coffee">
             <Box
               sx={{
-                fontSize: "0.6rem",
+                fontSize: "0.7rem",
                 fontWeight: 600,
                 px: 0.75,
                 py: 0.25,
@@ -145,7 +89,7 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe, coordinates }) => {
           <Tooltip title={matcha_brand ? `Matcha: ${matcha_brand}` : "Matcha available"}>
             <Box
               sx={{
-                fontSize: "0.6rem",
+                fontSize: "0.7rem",
                 fontWeight: 600,
                 px: 0.75,
                 py: 0.25,
@@ -159,11 +103,11 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe, coordinates }) => {
           </Tooltip>
         )}
 
-        {!matcha && (
+        {!matcha && !specialty && (
           <Tooltip title="Coffee">
             <Box
               sx={{
-                fontSize: "0.6rem",
+                fontSize: "0.7rem",
                 fontWeight: 600,
                 px: 0.75,
                 py: 0.25,
@@ -192,76 +136,33 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe, coordinates }) => {
         {bathroom && <Tooltip title="Bathroom"><WcIcon fontSize="small" /></Tooltip>}
       </Stack>
 
-      {/* google maps link */}
-      <Button
-          variant="contained"
-          size="small"
-          sx={{ fontSize: "0.60rem", padding: "4px 60", backgroundColor: "#0f9d58c7" }}
-          href={googleMapsURL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Google Maps
-      </Button>
-
       {/* actions */}
-      <Stack direction="row" spacing={1} sx={{ mt: 0.5, justifyContent: "center" }}>
-  {/* Save button */}
-  <Button
-    variant="contained"
-    size="small"
-    startIcon={<StarsIcon fontSize="inherit" />}
-    sx={{
-      fontSize: "0.65rem",
-      px: 1.25,
-      py: 0.5,
-      borderRadius: 3, // pill-shaped
-      textTransform: "none",
-      bgcolor: "#ffe0b2", // soft warm color
-      color: "#6f4e37",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
-      "&:hover": {
-        bgcolor: "#ffcc80",
-        transform: "scale(1.05)",
-        boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
-      },
-      transition: "all 0.2s ease-in-out",
-    }}
-  >
-    Save
-  </Button>
 
-  {/* View all details button */}
-  <Button
-    variant="contained"
-    size="small"
-    endIcon={<ArrowForwardIcon fontSize="inherit" />}
-    sx={{
-      fontSize: "0.65rem",
-      px: 1.25,
-      py: 0.5,
-      borderRadius: 3,
-      textTransform: "none",
-      bgcolor: "#c8e6c9", // soft green
-      color: "#2e7d32",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
-      "&:hover": {
-        bgcolor: "#a5d6a7",
-        transform: "scale(1.05)",
-        boxShadow: "0 3px 6px rgba(0,0,0,0.2)",
-      },
-      transition: "all 0.2s ease-in-out",
-    }}
-  >
-    View all details
-  </Button>
-</Stack>
-
-      {/* <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+      <Stack direction="row" spacing={1}>
         <Button
           variant="outlined"
           size="small"
-          sx={{ fontSize: "0.65rem", px: 1 }}
+          startIcon={<FavoriteBorderIcon />}
+          sx={{
+            borderColor: "#b23a62",
+            borderWidth: "1.5px",
+            borderRadius: 1,
+            color: "#b23a62",
+            flex: 1,
+            textTransform: "none",
+            "&:hover": {
+              borderColor: "#992c52",
+              backgroundColor: "rgba(111,78,55,0.06)",
+            },
+            "& .MuiButton-startIcon": {
+              marginRight: "4px", 
+              marginLeft: 0,
+            },
+
+            "& .MuiButton-startIcon svg": {
+              fontSize: "0.9rem",
+            },
+          }}
         >
           Save
         </Button>
@@ -269,11 +170,25 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe, coordinates }) => {
         <Button
           variant="outlined"
           size="small"
-          sx={{ fontSize: "0.65rem", px: 1 }}
+          sx={{
+            borderColor: "#6f4e37",
+            borderWidth: "1.5px",
+            borderRadius: 1,
+            color: "#6f4e37",
+            flex: 1,
+            textWrap: "nowrap",
+            px: "16px",
+            textTransform: "none",
+            "&:hover": {
+              borderColor: "#6f4e37",
+              backgroundColor: "rgba(111,78,55,0.06)",
+            },
+          }}
+          onClick={() => openCafeDetails(cafe)}
         >
-          View all details
+          See Details
         </Button>
-      </Stack> */}
+      </Stack>
     </Box>
   );
 };

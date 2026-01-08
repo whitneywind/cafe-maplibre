@@ -1,11 +1,16 @@
 import { Map } from "maplibre-gl";
 import { create } from "zustand";
-import { Neighborhood, NeighborhoodCollection } from "../../types";
+import { Neighborhood, NeighborhoodCollection, NewCoffeeShop } from "../../types";
 
 
 interface MapStore {
   map: Map | null;
   setMap: (mapInstance: Map) => void;
+
+  cafeDetailsOpen: boolean;
+  selectedCafe: NewCoffeeShop | null;
+  openCafeDetails: (cafe: NewCoffeeShop) => void;
+  closeCafeDetails: () => void;
 
   currentPopup: maplibregl.Popup | null;
   setCurrentPopup: (popup: maplibregl.Popup | null) => void;
@@ -15,11 +20,24 @@ interface MapStore {
 
   selectedNeighborhood: any | null;
   setSelectedNeighborhood: (neighborhood: Neighborhood | null) => void;
+
+
+
+  scrollerOpen: boolean;
+  openScroller: () => void;
+  closeScroller: () => void;
+  toggleScroller: () => void;
 }
 
 const useMapStore = create<MapStore>((set) => ({
   map: null,
   setMap: (mapInstance: Map) => set({ map: mapInstance }),
+
+  cafeDetailsOpen: false,
+  selectedCafe: null,
+
+  openCafeDetails: (cafe) => set({ cafeDetailsOpen: true, selectedCafe: cafe }),
+  closeCafeDetails: () => set({ cafeDetailsOpen: false, selectedCafe: null }),
 
   currentPopup: null,
   setCurrentPopup: (popup) => set({ currentPopup: popup }),
@@ -29,6 +47,12 @@ const useMapStore = create<MapStore>((set) => ({
   
   selectedNeighborhood: null,
   setSelectedNeighborhood: (neighborhood) => set({ selectedNeighborhood: neighborhood }),
+
+  scrollerOpen: true,
+  openScroller: () => set({ scrollerOpen: true }),
+  closeScroller: () => set({ scrollerOpen: false }),
+  toggleScroller: () =>
+  set((state) => ({ scrollerOpen: !state.scrollerOpen })),
 }));
 
 export default useMapStore;

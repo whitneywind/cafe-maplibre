@@ -17,7 +17,7 @@ export default function MapComponent() {
   const [neighborhoodLayerVisible, setNeighborhoodLayerVisible] = useState(false);
   const mapContainer = useRef(null);
   const popupRef = useRef(
-    new Popup({ closeButton: false, closeOnClick: false })
+    new Popup({ closeButton: false, closeOnClick: false, maxWidth: "90vw" })
   );
 
   useEffect(() => {
@@ -352,6 +352,7 @@ export default function MapComponent() {
       >
         Refresh
       </button>
+      
       <CafeScroller map={map} visibleCafes={visibleCafes} popupRef={popupRef} />
     </>
   );

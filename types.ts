@@ -6,6 +6,9 @@ export interface NewCoffeeShop {
   neighborhood?: string;
 
   specialty: boolean;
+    coffee_rec?: boolean,
+    matcha_rec?: boolean,
+
   roaster?: string;
   in_house_roast?: boolean;
   matcha?: boolean;

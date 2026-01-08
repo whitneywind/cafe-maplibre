@@ -6,6 +6,7 @@ import CoffeeIcon from "@mui/icons-material/Coffee";
 import "../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog"
 import useMapStore from "../store/useMapStore";
+import CafeDetailsModal from "./CafeDetailsModal"
 
 
 const TopMenu = () => {
@@ -70,10 +71,11 @@ const TopMenu = () => {
             onClick={handleDialogOpen}
             sx={{
               ml: 1,
-              pl: 6,
-              pr: 7,
+          pl: { xs: "1rem", sm: "3rem", md: "4rem" },
+          pr: { xs: "1.5rem", sm: "4rem", md: "5rem" }, 
               fontSize: "0.95rem",
               textTransform: "none",
+              letterSpacing: 1,
               backgroundColor: "rgba(255, 255, 255, 0.17)",
               borderRadius: "8px",
               "&:hover": { backgroundColor: "rgba(255,255,255,0.2)" },
@@ -171,20 +173,6 @@ const TopMenu = () => {
           <IconButton color="inherit" sx={{ ml: 1 }}>
             <FavoriteIcon />
           </IconButton>
-
-          {/* <Button
-            color="inherit"
-            size="small"
-            sx={{
-              ml: 1,
-              px: 1.5,
-              py: 0.5,
-              fontSize: "0.6rem",
-              border: "1px solid rgba(255,255,255,0.5)",
-            }}
-          >
-            Login
-          </Button> */}
 
         </Toolbar>
       </AppBar>

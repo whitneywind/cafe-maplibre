@@ -128,6 +128,28 @@ export function flyToCafe(map: Map, cafe: NewCoffeeShop, zoom = 14, popupRef?: P
   popupRef?.setLngLat(coordinates).setDOMContent(popupNode).addTo(map);
 }
 
+// recenter popup if needed
+export function focusCafeIfNeeded(
+  map: maplibregl.Map | null,
+  cafe: NewCoffeeShop,
+  targetZoom = 14
+) {
+  if (!map) return;
+
+  const currentCenter = map.getCenter();
+  const currentZoom = map.getZoom();
+  const [lng, lat] = cafe.coordinates;
+
+  const alreadyCentered =
+    Math.abs(currentCenter.lng - lng) < 0.00001 &&
+    Math.abs(currentCenter.lat - lat) < 0.00001 &&
+    Math.abs(currentZoom - targetZoom) < 0.01;
+
+  if (alreadyCentered) return;
+
+  flyToCafe(map, cafe, targetZoom);
+}
+
 export async function deleteCafe(
   map: maplibregl.Map,
   id: string | number,

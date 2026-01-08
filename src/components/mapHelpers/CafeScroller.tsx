@@ -1,8 +1,6 @@
 import React, { useRef } from "react";
-import { Box, Card, CardContent, Typography, IconButton } from "@mui/material";
-import { ChevronLeft } from "@mui/icons-material";
-import { ChevronRight } from "@mui/icons-material";
-import Tooltip from "@mui/material/Tooltip";
+import { Box, Card, CardContent, Typography, IconButton, Tooltip } from "@mui/material";
+import { ChevronLeft, ChevronRight, ExpandLess, ExpandMore  } from "@mui/icons-material";
 import LocalCafeIcon from "@mui/icons-material/LocalCafe";
 import SpaIcon from "@mui/icons-material/Spa"; // matcha stand-in
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
@@ -20,8 +18,12 @@ interface CafeScrollerProps {
 
 const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-    const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
+  const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
   const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
+
+  const scrollerOpen = useMapStore((state) => state.scrollerOpen);
+  const openScroller = useMapStore((state) => state.openScroller);
+  const closeScroller = useMapStore((state) => state.closeScroller);
 
   const scrollAmount = 300; // pixels to scroll per click
 
@@ -56,6 +58,8 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
     showCafePopup(map, popupRef, cafe);
   };
 
+  const containerHeight = scrollerOpen ? "12vh" : "1.5rem";
+
   return (
     <Box
       sx={{
@@ -63,157 +67,187 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
         bottom: 0,
         left: 0,
         right: 0,
-        height: "12vh",
+        height: containerHeight,
         bgcolor: "rgba(255,255,255,0.9)",
-        zIndex: 999,
-        p: 1.25,
         boxShadow: "0 -2px 5px rgba(0,0,0,0.2)",
+        zIndex: 999,
+        p: scrollerOpen ? 1.25 : 0,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         gap: 0.5,
-        overflow: "hidden",
+        transition: "height 0.3s ease, padding 0.3s ease",
       }}
     >
-      {/* left scroll button */}
+
+      {/* handle when closed */}
       <IconButton
-        onClick={scrollLeft}
+        onClick={scrollerOpen ? closeScroller : openScroller}
         sx={{
-          p: 0.5,
-          bgcolor: "rgba(255, 255, 255, 0.7)",
-          boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-          "&:hover": {
-            bgcolor: "rgba(255,255,255,1)",
-          },
-          zIndex: 1000,
+          position: "absolute",
+          top: scrollerOpen ? "-1rem" : "-0.75rem",
+          left: "50%",
+          transform: "translateX(-50%)",
+          bgcolor: "white",
+          boxShadow: "0 1px 5px rgba(0,0,0,0.2)",
+          border: "1px solid #ccc",
+          "&:hover": { bgcolor: "white" },
+          zIndex: 1001,
+          width: 30,
+          height: 30,
         }}
       >
-        <ChevronLeft />
+        {scrollerOpen ? <ExpandMore /> : <ExpandLess />}
       </IconButton>
 
-      <Box
-        ref={scrollRef}
-        sx={{
-          display: "flex",
-          alignItems: "center", 
-          flexGrow: 1,
-          height: "100%",
-          gap: 1.5,
-          paddingLeft: 0.8,
-          overflowX: "auto",
-          "&::-webkit-scrollbar": {
-            display: "none",
-          },
-          msOverflowStyle: "none",
-          scrollbarWidth: "none",
-        }}
-      >
-        {visibleCafes.map((cafe, index) => (
-          <Card
-            key={index}
-            onClick={() => handleClickCafe(cafe)}
-            sx={{
-              width: 270,
-              minWidth: 250,
-              height: "95%",
-              alignSelf: "center",
-              display: "flex",
-              cursor: "pointer",
-              borderRadius: 2,
-              boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-              "&:hover": {
-                boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                transform: "scale(1.02)",
-                transition: "all 0.2s ease-in-out",
-              },
-            }}
-            elevation={3}
-          >
-            <CardContent
+      {scrollerOpen && (
+        <>
+        {/* left scroll button */}
+        <IconButton
+          onClick={scrollLeft}
+          sx={{
+            p: 0.5,
+            bgcolor: "rgba(255, 255, 255, 0.7)",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+            "&:hover": {
+              bgcolor: "rgba(255,255,255,1)",
+            },
+            zIndex: 1000,
+          }}
+        >
+          <ChevronLeft />
+        </IconButton>
+        
+        {/* scrollable box and cafe cards */}
+        <Box
+          ref={scrollRef}
+          sx={{
+            display: "flex",
+            alignItems: "center", 
+            flexGrow: 1,
+            height: "100%",
+            gap: 1.5,
+            paddingLeft: 0.8,
+            overflowX: "auto",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+            msOverflowStyle: "none",
+            scrollbarWidth: "none",
+          }}
+        >
+          {visibleCafes.map((cafe, index) => (
+            <Card
+              key={index}
+              onClick={() => handleClickCafe(cafe)}
               sx={{
+                width: 270,
+                minWidth: 250,
+                height: "95%",
+                alignSelf: "center",
                 display: "flex",
-                flex: 1,
-                justifyContent: "center",
-                flexDirection: "column",
-                overflowY: "auto",
-                paddingY: 0,
-                paddingX: "5px",
+                cursor: "pointer",
+                borderRadius: 2,
+                boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                "&:hover": {
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                  transform: "scale(1.02)",
+                  transition: "all 0.2s ease-in-out",
+                },
               }}
+              elevation={3}
             >
-              {/* row 1: name */}
-              <Typography
-                fontWeight="bold"
-                sx={{
-                  textAlign: "center",
-                  fontFamily: "'Montserrat', sans-serif",
-                }}
-              >
-                {cafe.name || "Unnamed Cafe"}
-              </Typography>
-
-            {/* row 2— icons */}
-              <Box
+      
+              <CardContent
                 sx={{
                   display: "flex",
+                  flex: 1,
                   justifyContent: "center",
-                  gap: 1,
-                  mb: "1px",
-                  alignItems: "center",
-                  color: "#555",
+                  flexDirection: "column",
+                  overflowY: "clip",
+                  paddingY: 0,
+                  paddingX: "5px",
                 }}
               >
-                {/* Coffee */}
-                <Tooltip title="Coffee-focused" arrow>
-                  <LocalCafeIcon sx={{ fontSize: 16 }} />
-                </Tooltip>
+                {/* row 1: name */}
+                <Typography
+                  fontWeight="bold"
+                  sx={{
+                    textAlign: "center",
+                    fontFamily: "'Montserrat', sans-serif",
+                    lineHeight: 1,
+                    pb: "4px",
+                  }}
+                >
+                  {cafe.name || "Unnamed Cafe"}
+                </Typography>
 
-                {/* TODO: update this to reflect matcha specialty or matcha recommended */}
-                {/* Matcha */}
-                {cafe.matcha && (
-                  <Tooltip title="High-Quality Matcha" arrow>
-                    <SpaIcon sx={{ fontSize: 16 }} />
+              {/* row 2— icons */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 1,
+                    mb: "1px",
+                    alignItems: "center",
+                    color: "#555",
+                  }}
+                >
+                  {/* Coffee */}
+                  <Tooltip title="Coffee-focused" arrow>
+                    <LocalCafeIcon sx={{ fontSize: 16 }} />
                   </Tooltip>
-                )}
 
-                {/* Parking */}
-                {cafe.parking && (
-                  <Tooltip title="Parking available" arrow>
-                    <LocalParkingIcon sx={{ fontSize: 16 }} />
-                  </Tooltip>
-                )}
-              </Box>
+                  {/* TODO: update this to reflect matcha specialty or matcha recommended */}
+                  {/* Matcha */}
+                  {cafe.matcha && (
+                    <Tooltip title="High-Quality Matcha" arrow>
+                      <SpaIcon sx={{ fontSize: 16 }} />
+                    </Tooltip>
+                  )}
 
-              {/* row 3 */}
-              <Typography
-                sx={{
-                  textAlign: "center",
-                  fontSize: "0.75rem",
-                  fontWeight: "600",
-                }}
-              >
-                {`${cafe.neighborhood && cafe.neighborhood !== "unknown" ? cafe.neighborhood : ""}`}
-              </Typography>
+                  {/* Parking */}
+                  {cafe.parking && (
+                    <Tooltip title="Parking available" arrow>
+                      <LocalParkingIcon sx={{ fontSize: 16 }} />
+                    </Tooltip>
+                  )}
+                </Box>
 
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+                {/* row 3 */}
+                <Typography
+                  sx={{
+                    textAlign: "center",
+                    fontSize: "0.75rem",
+                    fontWeight: "600",
+                  }}
+                >
+                  {`${cafe.neighborhood && cafe.neighborhood !== "unknown" ? cafe.neighborhood : ""}`}
+                </Typography>
 
-      {/* right scroll button */}
-      <IconButton
-        onClick={scrollRight}
-        sx={{
-          p: 0.5,
-          bgcolor: "rgba(255,255,255,0.7)",
-          boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-          "&:hover": {
-            bgcolor: "rgba(255,255,255,1)",
-          },
-          zIndex: 1000,
-        }}
-      >
-        <ChevronRight />
-      </IconButton>
+              </CardContent>
+
+            </Card>
+          ))}
+        </Box>
+
+        {/* right scroll button */}
+        <IconButton
+          onClick={scrollRight}
+          sx={{
+            p: 0.5,
+            bgcolor: "rgba(255,255,255,0.7)",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+            "&:hover": {
+              bgcolor: "rgba(255,255,255,1)",
+            },
+            zIndex: 1000,
+          }}
+        >
+          <ChevronRight />
+        </IconButton>
+        </>  
+      )}
     </Box>
   );
 };
