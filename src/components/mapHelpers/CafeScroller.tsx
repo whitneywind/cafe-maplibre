@@ -1,11 +1,15 @@
-import React, { useRef } from 'react';
-import { Box, Card, CardContent, Typography, IconButton } from '@mui/material';
-import { ChevronLeft } from '@mui/icons-material';
-import { ChevronRight } from '@mui/icons-material';
-import { NewCoffeeShop } from '../../../types';
-import { Map, Popup } from 'maplibre-gl';
-import { flyToCafe, showCafePopup } from './mapFns';
-import useMapStore from '../../store/useMapStore';
+import React, { useRef } from "react";
+import { Box, Card, CardContent, Typography, IconButton } from "@mui/material";
+import { ChevronLeft } from "@mui/icons-material";
+import { ChevronRight } from "@mui/icons-material";
+import Tooltip from "@mui/material/Tooltip";
+import LocalCafeIcon from "@mui/icons-material/LocalCafe";
+import SpaIcon from "@mui/icons-material/Spa"; // matcha stand-in
+import LocalParkingIcon from "@mui/icons-material/LocalParking";
+import { NewCoffeeShop } from "../../../types";
+import { Map, Popup } from "maplibre-gl";
+import { flyToCafe, showCafePopup } from "./mapFns";
+import useMapStore from "../../store/useMapStore";
 
 
 interface CafeScrollerProps {
@@ -25,7 +29,7 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
     if (scrollRef.current) {
       scrollRef.current.scrollBy({
         left: -scrollAmount,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   };
@@ -34,7 +38,7 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
     if (scrollRef.current) {
       scrollRef.current.scrollBy({
         left: scrollAmount,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   };
@@ -42,12 +46,12 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
     const handleClickCafe = (cafe: NewCoffeeShop) => {
     if (!map) return;
 
-    // Clear selected neighborhood if cafe is outside it
+    // clear selected neighborhood if cafe is outside it
     if (selectedNeighborhood && cafe.neighborhood !== selectedNeighborhood.name) {
       setSelectedNeighborhood(null);
     }
 
-    // Fly to and show popup
+    // fly to and show popup
     flyToCafe(map, cafe, 14);
     showCafePopup(map, popupRef, cafe);
   };
@@ -59,14 +63,14 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
         bottom: 0,
         left: 0,
         right: 0,
-        height: 100,
+        height: "12vh",
         bgcolor: "rgba(255,255,255,0.9)",
         zIndex: 999,
         p: 1.25,
         boxShadow: "0 -2px 5px rgba(0,0,0,0.2)",
         display: "flex",
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
         gap: 0.5,
         overflow: "hidden",
       }}
@@ -76,10 +80,10 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
         onClick={scrollLeft}
         sx={{
           p: 0.5,
-          bgcolor: 'rgba(255,255,255,0.7)',
-          boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-          '&:hover': {
-            bgcolor: 'rgba(255,255,255,1)',
+          bgcolor: "rgba(255, 255, 255, 0.7)",
+          boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+          "&:hover": {
+            bgcolor: "rgba(255,255,255,1)",
           },
           zIndex: 1000,
         }}
@@ -91,16 +95,17 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
         ref={scrollRef}
         sx={{
           display: "flex",
-          alignItems: 'center',
+          alignItems: "center", 
+          flexGrow: 1,
+          height: "100%",
           gap: 1.5,
           paddingLeft: 0.8,
           overflowX: "auto",
-          flexGrow: 1,
-          '&::-webkit-scrollbar': {
-            display: 'none',
+          "&::-webkit-scrollbar": {
+            display: "none",
           },
-          msOverflowStyle: 'none',
-          scrollbarWidth: 'none',
+          msOverflowStyle: "none",
+          scrollbarWidth: "none",
         }}
       >
         {visibleCafes.map((cafe, index) => (
@@ -110,12 +115,13 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
             sx={{
               width: 270,
               minWidth: 250,
-              flexShrink: 0,
+              height: "95%",
+              alignSelf: "center",
+              display: "flex",
               cursor: "pointer",
               borderRadius: 2,
-              height: "100%",
               boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-              ":hover": {
+              "&:hover": {
                 boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
                 transform: "scale(1.02)",
                 transition: "all 0.2s ease-in-out",
@@ -125,42 +131,69 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
           >
             <CardContent
               sx={{
-                display: 'flex',
+                display: "flex",
                 flex: 1,
-                flexDirection: 'column',
+                justifyContent: "center",
+                flexDirection: "column",
                 overflowY: "auto",
+                paddingY: 0,
+                paddingX: "5px",
               }}
             >
+              {/* row 1: name */}
               <Typography
                 fontWeight="bold"
                 sx={{
-                  textAlign: 'center',
-                  fontFamily: '"Montserrat", sans-serif',
-                  marginBottom: "1px",
+                  textAlign: "center",
+                  fontFamily: "'Montserrat', sans-serif",
                 }}
               >
                 {cafe.name || "Unnamed Cafe"}
               </Typography>
-              <Typography
+
+            {/* row 2— icons */}
+              <Box
                 sx={{
-                  textAlign: 'center',
-                  fontSize: "0.9rem",
-                  marginTop: "2px",
-                  marginBottom: "3px",
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 1,
+                  mb: "1px",
+                  alignItems: "center",
+                  color: "#555",
                 }}
               >
-                {(cafe.neighborhood && cafe.neighborhood !== "unknown") ? `${cafe.neighborhood}` : "Los Angeles"}
-              </Typography>
+                {/* Coffee */}
+                <Tooltip title="Coffee-focused" arrow>
+                  <LocalCafeIcon sx={{ fontSize: 16 }} />
+                </Tooltip>
+
+                {/* TODO: update this to reflect matcha specialty or matcha recommended */}
+                {/* Matcha */}
+                {cafe.matcha && (
+                  <Tooltip title="High-Quality Matcha" arrow>
+                    <SpaIcon sx={{ fontSize: 16 }} />
+                  </Tooltip>
+                )}
+
+                {/* Parking */}
+                {cafe.parking && (
+                  <Tooltip title="Parking available" arrow>
+                    <LocalParkingIcon sx={{ fontSize: 16 }} />
+                  </Tooltip>
+                )}
+              </Box>
+
+              {/* row 3 */}
               <Typography
                 sx={{
-                  textAlign: 'center',
-                  color: "#a23333ff",
-                  fontSize: "0.8rem",
+                  textAlign: "center",
+                  fontSize: "0.75rem",
                   fontWeight: "600",
                 }}
               >
-                {`${cafe.specialty ? "Specialty Coffee" : ""}`}
+                {`${cafe.neighborhood && cafe.neighborhood !== "unknown" ? cafe.neighborhood : ""}`}
               </Typography>
+
             </CardContent>
           </Card>
         ))}
@@ -171,10 +204,10 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
         onClick={scrollRight}
         sx={{
           p: 0.5,
-          bgcolor: 'rgba(255,255,255,0.7)',
-          boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-          '&:hover': {
-            bgcolor: 'rgba(255,255,255,1)',
+          bgcolor: "rgba(255,255,255,0.7)",
+          boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+          "&:hover": {
+            bgcolor: "rgba(255,255,255,1)",
           },
           zIndex: 1000,
         }}

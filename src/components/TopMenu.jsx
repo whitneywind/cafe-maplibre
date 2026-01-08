@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
-import { AppBar, Toolbar, Button, TextField, Autocomplete, Box } from "@mui/material";
+import { AppBar, Toolbar, Button, TextField, Autocomplete, Box, IconButton } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import CoffeeIcon from "@mui/icons-material/Coffee";
 import "../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog"
 import useMapStore from "../store/useMapStore";
 
 
-const WavyMenu = () => {
+const TopMenu = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const map = useMapStore((state) => state.map);
   const neighborhoods = useMapStore((state) => state.neighborhoods);
@@ -39,7 +41,7 @@ const WavyMenu = () => {
       <AppBar
         position="static"
         sx={{ backgroundColor: "#b23a48" }}
-        className="wavy-menu"
+        className="top-menu"
       >
         <Toolbar>
           <Button
@@ -63,19 +65,33 @@ const WavyMenu = () => {
             <CoffeeIcon sx={{ fontSize: 25 }} />
           </Button>
 
-          <Button color="inherit">Filter</Button>
+          <Button
+            color="inherit"
+            onClick={handleDialogOpen}
+            sx={{
+              ml: 1,
+              pl: 6,
+              pr: 7,
+              fontSize: "0.95rem",
+              textTransform: "none",
+              backgroundColor: "rgba(255, 255, 255, 0.17)",
+              borderRadius: "8px",
+              "&:hover": { backgroundColor: "rgba(255,255,255,0.2)" },
+            }}
+          >
+            🔍 Find a Cafe
+          </Button>
 
           <Autocomplete
             options={neighborhoodOptions}
             getOptionLabel={(option) => option?.properties.name || ""}
               sx={{
-                minWidth: 200,
-                maxWidth: "100%",
+                minWidth: 100,
                 width: "auto",
                 mx: "10px",
                 "& .MuiInputBase-root": {
                   color: "white",
-                  fontSize: "0.8rem",
+                  fontSize: "0.6rem",
                   backgroundColor: "rgba(255,255,255,0.1)",
                   borderRadius: "8px",
                   paddingRight: "4px",
@@ -104,27 +120,59 @@ const WavyMenu = () => {
                   },
                 },
               }}
-            size="small"
-            value={selectedNeighborhood || null}
-            onChange={(event, value) => handleNeighborhoodSelect(event, value)}
-            renderInput={(params) => (
-              <TextField 
-                {...params}
-                placeholder="Neighborhood"
-                sx={{
-                  "& .MuiInputBase-input": { fontSize: "0.8rem", padding: "6px 8px" },
-                  "& .MuiInputLabel-root": { fontSize: "0.75rem" },
-                }}
-              />
-            )}
+              size="small"
+              value={selectedNeighborhood || null}
+              onChange={(event, value) => handleNeighborhoodSelect(event, value)}
+              renderInput={(params) => (
+                <TextField 
+                  {...params}
+                  placeholder="Area"
+                  sx={{
+                    "& .MuiInputBase-input": { fontSize: "0.8rem", padding: "6px 8px" },
+                    "& .MuiInputLabel-root": { fontSize: "0.75rem" },
+                  }}
+                />
+              )}
+              slotProps={{
+              // styles to the dropdown listbox
+              paper: {
+                sx: { fontSize: "0.8rem" },
+              },
+              listbox: {
+                sx: {
+                  fontSize: "0.8rem",
+                  padding: 0,
+                },
+              },
+              option: {
+                sx: {
+                  fontSize: "0.8rem",
+                  padding: "4px 10px",
+                  "&[aria-selected='true']": { backgroundColor: "#f3e5f5 !important" },
+                  "&:hover": { backgroundColor: "#f8bbd0" },
+                },
+              },
+            }}
           />
 
           <Box sx={{ flexGrow: 1 }} />
 
-          <Button color="inherit" onClick={handleDialogOpen}>
+          {/* <Button color="inherit" onClick={handleDialogOpen}>
             Suggest New
-          </Button>
-          <Button
+          </Button> */}
+          <IconButton
+            color="inherit"
+            onClick={handleDialogOpen}
+            sx={{ ml: 1 }}
+          >
+            <AddIcon />
+          </IconButton>
+
+          <IconButton color="inherit" sx={{ ml: 1 }}>
+            <FavoriteIcon />
+          </IconButton>
+
+          {/* <Button
             color="inherit"
             size="small"
             sx={{
@@ -136,7 +184,7 @@ const WavyMenu = () => {
             }}
           >
             Login
-          </Button>
+          </Button> */}
 
         </Toolbar>
       </AppBar>
@@ -148,4 +196,4 @@ const WavyMenu = () => {
   );
 };
 
-export default WavyMenu;
+export default TopMenu;

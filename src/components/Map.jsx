@@ -291,6 +291,7 @@ export default function MapComponent() {
         // interactiveLayerIds={interactiveLayerIds}
         // onLoad={onLoad}
       />
+
       {selectedNeighborhood ? (
         <button
           onClick={() => setSelectedNeighborhood(null)}
@@ -313,30 +314,31 @@ export default function MapComponent() {
           Clear Neighborhood
         </button>
       ) :
-      <button
-        onClick={toggleNeighborhoodLayer}
-        style={{
-          position: "absolute",
-          bottom: "160px",
-          right: "20px",
-          padding: "6px 8px",
-          backgroundColor: "rgb(255, 255, 255)",
-          color: "#111",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "0.9em",
-          zIndex: 1000,
-        }}
-      >
-        {neighborhoodLayerVisible ? "Hide Neighborhoods" : "Show Neighborhoods"}
-      </button>
-    }
+        <button
+          onClick={toggleNeighborhoodLayer}
+          style={{
+            position: "absolute",
+            bottom: "160px",
+            right: "20px",
+            padding: "6px 8px",
+            backgroundColor: "rgb(255, 255, 255)",
+            color: "#111",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "0.9em",
+            zIndex: 1000,
+          }}
+        >
+          {neighborhoodLayerVisible ? "Hide Neighborhoods" : "Show Neighborhoods"}
+        </button>
+      }
+
       <button
         onClick={() => fetchCafes(map)}
         style={{
           position: "absolute",
-          bottom: "125px",
+          bottom: "16vh",
           right: "20px",
           padding: "6px 8px",
           backgroundColor: "rgb(255, 255, 255)",

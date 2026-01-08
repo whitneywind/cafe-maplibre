@@ -36,7 +36,6 @@ export default function UpdateCafeDialog({
 }: UpdateCafeDialogProps) {
   const [formData, setFormData] = useState({ ...cafe });
   const map = useMapStore((state) => state.map);
-  // TODO: figure out why popular_items in being converted to a str from the string[] in the db
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -130,67 +129,50 @@ export default function UpdateCafeDialog({
           />
         </Box>
 
-        {/* <TextField
-          label="Popular Items (comma-separated)"
-          name="popular_items"
-          fullWidth
-          margin="dense"
-          value={Array.isArray(formData.popular_items)
-            ? formData.popular_items.map(item => item.replace(/_/g, " ")).join(", ")
-            : ""}
-          onChange={(e) =>
-            setFormData(prev => ({
-              ...prev,
-              popular_items: e.target.value
-                .split(",")
-                .map(s => s.trim().replace(/\s+/g, " ").replace(/ /g, "_")),
-            }))
+        <Autocomplete
+          multiple
+          freeSolo
+          options={[]} // no predefined options, or you can add suggestions
+          value={
+            Array.isArray(formData.popular_items)
+              ? formData.popular_items.map(item => item.replace(/_/g, " "))
+              : []
           }
-        /> */}
-<Autocomplete
-  multiple
-  freeSolo
-  options={[]} // no predefined options, or you can add suggestions
-  value={
-    Array.isArray(formData.popular_items)
-      ? formData.popular_items.map(item => item.replace(/_/g, " "))
-      : []
-  }
-  onChange={(_, newValue: string[]) => {
-    // convert to snake_case for storage
-    const formatted = newValue
-      .map(s => s.trim())
-      .map(s => s.replace(/\s+/g, " "))
-      .map(s => s.replace(/ /g, "_"));
-    setFormData(prev => ({ ...prev, popular_items: formatted }));
-  }}
-  filterOptions={(options, params) => {
-    // split input by comma, enter, or space
-    const input = params.inputValue;
-    const lastChar = input.slice(-1);
-    if (lastChar === " " || lastChar === "," || lastChar === "\n") {
-      const trimmed = input.trim();
-      if (trimmed) {
-        return [...options, trimmed];
-      }
-    }
-    return options;
-  }}
-  renderTags={(value: string[], getTagProps) =>
-    value.map((option, index) => (
-      <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-    ))
-  }
-  renderInput={(params) => (
-    <TextField
-      {...params}
-      label="Popular Items"
-      placeholder="Type an item and press comma, enter, or space"
-      margin="dense"
-      fullWidth
-    />
-  )}
-/>
+          onChange={(_, newValue: string[]) => {
+            // convert to snake_case for storage
+            const formatted = newValue
+              .map(s => s.trim())
+              .map(s => s.replace(/\s+/g, " "))
+              .map(s => s.replace(/ /g, "_"));
+            setFormData(prev => ({ ...prev, popular_items: formatted }));
+          }}
+          filterOptions={(options, params) => {
+            // split input by comma, enter, or space
+            const input = params.inputValue;
+            const lastChar = input.slice(-1);
+            if (lastChar === " " || lastChar === "," || lastChar === "\n") {
+              const trimmed = input.trim();
+              if (trimmed) {
+                return [...options, trimmed];
+              }
+            }
+            return options;
+          }}
+          renderTags={(value: string[], getTagProps) =>
+            value.map((option, index) => (
+              <Chip variant="outlined" label={option} {...getTagProps({ index })} />
+            ))
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Popular Items"
+              placeholder="Type an item and press comma, enter, or space"
+              margin="dense"
+              fullWidth
+            />
+          )}
+        />
 
         <FormControl fullWidth margin="dense">
           <InputLabel id="parking-label">Parking</InputLabel>
@@ -212,7 +194,7 @@ export default function UpdateCafeDialog({
           </Select>
         </FormControl>
 
-        <TextField
+        {/* <TextField
           label="Roasters"
           name="roaster"
           fullWidth
@@ -223,7 +205,7 @@ export default function UpdateCafeDialog({
               roaster: e.target.value.split(",").map(s => s.trim())
             }))
           }
-        />
+        /> */}
         <TextField label="Notes" name="notes" fullWidth margin="dense" multiline rows={3} value={formData.notes || ""} onChange={handleTextChange} />
       </DialogContent>
 
@@ -233,120 +215,6 @@ export default function UpdateCafeDialog({
         <Button variant="contained" onClick={handleSubmit}>Update</Button>
       </DialogActions>
     </Dialog>
-    // <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth disableEnforceFocus disableRestoreFocus>
-    //   <DialogTitle>Update Cafe</DialogTitle>
-    //   <DialogContent>
-    //     <TextField
-    //       label="Cafe Name"
-    //       name="name"
-    //       fullWidth
-    //       required
-    //       margin="dense"
-    //       value={formData.name}
-    //       onChange={handleTextChange}
-    //     />
 
-    //     <TextField
-    //       label="Address"
-    //       name="address"
-    //       fullWidth
-    //       margin="dense"
-    //       value={formData.address}
-    //       onChange={handleTextChange}
-    //     />
-
-    //     <FormControlLabel
-    //       control={<Checkbox name="wifi" checked={formData.wifi} onChange={handleCheckboxChange} />}
-    //       label="Wifi"
-    //     />
-    //     <FormControlLabel
-    //       control={<Checkbox name="bathroom" checked={formData.bathroom} onChange={handleCheckboxChange} />}
-    //       label="Bathroom"
-    //     />
-    //     <FormControlLabel
-    //       control={<Checkbox name="outlets" checked={formData.outlets} onChange={handleCheckboxChange} />}
-    //       label="Outlets"
-    //     />
-    //     <FormControlLabel
-    //       control={<Checkbox name="laptop_friendly" checked={formData.laptop_friendly} onChange={handleCheckboxChange} />}
-    //       label="Laptop-friendly"
-    //     />
-    //     <FormControlLabel
-    //       control={<Checkbox name="outdoor_seating" checked={formData.outdoor_seating} onChange={handleCheckboxChange} />}
-    //       label="Outdoor seating"
-    //     />
-    //     <FormControlLabel
-    //       control={<Checkbox name="specialty" checked={formData.specialty} onChange={handleCheckboxChange} />}
-    //       label="Specialty Coffee"
-    //     />
-
-    //     <TextField
-    //       label="Instagram"
-    //       name="instagram"
-    //       fullWidth
-    //       margin="dense"
-    //       value={formData.instagram || ""}
-    //       onChange={handleTextChange}
-    //     />
-
-    //     <TextField
-    //       label="Website"
-    //       name="website"
-    //       fullWidth
-    //       margin="dense"
-    //       value={formData.website || ""}
-    //       onChange={handleTextChange}
-    //     />
-
-    //     <FormControl fullWidth margin="dense">
-    //       <InputLabel id="parking-label">Parking</InputLabel>
-    //       <Select
-    //         labelId="parking-label"
-    //         name="parking"
-    //         value={formData.parking || ""}
-    //         onChange={handleSelectChange}
-    //       >
-    //         <MenuItem value="">None</MenuItem>
-    //         <MenuItem value="parking lot">Parking lot</MenuItem>
-    //         <MenuItem value="street parking">Street parking</MenuItem>
-    //       </Select>
-    //     </FormControl>
-
-    //     {/* <TextField
-    //       label="Roasters"
-    //       name="roaster"
-    //       fullWidth
-    //       margin="dense"
-    //       value={formData.roaster?.join(", ") || ""}
-    //       onChange={(e) => setFormData(prev => ({ ...prev, roaster: e.target.value.split(",").map(s => s.trim()) }))}
-    //     /> */}
-
-    //     {/* <TextField
-    //       label="Special Items"
-    //       name="special_items"
-    //       fullWidth
-    //       margin="dense"
-    //       value={formData.special_items?.join(", ") || ""}
-    //       onChange={(e) => setFormData(prev => ({ ...prev, special_items: e.target.value.split(",").map(s => s.trim()) }))}
-    //     /> */}
-
-    //     {/* <TextField
-    //       label="Notes"
-    //       name="notes"
-    //       fullWidth
-    //       margin="dense"
-    //       multiline
-    //       rows={3}
-    //       value={formData.notes || ""}
-    //       onChange={handleTextChange}
-    //     /> */}
-    //   </DialogContent>
-
-    //   <DialogActions>
-    //     <Button color="error" onClick={handleDelete}>Delete</Button>
-    //     <Button onClick={onClose}>Cancel</Button>
-    //     <Button variant="contained" onClick={handleSubmit}>Update</Button>
-    //   </DialogActions>
-    // </Dialog>
   );
 }
