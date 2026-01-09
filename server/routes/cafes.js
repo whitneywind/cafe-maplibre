@@ -28,11 +28,13 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const {
     id,
-   name,
+    name,
     address,
     coordinates,
     neighborhood,
     roaster,
+    coffee_rec,
+    matcha_rec,
     in_house_roast,
     specialty,
     matcha,
@@ -65,7 +67,7 @@ router.post("/", async (req, res) => {
     await pool.query(
       `INSERT INTO cafes (
         id, name, address, neighborhood,
-        roaster, in_house_roast, specialty,
+        roaster, in_house_roast, specialty, coffee_rec, matcha_rec,
         matcha, matcha_brand, alt_milks, alt_milks_cost, latte_price, popular_items,
         bathroom, bathroom_access, indoor_seating, outdoor_seating, wifi, outlets, laptop_friendly,
         parking, closest_metro, opening_hours, website, phone, instagram, notes,
@@ -73,11 +75,11 @@ router.post("/", async (req, res) => {
       )
       VALUES (
         $1,$2,$3,$4,
-        $5,$6,$7,
-        $8,$9,$10,$11,$12,$13,
-        $14,$15,$16,$17,$18,$19,$20,
-        $21,$22,$23,$24,$25,$26,$27,
-        ST_SetSRID(ST_MakePoint($28, $29), 4326)
+        $5,$6,$7,$8,$9,
+        $10,$11,$12,$13,$14,$15,
+        $16,$17,$18,$19,$20,$21,$22,
+        $23,$24,$25,$26,$27,$28,$29,
+        ST_SetSRID(ST_MakePoint($30, $31), 4326)
       )
       ON CONFLICT (id) DO NOTHING`,
       [
@@ -88,6 +90,8 @@ router.post("/", async (req, res) => {
         Array.isArray(roaster) ? roaster : null,
         in_house_roast ?? null,
         specialty ?? false,
+        coffee_rec ?? null,
+        matcha_rec ?? null,
         matcha ?? null,
         matcha_brand || null,
         Array.isArray(alt_milks) ? alt_milks : null,
@@ -131,6 +135,8 @@ router.put("/:id", async (req, res) => {
     roaster,
     in_house_roast,
     specialty,
+    coffee_rec,
+    matcha_rec,
     matcha,
     matcha_brand,
     alt_milks,
@@ -160,35 +166,37 @@ router.put("/:id", async (req, res) => {
   try {
     const result = await pool.query(
       `UPDATE cafes
-       SET
-         name = $1,
-         address = $2,
-         neighborhood = $3,
-         roaster = $4,
-         in_house_roast = $5,
-         specialty = $6,
-         matcha = $7,
-         matcha_brand = $8,
-         alt_milks = $9,
-         alt_milks_cost = $10,
-         latte_price = $11,
-         popular_items = $12,
-         bathroom = $13,
-         bathroom_access = $14,
-         indoor_seating = $15,
-         outdoor_seating = $16,
-         wifi = $17,
-         outlets = $18,
-         laptop_friendly = $19,
-         parking = $20,
-         closest_metro = $21,
-         opening_hours = $22,
-         website = $23,
-         phone = $24,
-         instagram = $25,
-         notes = $26,
-         coordinates = ST_SetSRID(ST_MakePoint($27, $28), 4326)
-       WHERE id = $29
+      SET
+        name = $1,
+        address = $2,
+        neighborhood = $3,
+        roaster = $4,
+        in_house_roast = $5,
+        specialty = $6,
+        coffee_rec = $7,
+        matcha_rec = $8,
+        matcha = $9,
+        matcha_brand = $10,
+        alt_milks = $11,
+        alt_milks_cost = $12,
+        latte_price = $13,
+        popular_items = $14,
+        bathroom = $15,
+        bathroom_access = $16,
+        indoor_seating = $17,
+        outdoor_seating = $18,
+        wifi = $19,
+        outlets = $20,
+        laptop_friendly = $21,
+        parking = $22,
+        closest_metro = $23,
+        opening_hours = $24,
+        website = $25,
+        phone = $26,
+        instagram = $27,
+        notes = $28,
+        coordinates = ST_SetSRID(ST_MakePoint($29, $30), 4326)
+      WHERE id = $31
        RETURNING *`,
       [
         name,
@@ -197,6 +205,8 @@ router.put("/:id", async (req, res) => {
         Array.isArray(roaster) ? roaster : null,
         in_house_roast ?? null,
         specialty ?? false,
+        coffee_rec ?? null,
+        matcha_rec ?? null,
         matcha ?? null,
         matcha_brand || null,
         Array.isArray(alt_milks) ? alt_milks : null,

@@ -32,6 +32,9 @@ function transformFeature(feature) {
     in_house_roast: p.inHouseRoast || false,
     specialty: p.specialty || false,
 
+    coffee_rec: p.coffeeRec ?? false,
+    matcha_rec: p.matchaRec ?? false,
+
     matcha: p.matcha ?? null,               // boolean or null
     matcha_brand: p.matchaBrand || null,
     alt_milks: p.altMilks || null,          // string[] or null
@@ -66,19 +69,19 @@ async function importCafes() {
       await pool.query(
         `INSERT INTO cafes (
           id, name, address, neighborhood,
-          roaster, in_house_roast, specialty,
+          roaster, in_house_roast, specialty, coffee_rec, matcha_rec,
           matcha, matcha_brand, alt_milks, alt_milks_cost, latte_price, popular_items,
           bathroom, bathroom_access, indoor_seating, outdoor_seating, wifi, outlets, laptop_friendly,
           parking, closest_metro, opening_hours, website, phone, instagram, notes,
           coordinates
         )
         VALUES (
-          $1,$2,$3,$4,
-          $5,$6,$7,
-          $8,$9,$10,$11,$12,$13,
-          $14,$15,$16,$17,$18,$19,$20,
-          $21,$22,$23,$24,$25,$26,$27,
-          ST_SetSRID(ST_MakePoint($28, $29), 4326)
+          $1, $2, $3, $4,
+          $5, $6, $7, $8, $9,
+          $10, $11, $12, $13, $14, $15,
+          $16, $17, $18, $19, $20, $21, $22,
+          $23, $24, $25, $26, $27, $28, $29,
+          ST_SetSRID(ST_MakePoint($30, $31), 4326)
         )
         ON CONFLICT (id) DO NOTHING`,
         [
@@ -89,6 +92,8 @@ async function importCafes() {
           cafe.roaster,
           cafe.in_house_roast,
           cafe.specialty,
+          cafe.coffee_rec,
+          cafe.matcha_rec,
           cafe.matcha,
           cafe.matcha_brand,
           cafe.alt_milks,

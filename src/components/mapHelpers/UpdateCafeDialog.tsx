@@ -22,6 +22,7 @@ import { useState, ChangeEvent } from "react";
 import { NewCoffeeShop } from "../../../types.ts";
 import { deleteCafe } from "./mapFns.tsx";
 import useMapStore from "../../store/useMapStore.ts";
+import { normalizeStringArray } from "../../utils/dataNormalization.ts";
 
 type UpdateCafeDialogProps = {
   open: boolean;
@@ -133,11 +134,12 @@ export default function UpdateCafeDialog({
           multiple
           freeSolo
           options={[]} // no predefined options, or you can add suggestions
-          value={
-            Array.isArray(formData.popular_items)
-              ? formData.popular_items.map(item => item.replace(/_/g, " "))
-              : []
-          }
+          // value={
+          //   Array.isArray(formData.popular_items)
+          //     ? formData.popular_items.map(item => item.replace(/_/g, " "))
+          //     : []
+          // }
+          value={normalizeStringArray(formData.popular_items, true)}
           onChange={(_, newValue: string[]) => {
             // convert to snake_case for storage
             const formatted = newValue
@@ -194,18 +196,6 @@ export default function UpdateCafeDialog({
           </Select>
         </FormControl>
 
-        {/* <TextField
-          label="Roasters"
-          name="roaster"
-          fullWidth
-          value={Array.isArray(formData.roaster) ? formData.roaster.join(", ") : ""}
-          onChange={(e) =>
-            setFormData(prev => ({
-              ...prev,
-              roaster: e.target.value.split(",").map(s => s.trim())
-            }))
-          }
-        /> */}
         <TextField label="Notes" name="notes" fullWidth margin="dense" multiline rows={3} value={formData.notes || ""} onChange={handleTextChange} />
       </DialogContent>
 

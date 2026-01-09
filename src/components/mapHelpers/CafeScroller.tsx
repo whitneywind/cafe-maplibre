@@ -162,10 +162,10 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
                 sx={{
                   display: "flex",
                   flex: 1,
-                  justifyContent: "center",
+                  height: "95%",
+                  justifyContent: "flex-start",
                   flexDirection: "column",
                   overflowY: "clip",
-                  paddingY: 0,
                   paddingX: "5px",
                 }}
               >
