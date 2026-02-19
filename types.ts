@@ -41,7 +41,7 @@ export interface NewCoffeeShop {
 }
 
 
-export type BathroomAccess = "open" | "key" | "keypad" | "unavailable";
+export type BathroomAccess = "open" | "needs-key-code" | "unavailable";
 
 export type Coordinates = [number, number];
 
@@ -81,3 +81,14 @@ export interface UserFavorite {
   cafeId: string;
   createdAt: string;
 }
+
+export type UpdateCafeDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  cafe: NewCoffeeShop;
+};
+
+export type NewCafeDialogProps = {
+  open: boolean;
+  onClose: () => void;
+};

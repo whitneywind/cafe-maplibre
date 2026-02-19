@@ -97,7 +97,6 @@ const CafeDetailsModal: React.FC = () => {
     //   normalize str arrs
     const normalizedAltMilks = normalizeStringArray(alt_milks, true); 
     // Results in: ["Oat Milk", "Almond Milk"] instead of ["oat_milk", "almond_milk"]
-      console.log(normalizedAltMilks)
 
 
     const normalizedPopularItems = normalizeStringArray(popular_items, true);
@@ -156,17 +155,6 @@ const CafeDetailsModal: React.FC = () => {
         >
           <CloseIcon />
         </IconButton>
-
-        {/* save button */}
-        {/* <Button
-          variant="contained"
-          color="secondary"
-          sx={{ position: "absolute", top: 12, left: 12, backgroundColor: "#b23a48", p: "5px 8px", minWidth: 0 }}
-        >
-            <FavoriteBorderIcon />
-        </Button> */}
-
-
 
         {/* cafe name & recs */}
         <Box sx={{ textAlign: "center" }}>
@@ -326,7 +314,6 @@ const CafeDetailsModal: React.FC = () => {
 
                         <Button
                             variant="outlined"
-                            // startIcon={<EditIcon />}
                             onClick={handleUpdateClick}
                             size="small"
                             sx={{

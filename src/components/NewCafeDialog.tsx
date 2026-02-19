@@ -19,11 +19,11 @@ import {
   Chip,
 } from "@mui/material";
 import { useState, ChangeEvent } from "react";
-import { NewCoffeeShop, BathroomAccess } from "../../types.ts";
+import { NewCoffeeShop, BathroomAccess, NewCafeDialogProps } from "../../types.ts";
 
 // TODO: make alt milk charge a boolean instead (fe, be, db)
 
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+export const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <Box
     sx={{
       p: 2.5,
@@ -44,7 +44,7 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
   </Box>
 );
 
-const AmenityCheckbox = ({
+export const AmenityCheckbox = ({
   label,
   name,
   checked,
@@ -80,7 +80,7 @@ const AmenityCheckbox = ({
   />
 );
 
-const ALT_MILK_OPTIONS = [
+export const ALT_MILK_OPTIONS = [
   "oat",
   "almond",
   "soy",
@@ -91,11 +91,6 @@ const ALT_MILK_OPTIONS = [
   "macadamia",
   "other",
 ];
-
-type NewCafeDialogProps = {
-  open: boolean;
-  onClose: () => void;
-};
 
 export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
   const [formData, setFormData] = useState({
@@ -512,62 +507,60 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
 
         </Section>
 
-<Section title="Alternative Milks">
-  <Typography variant="body2" sx={{ mb: 1, color: "#555" }}>
-    Select all alternative milks that are available at this cafe:
-  </Typography>
+        <Section title="Alternative Milks">
+          <Typography variant="body2" sx={{ mb: 1, color: "#555" }}>
+            Select all alternative milks that are available at this cafe:
+          </Typography>
 
-  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-    {ALT_MILK_OPTIONS.map((milk) => {
-      const selected = formData.alt_milks.includes(milk);
-      return (
-        <Chip
-          key={milk}
-          label={milk}
-          clickable
-          color={selected ? "primary" : "default"}
-          onClick={() => {
-            setFormData(prev => ({
-              ...prev,
-              alt_milks: selected
-                ? prev.alt_milks.filter(m => m !== milk) // remove
-                : [...prev.alt_milks, milk],            // add
-            }));
-          }}
-          sx={{
-            textTransform: "capitalize",
-            border: selected ? "none" : "1px solid #ccc",
-          }}
-        />
-      );
-    })}
-  </Box>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+            {ALT_MILK_OPTIONS.map((milk) => {
+              const selected = formData.alt_milks.includes(milk);
+              return (
+                <Chip
+                  key={milk}
+                  label={milk}
+                  clickable
+                  color={selected ? "primary" : "default"}
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      alt_milks: selected
+                        ? prev.alt_milks.filter(m => m !== milk) // remove
+                        : [...prev.alt_milks, milk],            // add
+                    }));
+                  }}
+                  sx={{
+                    textTransform: "capitalize",
+                    border: selected ? "none" : "1px solid #ccc",
+                  }}
+                />
+              );
+            })}
+          </Box>
 
-  <Typography variant="body2" sx={{ mb: 1, color: "#555" }}>
-    Are alternative milks free or extra cost?
-  </Typography>
-  
-  <Box sx={{ display: "flex", gap: 2 }}>
-    <Button
-      variant={formData.alt_milks_cost === "free" ? "contained" : "outlined"}
-      onClick={() =>
-        setFormData(prev => ({ ...prev, alt_milks_cost: "free" }))
-      }
-    >
-      Free
-    </Button>
-    <Button
-      variant={formData.alt_milks_cost === "extra" ? "contained" : "outlined"}
-      onClick={() =>
-        setFormData(prev => ({ ...prev, alt_milks_cost: "extra" }))
-      }
-    >
-      Extra
-    </Button>
-  </Box>
-</Section>
-
-
+          <Typography variant="body2" sx={{ mb: 1, color: "#555" }}>
+            Are alternative milks free or extra cost?
+          </Typography>
+          
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant={formData.alt_milks_cost === "free" ? "contained" : "outlined"}
+              onClick={() =>
+                setFormData(prev => ({ ...prev, alt_milks_cost: "free" }))
+              }
+            >
+              Free
+            </Button>
+            <Button
+              variant={formData.alt_milks_cost === "extra" ? "contained" : "outlined"}
+              onClick={() =>
+                setFormData(prev => ({ ...prev, alt_milks_cost: "extra" }))
+              }
+            >
+              Extra
+            </Button>
+          </Box>
+        </Section>
 
         <Section title="Contact & Hours">
           <TextField

@@ -5,37 +5,33 @@ import {
   DialogActions,
   Button,
   TextField,
-  FormControlLabel,
-  Checkbox,
-  FormControl,
-  InputLabel,
-  Select,
   MenuItem,
-  SelectChangeEvent,
   Slider,
   Typography,
   Box,
-  Autocomplete,
   Chip,
 } from "@mui/material";
 import { useState, ChangeEvent } from "react";
-import { NewCoffeeShop } from "../../../types.ts";
+import { UpdateCafeDialogProps } from "../../../types.ts";
 import { deleteCafe } from "./mapFns.tsx";
 import useMapStore from "../../store/useMapStore.ts";
-import { normalizeStringArray } from "../../utils/dataNormalization.ts";
-
-type UpdateCafeDialogProps = {
-  open: boolean;
-  onClose: () => void;
-  cafe: NewCoffeeShop;
-};
+import { ALT_MILK_OPTIONS, AmenityCheckbox, Section } from "../NewCafeDialog.tsx";
+import { normalizeCafe } from "../../utils/dataNormalization.ts";
 
 export default function UpdateCafeDialog({
   open,
   onClose,
   cafe,
 }: UpdateCafeDialogProps) {
-  const [formData, setFormData] = useState({ ...cafe });
+  const [formData, setFormData] = useState(() => normalizeCafe(cafe));
+  // const [popularItemsInput, setPopularItemsInput] = useState(
+  //   Array.isArray(cafe.popular_items) 
+  //     ? cafe.popular_items.map(i => i.replace(/_/g, " ")).join(", ") 
+  //     : ""
+  // );
+  const [popularItemsInput, setPopularItemsInput] = useState(() =>
+    formData.popular_items?.map(i => i.replace(/_/g, " ")).join(", ") || ""
+  );
   const map = useMapStore((state) => state.map);
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -48,13 +44,14 @@ export default function UpdateCafeDialog({
     setFormData(prev => ({ ...prev, [name]: checked }));
   };
 
-  const handleSelectChange = (e: SelectChangeEvent<string>) => {
-    const name = e.target.name!;
-    setFormData(prev => ({ ...prev, [name]: e.target.value }));
-  };
-
   const handleSubmit = async () => {
-    const updatedCafe = { ...formData };
+    const popularItemsArray = popularItemsInput
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(s => s.replace(/ /g, "_"));
+
+    const updatedCafe = { ...formData, popular_items: popularItemsArray };
 
     try {
         const res = await fetch(`http://localhost:3000/api/cafes/${formData.id}`, {
@@ -67,23 +64,24 @@ export default function UpdateCafeDialog({
             throw new Error("Failed to update cafe");
         }
 
-        // const updatedCafe = await res.json();
-        const result = await res.json();
-        console.log("Cafe updated:", result);
+        // const result = await res.json();
         onClose();
     } catch (error) {
         console.error(error);
         alert("There was a problem updating the cafe");
     }
-    };
+  };
 
   const handleDelete = async () => {
     if (!map) return alert("Map not initialized yet.");
+
+    if (!formData.id) {
+      return alert("Cannot delete cafe: missing ID");
+    }
     
     if (window.confirm(`Are you sure you want to delete ${formData.name}?`)) {
         try {
             await deleteCafe(map, formData.id);
-            // close cafepopup too
             onClose();
         } catch (error) {
            console.error(error); 
@@ -93,118 +91,159 @@ export default function UpdateCafeDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth disableEnforceFocus disableRestoreFocus>
-      <DialogTitle>Update Cafe</DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3, p: 1 } }}>
+      <DialogTitle
+        sx={{
+          textAlign: "center",
+          pb: 1,
+          typography: "h4",
+          fontWeight: "bold",
+          color: "#b23a48",
+        }}
+      >
+        Update Cafe
+      </DialogTitle>
+
       <DialogContent>
-        <TextField label="Cafe Name" name="name" fullWidth required margin="dense" value={formData.name} onChange={handleTextChange} />
-        <TextField label="Address" name="address" fullWidth margin="dense" value={formData.address} onChange={handleTextChange} />
-
-        <FormControlLabel control={<Checkbox name="wifi" checked={formData.wifi} onChange={handleCheckboxChange} />} label="Wifi" />
-        <FormControlLabel control={<Checkbox name="bathroom" checked={formData.bathroom} onChange={handleCheckboxChange} />} label="Bathroom" />
-        <FormControlLabel control={<Checkbox name="outlets" checked={formData.outlets} onChange={handleCheckboxChange} />} label="Outlets" />
-        <FormControlLabel control={<Checkbox name="laptop_friendly" checked={formData.laptop_friendly} onChange={handleCheckboxChange} />} label="Laptop-friendly" />
-        <FormControlLabel control={<Checkbox name="outdoor_seating" checked={formData.outdoor_seating} onChange={handleCheckboxChange} />} label="Outdoor seating" />
-        <FormControlLabel control={<Checkbox name="indoor_seating" checked={formData.indoor_seating} onChange={handleCheckboxChange} />} label="Indoor seating" />
-        <FormControlLabel control={<Checkbox name="specialty" checked={formData.specialty} onChange={handleCheckboxChange} />} label="Specialty Coffee" />
-        <FormControlLabel control={<Checkbox name="in_house_roast" checked={formData.in_house_roast} onChange={handleCheckboxChange} />} label="In-house Roast" />
-        <FormControlLabel control={<Checkbox name="matcha" checked={formData.matcha} onChange={handleCheckboxChange} />} label="Matcha" />
-
-        <TextField label="Instagram" name="instagram" fullWidth margin="dense" value={formData.instagram || ""} onChange={handleTextChange} />
-        <TextField label="Website" name="website" fullWidth margin="dense" value={formData.website || ""} onChange={handleTextChange} />
-        <TextField label="Matcha Brand" name="matcha_brand" fullWidth margin="dense" value={formData.matcha_brand || ""} onChange={handleTextChange} />
-        <TextField label="Alt Milks (comma-separated)" name="alt_milks" fullWidth margin="dense" value={formData.alt_milks?.join(", ")} onChange={(e) => setFormData(prev => ({ ...prev, alt_milks: e.target.value.split(",").map(s => s.trim()) }))} />
-        <TextField label="Alt Milks Cost" name="alt_milks_cost" fullWidth margin="dense" value={formData.alt_milks_cost || ""} onChange={handleTextChange} />
-
-        <Box sx={{ mt: 2, width: "75%", mx: "auto" }}>
-          <Typography gutterBottom>Latte Price (${parseFloat(formData.latte_price || "0").toFixed(2)})</Typography>
-          <Slider
-            value={formData.latte_price ? parseFloat(formData.latte_price) : 3}
-            min={3}
-            max={10}
-            step={0.25}
-            valueLabelDisplay="auto"
-            onChange={(_, value) => {
-              if (typeof value === "number") setFormData(prev => ({ ...prev, latte_price: value.toFixed(2) }));
-            }}
-            sx={{ color: "#b23a48" }}
+        <Section title="Cafe Info*">
+          <TextField
+            label="Cafe Name"
+            name="name"
+            fullWidth
+            required
+            value={formData.name}
+            onChange={handleTextChange}
           />
-        </Box>
+        </Section>
 
-        <Autocomplete
-          multiple
-          freeSolo
-          options={[]} // no predefined options, or you can add suggestions
-          // value={
-          //   Array.isArray(formData.popular_items)
-          //     ? formData.popular_items.map(item => item.replace(/_/g, " "))
-          //     : []
-          // }
-          value={normalizeStringArray(formData.popular_items, true)}
-          onChange={(_, newValue: string[]) => {
-            // convert to snake_case for storage
-            const formatted = newValue
-              .map(s => s.trim())
-              .map(s => s.replace(/\s+/g, " "))
-              .map(s => s.replace(/ /g, "_"));
-            setFormData(prev => ({ ...prev, popular_items: formatted }));
-          }}
-          filterOptions={(options, params) => {
-            // split input by comma, enter, or space
-            const input = params.inputValue;
-            const lastChar = input.slice(-1);
-            if (lastChar === " " || lastChar === "," || lastChar === "\n") {
-              const trimmed = input.trim();
-              if (trimmed) {
-                return [...options, trimmed];
-              }
-            }
-            return options;
-          }}
-          renderTags={(value: string[], getTagProps) =>
-            value.map((option, index) => (
-              <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-            ))
-          }
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Popular Items"
-              placeholder="Type an item and press comma, enter, or space"
-              margin="dense"
-              fullWidth
+        <Section title="Highlights">
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+            <AmenityCheckbox
+              label="Coffee Recommended"
+              name="coffee_rec"
+              checked={formData.coffee_rec || false}
+              onChange={handleCheckboxChange}
             />
-          )}
-        />
+            <AmenityCheckbox
+              label="Matcha Recommended"
+              name="matcha_rec"
+              checked={formData.coffee_rec || false}
+              onChange={handleCheckboxChange}
+            />
+          </Box>
+        </Section>
 
-        <FormControl fullWidth margin="dense">
-          <InputLabel id="parking-label">Parking</InputLabel>
-          <Select labelId="parking-label" name="parking" value={formData.parking || ""} onChange={handleSelectChange}>
-            <MenuItem value="">None</MenuItem>
-            <MenuItem value="parking lot">Parking lot</MenuItem>
-            <MenuItem value="street parking">Street parking</MenuItem>
-          </Select>
-        </FormControl>
+        <Section title="Details">
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+            <AmenityCheckbox label="Specialty Coffee" name="specialty" checked={formData.specialty || false} onChange={handleCheckboxChange} />
+            <AmenityCheckbox label="In-house Roast" name="in_house_roast" checked={formData.in_house_roast || false} onChange={handleCheckboxChange} />
+            <AmenityCheckbox label="Matcha Available" name="matcha" checked={formData.matcha || false} onChange={handleCheckboxChange} />
+            <AmenityCheckbox label="Wi-Fi" name="wifi" checked={formData.wifi || false} onChange={handleCheckboxChange} />
+            <AmenityCheckbox label="Outlets" name="outlets" checked={formData.outlets || false} onChange={handleCheckboxChange} />
+            <AmenityCheckbox label="Laptop Friendly" name="laptop_friendly" checked={formData.laptop_friendly || false} onChange={handleCheckboxChange} />
+            <AmenityCheckbox label="Indoor Seating" name="indoor_seating" checked={formData.indoor_seating || false} onChange={handleCheckboxChange} />
+            <AmenityCheckbox label="Outdoor Seating" name="outdoor_seating" checked={formData.outdoor_seating || false} onChange={handleCheckboxChange} />
 
-        <FormControl fullWidth margin="dense">
-          <InputLabel id="bathroom-access-label">Bathroom Access</InputLabel>
-          <Select labelId="bathroom-access-label" name="bathroom_access" value={formData.bathroom_access || ""} onChange={handleSelectChange}>
-            <MenuItem value="">Select</MenuItem>
-            <MenuItem value="open">Open</MenuItem>
-            <MenuItem value="key">Physical Key</MenuItem>
-            <MenuItem value="keypad">Keypad Access</MenuItem>
-            <MenuItem value="unavailable">Unavailable</MenuItem>
-          </Select>
-        </FormControl>
+            {formData.bathroom && (
+              <TextField
+                select
+                size="small"
+                label="Bathroom Access"
+                name="bathroom_access"
+                value={formData.bathroom_access ?? ""}
+                onChange={handleTextChange}
+                sx={{ minWidth: 180 }}
+              >
+                <MenuItem value="">Select</MenuItem>
+                <MenuItem value="open">Open</MenuItem>
+                <MenuItem value="needs-key-code">Requires Key / Code</MenuItem>
+                <MenuItem value="unavailable">Unavailable</MenuItem>
+              </TextField>
+            )}
+            <AmenityCheckbox label="Bathroom" name="bathroom" checked={formData.bathroom || false} onChange={handleCheckboxChange} />
+          </Box>
+        </Section>
 
-        <TextField label="Notes" name="notes" fullWidth margin="dense" multiline rows={3} value={formData.notes || ""} onChange={handleTextChange} />
+        <Section title="Drinks & Menu">
+          <Box sx={{ width: "75%", mx: "auto" }}>
+            <Typography gutterBottom>Latte Price (${formData.latte_price || "—"})</Typography>
+            <Slider
+              min={3}
+              max={10}
+              step={0.25}
+              value={Number(formData.latte_price) || 3}
+              onChange={(_, value) => typeof value === "number" && setFormData(prev => ({ ...prev, latte_price: value.toFixed(2) }))}
+              sx={{ color: "#b23a48" }}
+            />
+          </Box>
+
+          <TextField label="Roaster" name="roaster" fullWidth margin="dense" value={formData.roaster || ""} onChange={handleTextChange} />
+          <TextField label="Matcha Brand" name="matcha_brand" fullWidth margin="dense" value={formData.matcha_brand || ""} onChange={handleTextChange} />
+          <TextField
+            label="Popular Items (comma-separated)"
+            fullWidth
+            margin="dense"
+            value={popularItemsInput}
+            onChange={e => setPopularItemsInput(e.target.value)}
+          />
+        </Section>
+
+        <Section title="Alternative Milks">
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+            {ALT_MILK_OPTIONS.map(milk => {
+              const selected = formData.alt_milks?.includes(milk);
+              return (
+                <Chip
+                  key={milk}
+                  label={milk}
+                  clickable
+                  color={selected ? "primary" : "default"}
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      alt_milks: selected
+                        ? (prev.alt_milks ?? []).filter(m => m !== milk)
+                        : [...(prev.alt_milks ?? []), milk],
+                    }));
+                  }}
+                  sx={{ textTransform: "capitalize", border: selected ? "none" : "1px solid #ccc" }}
+                />
+              );
+            })}
+          </Box>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant={formData.alt_milks_cost === "free" ? "contained" : "outlined"}
+              onClick={() => setFormData(prev => ({ ...prev, alt_milks_cost: "free" }))}
+            >
+              Free
+            </Button>
+            <Button
+              variant={formData.alt_milks_cost === "extra" ? "contained" : "outlined"}
+              onClick={() => setFormData(prev => ({ ...prev, alt_milks_cost: "extra" }))}
+            >
+              Extra
+            </Button>
+          </Box>
+        </Section>
+
+        <Section title="Contact & Hours">
+          <TextField label="Opening Hours" name="opening_hours" fullWidth margin="dense" value={formData.opening_hours || ""} onChange={handleTextChange} />
+          <TextField label="Phone" name="phone" fullWidth margin="dense" value={formData.phone || ""} onChange={handleTextChange} />
+          <TextField label="Instagram" name="instagram" fullWidth margin="dense" value={formData.instagram || ""} onChange={handleTextChange} />
+          <TextField label="Website" name="website" fullWidth margin="dense" value={formData.website || ""} onChange={handleTextChange} />
+        </Section>
+
+        <Section title="Extra Info">
+          <TextField label="Notes" name="notes" fullWidth multiline minRows={3} value={formData.notes || ""} onChange={handleTextChange} />
+        </Section>
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions sx={{ px: 3, pb: 3 }}>
         <Button color="error" onClick={handleDelete}>Delete</Button>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSubmit}>Update</Button>
+        <Button onClick={onClose} variant="outlined" sx={{ textTransform: "none", borderColor: "#999", color: "#666" }}>Cancel</Button>
+        <Button variant="contained" onClick={handleSubmit} sx={{ backgroundColor: "#b23a48", "&:hover": { backgroundColor: "#942d39" }, textTransform: "none", fontWeight: "bold" }}>Update</Button>
       </DialogActions>
     </Dialog>
-
   );
 }
