@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import maplibregl, { NavigationControl, Popup, GeolocateControl } from "maplibre-gl";
+import maplibregl, { NavigationControl, GeolocateControl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import CafeScroller from "./mapHelpers/CafeScroller.tsx"
+import CafeScroller from "./mapComponents/CafeScroller.tsx"
 import coffeeSVG from "../assets/icons/coffee2.svg";
 import specialtySVG from "../assets/icons/specialty.svg";
 import useMapStore from "../store/useMapStore";
-import { fetchCafes, fetchNeighborhoods, flyToCafe, showCafePopup, showSelectedNeighborhood } from "./mapHelpers/mapFns.jsx";
+import { fetchCafes, fetchNeighborhoods, flyToCafe, showCafePopup, showSelectedNeighborhood } from "./mapComponents/mapFns.js";
 
 
 export default function MapComponent() {
@@ -13,12 +13,8 @@ export default function MapComponent() {
   const map = useMapStore((state) => state.map);
   const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
   const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
-  const [visibleCafes, setVisibleCafes] = useState([]); // visible in the scroller
-  const [neighborhoodLayerVisible, setNeighborhoodLayerVisible] = useState(false);
+  const [visibleCafes, setVisibleCafes] = useState([]);
   const mapContainer = useRef(null);
-  const popupRef = useRef(
-    new Popup({ closeButton: false, closeOnClick: false, maxWidth: "90vw" })
-  );
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -55,27 +51,28 @@ export default function MapComponent() {
         style: style,
         center: [-118.3226, 34.0750],
         zoom: 12,
+        minZoom: 5,
       });
 
       newMap.on("load", async () => {
         // load regular coffee icon
         const regularIcon = new Image();
-        const regularSvgString = await fetch(coffeeSVG) // fetch SVG
-          .then((res) => res.text()) // convert to text (SVG content)
+        const regularSvgString = await fetch(coffeeSVG)
+          .then((res) => res.text())
           .then((svgContent) => svgContent); // this is the SVG string
         const regularSvgBlob = new Blob([regularSvgString], { type: "image/svg+xml" });
         const regularSvgURL = URL.createObjectURL(regularSvgBlob);
 
         regularIcon.onload = () => {
-          newMap.addImage("cafe-icon", regularIcon); // add image to map
-          URL.revokeObjectURL(regularSvgURL); // clean up URL object
+          newMap.addImage("cafe-icon", regularIcon);
+          URL.revokeObjectURL(regularSvgURL);
         };
         regularIcon.src = regularSvgURL;
 
         // load specialty coffee icon
         const specialtyIcon = new Image();
-        const specialtySvgString = await fetch(specialtySVG) // fetch SVG
-          .then((res) => res.text()) // convert to text (SVG content)
+        const specialtySvgString = await fetch(specialtySVG)
+          .then((res) => res.text())
           .then((svgContentS) => svgContentS); // this is the SVG string
         const specialtySvgBlob = new Blob([specialtySvgString], { type: "image/svg+xml" });
         const specialtySvgURL = URL.createObjectURL(specialtySvgBlob);
@@ -146,9 +143,9 @@ export default function MapComponent() {
           type: "fill",
           source: "neighborhoods",
           paint: {
-            "fill-color": "#b23a48",
-            "fill-opacity": 0.1,
-            "fill-outline-color": "#020202ff",
+            "fill-color": "#c97d5a",
+            "fill-opacity": 0.135,
+            // "fill-outline-color": "#020202ff",
           },
         });
 
@@ -197,7 +194,6 @@ export default function MapComponent() {
         setTimeout(updateVisibleCafes, 100); // initial load
         newMap.on("moveend", updateVisibleCafes); // update on map move
 
-
         // popup on click for cafes layer
         newMap.on("click", ["specialty-cafes", "regular-cafes"], (e) => {
           if (!e.features.length) return;
@@ -214,10 +210,9 @@ export default function MapComponent() {
             coordinates: feature.geometry.coordinates,
           };
 
-          showCafePopup(newMap, popupRef, cafe);
+          showCafePopup(newMap, cafe);
           flyToCafe(newMap, cafe, 14);
         });
-
 
         // change cursor to a pointer when entering a feature
         newMap.on("mouseenter", ["specialty-cafes", "regular-cafes"], () => {
@@ -234,7 +229,7 @@ export default function MapComponent() {
             layers: ["specialty-cafes", "regular-cafes"],
           });
           if (features.length === 0) {
-            popupRef.current.remove();
+            useMapStore.getState().currentCafePopup?.remove(); // ??
           }
         });
       });
@@ -274,14 +269,6 @@ export default function MapComponent() {
     }
   }, [selectedNeighborhood]);
 
-  const toggleNeighborhoodLayer = () => {
-    if (map) {
-      const visibility = neighborhoodLayerVisible ? "none" : "visible";
-      map.setLayoutProperty("polygon-layer", "visibility", visibility);
-      setNeighborhoodLayerVisible(!neighborhoodLayerVisible);
-    }
-  };
-
   return (
     <>
       <div
@@ -292,19 +279,19 @@ export default function MapComponent() {
         // onLoad={onLoad}
       />
 
-      {selectedNeighborhood ? (
+      {selectedNeighborhood && (
         <button
           onClick={() => setSelectedNeighborhood(null)}
           style={{
           position: "absolute",
           bottom: "150px",
           left: "50%",
-          transform: "translateX(-50%)", // center horizontally
+          transform: "translateX(-50%)",
           padding: "8px 16px",
-          backgroundColor: "#b23a48", // your brand color
+          backgroundColor: "#b23a48",
           color: "#fff",
           border: "none",
-          borderRadius: "20px", // rounded
+          borderRadius: "20px",
           cursor: "pointer",
           fontSize: "0.9em",
           zIndex: 1000,
@@ -313,47 +300,9 @@ export default function MapComponent() {
         >
           Clear Neighborhood
         </button>
-      ) :
-        <button
-          onClick={toggleNeighborhoodLayer}
-          style={{
-            position: "absolute",
-            bottom: "160px",
-            right: "20px",
-            padding: "6px 8px",
-            backgroundColor: "rgb(255, 255, 255)",
-            color: "#111",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "0.9em",
-            zIndex: 1000,
-          }}
-        >
-          {neighborhoodLayerVisible ? "Hide Neighborhoods" : "Show Neighborhoods"}
-        </button>
-      }
-
-      <button
-        onClick={() => fetchCafes(map)}
-        style={{
-          position: "absolute",
-          bottom: "16vh",
-          right: "20px",
-          padding: "6px 8px",
-          backgroundColor: "rgb(255, 255, 255)",
-          color: "#111",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "0.9em",
-          zIndex: 1000,
-        }}
-      >
-        Refresh
-      </button>
+      )}
       
-      <CafeScroller map={map} visibleCafes={visibleCafes} popupRef={popupRef} />
+      <CafeScroller map={map} visibleCafes={visibleCafes} />
     </>
   );
 }

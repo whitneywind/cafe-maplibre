@@ -17,7 +17,9 @@ import {
   Typography,
   MenuItem,
   Chip,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { useState, ChangeEvent } from "react";
 import { NewCoffeeShop, BathroomAccess, NewCafeDialogProps } from "../../types.ts";
 
@@ -289,11 +291,16 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
         },
       }}
     >
-      <DialogTitle sx={{ textAlign: "center", pb: 1 }}>
-        <Typography variant="h4" fontWeight="bold" sx={{ color: "#b23a48" }}>
-          Suggest a New Cafe
-        </Typography>
+      <DialogTitle sx={{ textAlign: "center", pb: 1, color: "#b23a48", fontWeight: "bold", fontSize: "2rem",}}>
+        Suggest a New Cafe
       </DialogTitle>
+
+      <IconButton
+        onClick={onClose}
+        sx={{ position: "absolute", top: 12, right: 12 }}
+      >
+        <CloseIcon />
+      </IconButton>
 
       <DialogContent>
         <Section title="Cafe Info*">
@@ -332,6 +339,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
             required
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
           />
 
           <Button

@@ -16,9 +16,10 @@ import OutletIcon from "@mui/icons-material/Power";
 import LaptopMacIcon from "@mui/icons-material/LaptopMac";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import MapIcon from '@mui/icons-material/Map';
 import useMapStore from "../store/useMapStore";
-import { showUpdateCafeDialog } from "./mapHelpers/mapFns";
+import { showUpdateCafeDialog } from "./mapComponents/mapFns";
 import WcIcon from "@mui/icons-material/Wc";
 import ChairIcon from "@mui/icons-material/Chair";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
@@ -59,12 +60,40 @@ const InfoLine = ({
     </Box>
 );
 
+const normalizeUrl = (url: string) => {
+  try {
+    new URL(url);
+    return url;
+  } catch {
+    try {
+      new URL(`https://${url}`);
+      return `https://${url}`;
+    } catch {
+      return null;
+    }
+  }
+};
+
+const normalizeInstagramUrl = (url: string): string | null => {
+  const normalized = normalizeUrl(url);
+  if (!normalized) return null;
+  
+  try {
+    const parsed = new URL(normalized);
+    return parsed.hostname === "instagram.com" || parsed.hostname === "www.instagram.com"
+      ? normalized
+      : null;
+  } catch {
+    return null;
+  }
+};
+
 
 const CafeDetailsModal: React.FC = () => {
-  const { cafeDetailsOpen, selectedCafe, closeCafeDetails } = useMapStore();
-  if (!selectedCafe) return null;
+    const { cafeDetailsOpen, selectedCafe, closeCafeDetails } = useMapStore();
+    if (!selectedCafe) return null;
 
-  const {
+    const {
     name,
     neighborhood,
     specialty,
@@ -92,14 +121,17 @@ const CafeDetailsModal: React.FC = () => {
     matcha_rec,
     notes,
     coordinates,
-  } = selectedCafe;
+    } = selectedCafe;
+    
+    const { addFavorite, removeFavorite, isFavorite } = useMapStore();
+    const favorited = isFavorite(selectedCafe.id);
 
-    //   normalize str arrs
     const normalizedAltMilks = normalizeStringArray(alt_milks, true); 
     // Results in: ["Oat Milk", "Almond Milk"] instead of ["oat_milk", "almond_milk"]
 
-
     const normalizedPopularItems = normalizeStringArray(popular_items, true);
+
+    const hasAmenities = bathroom || indoor_seating || outdoor_seating || wifi || outlets || laptop_friendly || parking;
 
     const handleUpdateClick = () => {
         const dialogContainer = document.createElement("div");
@@ -123,309 +155,325 @@ const CafeDetailsModal: React.FC = () => {
         }
     };
 
-  return (
-    <Modal
-      open={cafeDetailsOpen}
-      onClose={closeCafeDetails}
-      aria-labelledby="cafe-details-modal"
-      closeAfterTransition
-    >
-      <Box
-        sx={{
-          position: "absolute" as const,
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: { xs: "90%", sm: "75%", md: "60%" },
-          maxHeight: "90vh",
-          bgcolor: "background.paper",
-          borderRadius: 3,
-          boxShadow: 24,
-          p: 4,
-          overflowY: "auto",
-          display: "flex",
-          flexDirection: "column",
-          gap: 3,
-        }}
-      >
-        {/* close button */}
-        <IconButton
-          onClick={closeCafeDetails}
-          sx={{ position: "absolute", top: 12, right: 12 }}
+    return (
+        <Modal
+        open={cafeDetailsOpen}
+        onClose={closeCafeDetails}
+        aria-labelledby="cafe-details-modal"
+        closeAfterTransition
         >
-          <CloseIcon />
-        </IconButton>
-
-        {/* cafe name & recs */}
-        <Box sx={{ textAlign: "center" }}>
-          <Typography variant="h4" fontWeight="bold" sx={{ color: "#b23a48" }}>
-            {name || "Unnamed Cafe"}
-          </Typography>
-          <Box sx={{ mt: 1, display: "flex", justifyContent: "center", gap: 2 }}>
-            {coffee_rec && (
-              <Chip
-                icon={<LocalCafeIcon />}
-                label="Coffee Recommended"
-                color="error"
-                variant="outlined"
-                sx={{ fontWeight: "bold" }}
-              />
-            )}
-            {matcha_rec && matcha && (
-              <Chip
-                icon={<SpaIcon />}
-                label="Matcha Recommended"
-                color="info"
-                variant="outlined"
-                sx={{ fontWeight: "bold" }}
-              />
-            )}
-            {specialty && (
-              <Chip
-                icon={<LocalCafeIcon />}
-                label="Specialty Coffee"
-                color="default"
-                variant="outlined"
-                sx={{ fontWeight: "bold" }}
-              />
-            )}
-          </Box>
-        </Box>
-
-        {/* save/favorite button */}
-        <Box sx={{ 
-            display: "flex", 
-            justifyContent: "center", 
-            position: { xs: "relative", sm: "absolute" }, 
-            top: { sm: 12 }, 
-            left: { sm: 12 },
-            mt: { xs: 2, sm: 0 } 
-        }}>
-            <Button
-                variant="contained"
-                startIcon={<FavoriteBorderIcon />}
-                sx={{ 
-                backgroundColor: "#b23a48", 
-                borderRadius: { xs: 2, sm: 0.6 },
-                minWidth: { xs: "200px", sm: 0 },
-                p: { xs: "10px 24px", sm: "8px" },
-                "&:hover": { backgroundColor: "#942d39" },
-                // Hide text on desktop, show on mobile
-                "& .MuiButton-startIcon": { 
-                    margin: { xs: "0 8px 0 -4px", sm: 0 } 
-                }
+            <Box
+                sx={{
+                position: "absolute" as const,
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: { xs: "90%", sm: "75%", md: "60%" },
+                maxHeight: "90vh",
+                bgcolor: "background.paper",
+                borderRadius: 3,
+                boxShadow: 24,
+                p: 4,
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: 3,
                 }}
             >
-                {/* hidden on screens larger than sm */}
-                <Box component="span" sx={{ display: { xs: "inline", sm: "none" }, fontWeight: "bold" }}>
-                Save
+                <IconButton
+                onClick={closeCafeDetails}
+                sx={{ position: "absolute", top: 12, right: 12 }}
+                >
+                <CloseIcon />
+                </IconButton>
+
+                {/* cafe name & recs */}
+                <Box sx={{ textAlign: "center" }}>
+                <Typography variant="h4" fontWeight="bold" sx={{ color: "#b23a48" }}>
+                    {name || "Unnamed Cafe"}
+                </Typography>
+                <Box sx={{ mt: 1, display: "flex", justifyContent: "center", gap: 2 }}>
+                    {coffee_rec && (
+                        <Chip
+                            icon={<LocalCafeIcon />}
+                            label="Coffee Recommended"
+                            color="error"
+                            sx={{ fontWeight: "bold" }}
+                        />
+                    )}
+                    {matcha_rec && matcha && (
+                        <Chip
+                            icon={<SpaIcon />}
+                            label="Matcha Recommended"
+                            color="info"
+                            variant="outlined"
+                            sx={{ fontWeight: "bold" }}
+                        />
+                    )}
+                    {specialty && (
+                        <Chip
+                            icon={<LocalCafeIcon sx={{ color: "#6f4e37 !important" }} />}
+                            label="Specialty Coffee"
+                            sx={{ fontWeight: "bold", color: "#6f4e37", bgcolor: "transparent", border: "none" }}
+                        />
+                    )}
                 </Box>
-            </Button>
-        </Box>
+                </Box>
 
-        <Divider />
-
-        {/* main info section in grid */}
-        <Grid container spacing={2} sx={{ alignItems: "stretch"}}>
-
-            {/* amenities */}
-            <Grid size={{ xs: 12, sm: 8 }} sx={{ order: { xs: 2, sm: 1 }, display: "flex", flexDirection: "column" }}>
-                <Box sx={{ p: 2.5, bgcolor: "#f7f7f7", borderRadius: 3, flexGrow: 1, border: "1px solid #eee" }}>
-                    <Typography fontWeight="800" variant="subtitle1" gutterBottom sx={{ color: "#444", mb: 2 }}>
-                        Amenities
-                    </Typography>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
-                        {bathroom && <InfoItem icon={<WcIcon fontSize="small" />} label="Bathroom" value={bathroom_access ? `Yes (${bathroom_access})` : "Yes"} />}
-                        {indoor_seating && <InfoItem icon={<ChairIcon fontSize="small" />} label="Indoor Seating" />}
-                        {outdoor_seating && <InfoItem icon={<ChairIcon fontSize="small" />} label="Outdoor Seating" />}
-                        {wifi && <InfoItem icon={<WifiIcon fontSize="small" />} label="Wi-Fi" />}
-                        {outlets && <InfoItem icon={<OutletIcon fontSize="small" />} label="Outlets Available" />}
-                        {laptop_friendly && <InfoItem icon={<LaptopMacIcon fontSize="small" />} label="Laptop Friendly" />}
-                        {parking && <InfoItem icon={<LocalParkingIcon fontSize="small" />} label="Parking" value={parking} />}
+                <Box sx={{ 
+                    display: "flex", 
+                    justifyContent: "center", 
+                    position: { xs: "relative", sm: "absolute" }, 
+                    top: { sm: 12 }, 
+                    left: { sm: 12 },
+                    mt: { xs: 2, sm: 0 } 
+                }}>
+                    <Button
+                    variant="contained"
+                    startIcon={favorited ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                    onClick={() => favorited ? removeFavorite(selectedCafe.id) : addFavorite(selectedCafe)}
+                    sx={{ 
+                        backgroundColor: favorited ? "#942d39" : "#b23a48", 
+                        borderRadius: { xs: 2, sm: 0.6 },
+                        minWidth: { xs: "200px", sm: 0 },
+                        p: { xs: "10px 24px", sm: "8px" },
+                        "&:hover": { backgroundColor: "#942d39" },
+                        "& .MuiButton-startIcon": { 
+                        margin: { xs: "0 8px 0 -4px", sm: 0 } 
+                        }
+                    }}
+                    >
+                    <Box component="span" sx={{ display: { xs: "inline", sm: "none" }, fontWeight: "bold" }}>
+                        {favorited ? "Saved" : "Save"}
                     </Box>
+                    </Button>
                 </Box>
-            </Grid>
 
-            {/* right column: Location + Contact stacked */}
-            <Grid size={{ xs: 12, sm: 4 }} container direction="column" spacing={2} sx={{ order: { xs: 3, sm: 2 } }}>
+                <Divider />
 
-                {/* location */}
-                <Grid size={{ xs: 12}}>
-                    <Box sx={{ p: 2, bgcolor: "#f7f7f7", borderRadius: 2 }}>
-                    <Typography fontWeight="bold">Location</Typography>
-                    {neighborhood && <Typography>{neighborhood}</Typography>}
-                    {closest_metro && <Typography>Closest Metro: {closest_metro}</Typography>}
-                    {lat && lng && (
-                        <Button
+                {/* main info section in grid */}
+                <Grid container spacing={2} sx={{ alignItems: "stretch"}}>
+
+                    {/* amenities */}
+                    <Grid size={{ xs: 12, sm: 8 }} sx={{ order: { xs: hasAmenities ? 2 : 4, sm: hasAmenities ? 1 : 3 }, display: "flex", flexDirection: "column" }}>
+                        <Box sx={{ p: 2.5, bgcolor: "#f7f7f7", borderRadius: 3, flexGrow: 1, border: "1px solid #eee" }}>
+                            <Typography fontWeight="800" variant="subtitle1" gutterBottom sx={{ color: "#444", mb: 2 }}>
+                            Amenities
+                            </Typography>
+                            {hasAmenities ? (
+                            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+                                {bathroom && <InfoItem icon={<WcIcon fontSize="small" />} label="Bathroom" value={bathroom_access ? `Yes (${bathroom_access})` : "Yes"} />}
+                                {indoor_seating && <InfoItem icon={<ChairIcon fontSize="small" />} label="Indoor Seating" />}
+                                {outdoor_seating && <InfoItem icon={<ChairIcon fontSize="small" />} label="Outdoor Seating" />}
+                                {wifi && <InfoItem icon={<WifiIcon fontSize="small" />} label="Wi-Fi" />}
+                                {outlets && <InfoItem icon={<OutletIcon fontSize="small" />} label="Outlets Available" />}
+                                {laptop_friendly && <InfoItem icon={<LaptopMacIcon fontSize="small" />} label="Laptop Friendly" />}
+                                {parking && <InfoItem icon={<LocalParkingIcon fontSize="small" />} label="Parking" value={parking} />}
+                            </Box>
+                            ) : (
+                            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1, py: 2, color: "text.secondary" }}>
+                                <Typography variant="body2">No amenity info yet.</Typography>
+                                <Button
                                 variant="outlined"
                                 size="small"
-                                fullWidth
-                                startIcon={<MapIcon />}
-                                href={googleMapsURL}
-                                target="_blank"
+                                onClick={handleUpdateClick}
+                                sx={{ textTransform: "none", borderColor: "#999", color: "#666", "&:hover": { backgroundColor: "#eee" } }}
+                                >
+                                + Add amenities
+                                </Button>
+                            </Box>
+                            )}
+                        </Box>
+                    </Grid>
+
+                    {/* right column: Location + Contact stacked */}
+                    <Grid size={{ xs: 12, sm: 4 }} container direction="column" spacing={2} sx={{ order: { xs: 3, sm: 2 } }}>
+
+                        {/* location */}
+                        <Grid size={{ xs: 12}}>
+                            <Box sx={{ p: 2, bgcolor: "#f7f7f7", borderRadius: 2 }}>
+                            <Typography fontWeight="bold">Location</Typography>
+                            {(neighborhood && neighborhood !== "unknown") && <Typography>{neighborhood}</Typography>}
+                            {closest_metro && <Typography>Closest Metro: {closest_metro}</Typography>}
+                            {lat && lng && (
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    startIcon={<MapIcon />}
+                                    href={googleMapsURL}
+                                    target="_blank"
+                                    sx={{
+                                        mt: 2,
+                                        textTransform: "none",
+                                        borderColor: "#999",
+                                        color: "#666",
+                                        "&:hover": {
+                                            backgroundColor: "#eee",
+                                            borderColor: "#999",
+                                        },
+                                    }}
+                                >
+                                    Google Maps
+                                </Button>
+                            )}
+                            </Box>
+                        </Grid>
+
+                        {/* contact & notes */}
+                        <Grid size={{ xs: 12 }}>
+                            <Box
                                 sx={{
-                                    mt: 2, // Added more top margin to separate from the text above
+                                    p: 2,
+                                    bgcolor: "#f3f0f0",
+                                    borderRadius: 2,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 1,
+                                }}
+                            >
+                                {notes && <Typography>Notes: {notes}</Typography>}
+                                {instagram && normalizeInstagramUrl(instagram) && (
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    href={instagram}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    sx={{ textTransform: "none" }}
+                                >
+                                    Instagram
+                                </Button>
+                                )}
+                                {opening_hours && <Typography>Opening Hours: {opening_hours}</Typography>}
+
+
+                                {website && normalizeUrl(website) && (
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    href={website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    sx={{ textTransform: "none" }}
+                                >
+                                    Website
+                                </Button>
+                                )}
+
+                                <Button
+                                    variant="outlined"
+                                    onClick={handleUpdateClick}
+                                    size="small"
+                                    sx={{
                                     textTransform: "none",
-                                    borderColor: "#999", // Matching the "Suggest Edit" border
-                                    color: "#666",      // Matching the "Suggest Edit" text
+                                    borderColor: "#999",
+                                    color: "#666",
                                     "&:hover": {
                                         backgroundColor: "#eee",
                                         borderColor: "#999",
                                     },
-                                }}
-                            >
-                                Google Maps
-                            </Button>
-                    )}
-                    </Box>
-                </Grid>
-
-                {/* contact & notes */}
-                <Grid size={{ xs: 12 }}>
-                    <Box
-                        sx={{
-                            p: 2,
-                            bgcolor: "#f3f0f0",
-                            borderRadius: 2,
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 1,
-                        }}
-                    >
-                        {/* {phone && <Typography>Phone: {phone}</Typography>} */}
-                        {notes && <Typography>Notes: {notes}</Typography>}
-                        {instagram && <Typography>Instagram: {instagram}</Typography>}
-                        {opening_hours && <Typography>Opening Hours: {opening_hours}</Typography>}
-
-
-                        {website && (
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            href={website}
-                            target="_blank"
-                            sx={{
-                                textTransform: "none",
-                            }}
-                        >
-                            Website
-                        </Button>
-                        )}
-
-                        <Button
-                            variant="outlined"
-                            onClick={handleUpdateClick}
-                            size="small"
-                            sx={{
-                            textTransform: "none",
-                            borderColor: "#999",
-                            color: "#666",
-                            "&:hover": {
-                                backgroundColor: "#eee",
-                                borderColor: "#999",
-                            },
-                            }}
-                        >
-                            Suggest Edit
-                        </Button>
-                    </Box>
-                </Grid>
-
-            </Grid>
-
-            {/* drinks & specials */}
-            <Grid size={{ xs: 12 }} sx={{ order: { xs: 1, sm: 3 } }}>
-                <Box sx={{ p: 2.5, bgcolor: "#fdf8f4", borderRadius: 3, border: "1px solid #f3e5d8" }}>
-                    <Typography fontWeight="800" variant="subtitle1" gutterBottom sx={{ color: "#8d5d46", mb: 2 }}>
-                        Drinks & Specials
-                    </Typography>
-                    <Grid container spacing={3}>
-                        {/* Left Column: Coffee & Matcha */}
-                        <Grid size={{ xs: 12, sm: 6 }}>
-                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                <InfoLine 
-                                    icon={<LocalCafeIcon sx={{ color: "#8d5d46" }} />} 
-                                    label="Coffee" 
-                                    value={`${roaster || "Espresso-based"}`} 
-                                />
-                                <InfoLine 
-                                    icon={<AttachMoneyIcon sx={{ color: "#2e7d32" }} />} 
-                                    label="Latte Price" 
-                                    value={latte_price || ""} 
-                                    secondaryAction={!latte_price && (
-                                        <Typography variant="caption" onClick={handleUpdateClick} sx={{ ...addActionStyle, color: "#2e7d32" }}
-                                        >
-                                            + Add price
-                                        </Typography>
-                                    )}
-                                />
-                                <InfoLine 
-                                    icon={<SpaIcon sx={{ color: "#6b8e23" }} />} 
-                                    label="Matcha Brand" 
-                                    value={matcha_brand || "Various"} 
-                                />
+                                    }}
+                                >
+                                    Suggest Edit
+                                </Button>
                             </Box>
                         </Grid>
 
-                    {/* Right Column: Milks & Popular Items */}
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                            {specialty && (
-                                 <InfoLine 
-                                    icon={<LocalCafeIcon sx={{ color: "#b23a48" }} />} 
-                                    label="Specialty Coffee Status" 
-                                    value={" Specialty Coffee"} 
-                            />
-                            )}
-                            
-                            {/* Alt Milks - Always Visible */}
-                            <InfoLine 
-                                icon={<FavoriteBorderIcon sx={{ color: "#b23a48" }} />} 
-                                label="Alt Milks" 
-                                value={normalizedAltMilks.length > 0 
-                                    ? `${normalizedAltMilks.join(", ")}${alt_milks_cost ? ` (${alt_milks_cost})` : ""}` 
-                                    : ""
-                                } 
-                                // Optional: Add a small suggest action if empty
-                                secondaryAction={normalizedAltMilks.length === 0 && (
-                                    <Typography 
-                                        variant="caption" 
-                                        onClick={handleUpdateClick}
-                                        sx={{ ...addActionStyle, color: "#b23a48" }}
-                                    >
-                                        + Add options
-                                    </Typography>
-                                )}
-                            />
+                    </Grid>
 
-                            {/* Popular Items - Always Visible */}
-                            <InfoLine 
-                                icon={<StarIcon sx={{ color: "#ed6c02" }} />} 
-                                label="Popular Items" 
-                                value={normalizedPopularItems.length > 0 
-                                    ? normalizedPopularItems.join(", ") 
-                                    : ""
-                                } 
-                                secondaryAction={normalizedPopularItems.length === 0 && (
-                                    <Typography 
-                                        variant="caption" 
-                                        onClick={handleUpdateClick}
-                                        sx={{ ...addActionStyle, color: "#ed6c02" }}
-                                    >
-                                        + Suggest Item
-                                    </Typography>
-                                )}
-                            />
+                    {/* drinks & specials */}
+                    <Grid size={{ xs: 12 }} sx={{ order: { xs: 1, sm: 3 } }}>
+                        <Box sx={{ p: 2.5, bgcolor: "#fdf8f4", borderRadius: 3, border: "1px solid #f3e5d8" }}>
+                            <Typography fontWeight="800" variant="subtitle1" gutterBottom sx={{ color: "#8d5d46", mb: 2 }}>
+                                Drinks & Specials
+                            </Typography>
+                            <Grid container spacing={3}>
+                                {/* left Column: coffee & matcha */}
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                        <InfoLine 
+                                            icon={<LocalCafeIcon sx={{ color: "#8d5d46" }} />} 
+                                            label="Coffee" 
+                                            value={`${roaster || "Espresso-based"}`} 
+                                        />
+                                        <InfoLine 
+                                            icon={<AttachMoneyIcon sx={{ color: "#2e7d32" }} />} 
+                                            label="Latte Price" 
+                                            value={latte_price || ""} 
+                                            secondaryAction={!latte_price && (
+                                                <Typography variant="caption" onClick={handleUpdateClick} sx={{ ...addActionStyle, color: "#2e7d32" }}
+                                                >
+                                                    + Add price
+                                                </Typography>
+                                            )}
+                                        />
+                                        <InfoLine 
+                                            icon={<SpaIcon sx={{ color: "#6b8e23" }} />} 
+                                            label="Matcha Brand" 
+                                            value={matcha_brand || "Various"} 
+                                        />
+                                    </Box>
+                                </Grid>
+
+                            {/* right Column: Milks & Popular Items */}
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                    {specialty && (
+                                        <InfoLine 
+                                            icon={<LocalCafeIcon sx={{ color: "#b23a48" }} />} 
+                                            label="Specialty Coffee Status" 
+                                            value={" Specialty Coffee"} 
+                                    />
+                                    )}
+                                    
+                                    {/* alt Milks */}
+                                    <InfoLine 
+                                        icon={<FavoriteBorderIcon sx={{ color: "#b23a48" }} />} 
+                                        label="Alt Milks" 
+                                        value={normalizedAltMilks.length > 0 
+                                            ? `${normalizedAltMilks.join(", ")}${alt_milks_cost ? ` (${alt_milks_cost})` : ""}` 
+                                            : ""
+                                        } 
+                                        secondaryAction={normalizedAltMilks.length === 0 && (
+                                            <Typography 
+                                                variant="caption" 
+                                                onClick={handleUpdateClick}
+                                                sx={{ ...addActionStyle, color: "#b23a48" }}
+                                            >
+                                                + Add options
+                                            </Typography>
+                                        )}
+                                    />
+
+                                    {/* popular Items */}
+                                    <InfoLine 
+                                        icon={<StarIcon sx={{ color: "#ed6c02" }} />} 
+                                        label="Popular Items" 
+                                        value={normalizedPopularItems.length > 0 
+                                            ? normalizedPopularItems.join(", ") 
+                                            : ""
+                                        } 
+                                        secondaryAction={normalizedPopularItems.length === 0 && (
+                                            <Typography 
+                                                variant="caption" 
+                                                onClick={handleUpdateClick}
+                                                sx={{ ...addActionStyle, color: "#ed6c02" }}
+                                            >
+                                                + Suggest Item
+                                            </Typography>
+                                        )}
+                                    />
+                                </Box>
+                            </Grid>
+                            </Grid>
                         </Box>
                     </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
 
-        </Grid>
-      </Box>
-    </Modal>
-  );
+                </Grid>
+            </Box>
+        </Modal>
+    );
 };
 
 export default CafeDetailsModal;

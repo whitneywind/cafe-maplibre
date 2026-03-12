@@ -71,7 +71,7 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
 
   map.setLayoutProperty("polygon-layer", "visibility", "visible");
 
-  // only show the selected neighborhood
+  // only show selected neighborhood
   map.setFilter("polygon-layer", ["==", ["get", "name"], neighborhoodFeature.properties.name]);
 
   // only show cafes in selected neighborhood
@@ -87,9 +87,7 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
     ["==", ["get", "neighborhood"], neighborhoodName],
     ["==", ["get", "specialty"], true]
   ]);
-
-  console.log("Applied neighborhood filter:", neighborhoodName);
-}
+};
 
 // center and zoom to the cafe
 export function flyToCafe(map: Map, cafe: NewCoffeeShop, zoom = 14, popupRef?: Popup) {
@@ -101,7 +99,7 @@ export function flyToCafe(map: Map, cafe: NewCoffeeShop, zoom = 14, popupRef?: P
   map.flyTo({
     center: cafe.coordinates,
     zoom,
-    speed: 0.6,
+    speed: 0.7,
     curve: 1.8,
     essential: true,
   });
@@ -126,7 +124,7 @@ export function flyToCafe(map: Map, cafe: NewCoffeeShop, zoom = 14, popupRef?: P
   popupNode.innerHTML = popupHTML;
 
   popupRef?.setLngLat(coordinates).setDOMContent(popupNode).addTo(map);
-}
+};
 
 // recenter popup if needed
 export function focusCafeIfNeeded(
@@ -148,7 +146,7 @@ export function focusCafeIfNeeded(
   if (alreadyCentered) return;
 
   flyToCafe(map, cafe, targetZoom);
-}
+};
 
 export async function deleteCafe(
   map: maplibregl.Map,
@@ -177,19 +175,20 @@ export async function deleteCafe(
 
     source.setData(newData);
     
-    const popup = useMapStore.getState().currentPopup;
-    if (popup) popup.remove();
+    useMapStore.getState().currentCafePopup?.remove();
+
 
     console.log(`Cafe ${id} removed from map + DB`);
   } catch (error) {
     console.error("Error deleting cafe:", error);
     alert("Failed to delete cafe.");
   }
-}
+};
 
 // fn to show popup associated with cafe
-export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Popup>, cafe: any) {
-  if (!map || !cafe) return;
+export function showCafePopup(map: maplibregl.Map, cafe: any) {
+  const popup = useMapStore.getState().currentCafePopup;
+  if (!map || !cafe || !popup) return;
 
   const coordinates = cafe.coordinates.slice();
   const popupNode = document.createElement("div");
@@ -199,7 +198,6 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
     <CafePopup
       cafe={cafe}
       coordinates={coordinates}
-      // onDelete={() => deleteCafe(map, properties.id, popupRef)}
     />
   );
 
@@ -213,15 +211,12 @@ export function showCafePopup(map: maplibregl.Map, popupRef: React.RefObject<Pop
   const yOffset = minOffset + ((clampedZoom - minZoom) / (maxZoom - minZoom)) * (maxOffset - minOffset);
   const offset: maplibregl.PointLike = [0, -yOffset];
 
-  popupRef.current
+  popup
     .setLngLat(coordinates)
     .setDOMContent(popupNode)
     .setOffset(offset)
     .addTo(map);
-  
-  // update popup globally
-  useMapStore.getState().setCurrentPopup(popupRef.current);
-}
+};
 
 export function showUpdateCafeDialog(
   rootElement: HTMLElement,
@@ -238,7 +233,7 @@ export function showUpdateCafeDialog(
       onClose={() => root.unmount()}
     />
   );
-}
+};
 
 // fetches cafes from the backend (gets GeoJSON from /api/cafes (live from db)) and updates "cafes" GeoJSON source on map
 export const fetchCafes = async (map: maplibregl.Map | null) => {
@@ -255,6 +250,13 @@ export const fetchCafes = async (map: maplibregl.Map | null) => {
     if (source) {
       source.setData(cafesGeoJSON);
     }
+
+    // store in zustand
+    useMapStore.getState().setCafes(cafesGeoJSON.features.map((f: any) => ({
+      ...f.properties,
+      coordinates: f.geometry.coordinates,
+    })));
+
   } catch (error) {
     console.error("Error fetching cafes:", error);
   }

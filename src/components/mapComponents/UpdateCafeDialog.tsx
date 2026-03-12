@@ -12,7 +12,7 @@ import {
   Chip,
 } from "@mui/material";
 import { useState, ChangeEvent } from "react";
-import { UpdateCafeDialogProps } from "../../../types.ts";
+import { NewCoffeeShop, UpdateCafeDialogProps } from "../../../types.ts";
 import { deleteCafe } from "./mapFns.tsx";
 import useMapStore from "../../store/useMapStore.ts";
 import { ALT_MILK_OPTIONS, AmenityCheckbox, Section } from "../NewCafeDialog.tsx";
@@ -24,15 +24,13 @@ export default function UpdateCafeDialog({
   cafe,
 }: UpdateCafeDialogProps) {
   const [formData, setFormData] = useState(() => normalizeCafe(cafe));
-  // const [popularItemsInput, setPopularItemsInput] = useState(
-  //   Array.isArray(cafe.popular_items) 
-  //     ? cafe.popular_items.map(i => i.replace(/_/g, " ")).join(", ") 
-  //     : ""
-  // );
+
   const [popularItemsInput, setPopularItemsInput] = useState(() =>
     formData.popular_items?.map(i => i.replace(/_/g, " ")).join(", ") || ""
   );
   const map = useMapStore((state) => state.map);
+  const updateSelectedCafe = useMapStore((state) => state.updateSelectedCafe);
+
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -63,6 +61,8 @@ export default function UpdateCafeDialog({
         if (!res.ok) {
             throw new Error("Failed to update cafe");
         }
+
+        updateSelectedCafe(updatedCafe as unknown as NewCoffeeShop);
 
         // const result = await res.json();
         onClose();
@@ -127,7 +127,7 @@ export default function UpdateCafeDialog({
             <AmenityCheckbox
               label="Matcha Recommended"
               name="matcha_rec"
-              checked={formData.coffee_rec || false}
+              checked={formData.matcha_rec || false}
               onChange={handleCheckboxChange}
             />
           </Box>
@@ -222,7 +222,7 @@ export default function UpdateCafeDialog({
               variant={formData.alt_milks_cost === "extra" ? "contained" : "outlined"}
               onClick={() => setFormData(prev => ({ ...prev, alt_milks_cost: "extra" }))}
             >
-              Extra
+              Extra Cost
             </Button>
           </Box>
         </Section>

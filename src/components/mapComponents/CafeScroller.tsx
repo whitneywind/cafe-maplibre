@@ -4,19 +4,12 @@ import { ChevronLeft, ChevronRight, ExpandLess, ExpandMore  } from "@mui/icons-m
 import LocalCafeIcon from "@mui/icons-material/LocalCafe";
 import SpaIcon from "@mui/icons-material/Spa"; // matcha stand-in
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
-import { NewCoffeeShop } from "../../../types";
-import { Map, Popup } from "maplibre-gl";
+import { CafeScrollerProps, NewCoffeeShop } from "../../../types";
 import { flyToCafe, showCafePopup } from "./mapFns";
 import useMapStore from "../../store/useMapStore";
 
 
-interface CafeScrollerProps {
-  visibleCafes: NewCoffeeShop[];
-  map: Map | null;
-  popupRef: React.RefObject<Popup>;
-};
-
-const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef }) => {
+const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
   const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
@@ -45,7 +38,7 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
     }
   };
 
-    const handleClickCafe = (cafe: NewCoffeeShop) => {
+  const handleClickCafe = (cafe: NewCoffeeShop) => {
     if (!map) return;
 
     // clear selected neighborhood if cafe is outside it
@@ -55,10 +48,10 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
 
     // fly to and show popup
     flyToCafe(map, cafe, 14);
-    showCafePopup(map, popupRef, cafe);
+    showCafePopup(map, cafe);
   };
 
-  const containerHeight = scrollerOpen ? "12vh" : "1.5rem";
+  const containerHeight = scrollerOpen ? "9vh" : "1.2rem";
 
   return (
     <Box
@@ -79,7 +72,6 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
         transition: "height 0.3s ease, padding 0.3s ease",
       }}
     >
-
       {/* handle when closed */}
       <IconButton
         onClick={scrollerOpen ? closeScroller : openScroller}
@@ -157,7 +149,6 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
               }}
               elevation={3}
             >
-      
               <CardContent
                 sx={{
                   display: "flex",
@@ -181,8 +172,7 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
                 >
                   {cafe.name || "Unnamed Cafe"}
                 </Typography>
-
-              {/* row 2— icons */}
+              {/* row 2: icons */}
                 <Box
                   sx={{
                     display: "flex",
@@ -193,40 +183,24 @@ const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map, popupRef
                     color: "#555",
                   }}
                 >
-                  {/* Coffee */}
                   <Tooltip title="Coffee-focused" arrow>
                     <LocalCafeIcon sx={{ fontSize: 16 }} />
                   </Tooltip>
 
                   {/* TODO: update this to reflect matcha specialty or matcha recommended */}
-                  {/* Matcha */}
                   {cafe.matcha && (
                     <Tooltip title="High-Quality Matcha" arrow>
                       <SpaIcon sx={{ fontSize: 16 }} />
                     </Tooltip>
                   )}
 
-                  {/* Parking */}
                   {cafe.parking && (
                     <Tooltip title="Parking available" arrow>
                       <LocalParkingIcon sx={{ fontSize: 16 }} />
                     </Tooltip>
                   )}
                 </Box>
-
-                {/* row 3 */}
-                <Typography
-                  sx={{
-                    textAlign: "center",
-                    fontSize: "0.75rem",
-                    fontWeight: "600",
-                  }}
-                >
-                  {`${cafe.neighborhood && cafe.neighborhood !== "unknown" ? cafe.neighborhood : ""}`}
-                </Typography>
-
               </CardContent>
-
             </Card>
           ))}
         </Box>

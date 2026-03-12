@@ -4,22 +4,31 @@ import AddIcon from "@mui/icons-material/Add";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CoffeeIcon from "@mui/icons-material/Coffee";
 import "../styles/MenuBar.css";
-import NewCafeDialog from "./NewCafeDialog"
+import NewCafeDialog from "./NewCafeDialog";
 import useMapStore from "../store/useMapStore";
-import CafeDetailsModal from "./CafeDetailsModal"
+import FavoritesModal from "./FavoritesModal";
 
 
 const TopMenu = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [favoritesOpen, setFavoritesOpen] = useState(false);
+
   const map = useMapStore((state) => state.map);
   const neighborhoods = useMapStore((state) => state.neighborhoods);
+  const cafes = useMapStore((state) => state.cafes);
 
   const neighborhoodOptions = useMemo(() => {
+    if (!neighborhoods?.features) return [];
+
+    const neighborhoodsWithCafes = new Set(
+      cafes.map((cafe) => cafe.neighborhood).filter(Boolean)
+    );
+
     return neighborhoods?.features
-      .filter((f) => f.properties?.name)
+      .filter((f) => f.properties?.name && neighborhoodsWithCafes.has(f.properties.name))
       .sort((a, b) => a.properties.name > b.properties.name ? 1 : -1)
       || [];
-  }, [neighborhoods]);
+  }, [neighborhoods, cafes]);
 
   const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
   const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
@@ -44,7 +53,7 @@ const TopMenu = () => {
         sx={{ backgroundColor: "#b23a48" }}
         className="top-menu"
       >
-        <Toolbar>
+        <Toolbar disableGutters sx={{ px: 0.5 }}>
           <Button
             color="inherit"
             onClick={() => {
@@ -71,8 +80,8 @@ const TopMenu = () => {
             onClick={handleDialogOpen}
             sx={{
               ml: 1,
-          pl: { xs: "1rem", sm: "3rem", md: "4rem" },
-          pr: { xs: "1.5rem", sm: "4rem", md: "5rem" }, 
+              pl: { xs: "1rem", sm: "3rem", md: "4rem" },
+              pr: { xs: "1.5rem", sm: "4rem", md: "5rem" }, 
               fontSize: "0.95rem",
               textTransform: "none",
               letterSpacing: 1,
@@ -81,7 +90,7 @@ const TopMenu = () => {
               "&:hover": { backgroundColor: "rgba(255,255,255,0.2)" },
             }}
           >
-            🔍 Find a Cafe
+            Find a Cafe
           </Button>
 
           <Autocomplete
@@ -159,9 +168,6 @@ const TopMenu = () => {
 
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* <Button color="inherit" onClick={handleDialogOpen}>
-            Suggest New
-          </Button> */}
           <IconButton
             color="inherit"
             onClick={handleDialogOpen}
@@ -170,16 +176,19 @@ const TopMenu = () => {
             <AddIcon />
           </IconButton>
 
-          <IconButton color="inherit" sx={{ ml: 1 }}>
+          <IconButton color="inherit" onClick={() => setFavoritesOpen(true)} sx={{ ml: 1 }}>
             <FavoriteIcon />
           </IconButton>
 
         </Toolbar>
       </AppBar>
+
       <NewCafeDialog
         open={dialogOpen}
         onClose={handleDialogClose}
       />
+
+      <FavoritesModal open={favoritesOpen} onClose={() => setFavoritesOpen(false)} />
     </>
   );
 };

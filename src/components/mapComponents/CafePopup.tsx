@@ -5,15 +5,12 @@ import PowerIcon from "@mui/icons-material/Power";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import WcIcon from "@mui/icons-material/Wc";
 import DeckIcon from "@mui/icons-material/Deck";
-import { NewCoffeeShop } from "../../../types";
+import { CafePopupProps } from "../../../types";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import useMapStore from "../../store/useMapStore";
 import { focusCafeIfNeeded } from "./mapFns";
 
-interface CafePopupProps {
-  cafe: NewCoffeeShop;
-  coordinates: any;
-}
 
 const CafePopup: React.FC<CafePopupProps> = ({ cafe }) => {
   const { 
@@ -28,8 +25,8 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe }) => {
     matcha,
     matcha_brand,
   } = cafe;
-
-  const { openCafeDetails } = useMapStore();
+  const { openCafeDetails, addFavorite, removeFavorite, isFavorite } = useMapStore();
+  const favorited = isFavorite(cafe.id);
 
   return (
     <Box
@@ -61,10 +58,9 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe }) => {
           textOverflow: "ellipsis",
         }}
       >
-        {name || "Unnamed Cafe"}
+        {name || "Mystery Cafe"}
       </Typography>
 
-      {/* badges */}
       <Stack direction="row" spacing={0.75} alignItems="center">
         {specialty && (
           <Tooltip title="Specialty coffee">
@@ -122,7 +118,6 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe }) => {
         )}
       </Stack>
 
-      {/* amenities */}
       <Stack
         direction="row"
         spacing={0.75}
@@ -136,13 +131,12 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe }) => {
         {bathroom && <Tooltip title="Bathroom"><WcIcon fontSize="small" /></Tooltip>}
       </Stack>
 
-      {/* actions */}
-
       <Stack direction="row" spacing={1}>
         <Button
           variant="outlined"
           size="small"
-          startIcon={<FavoriteBorderIcon />}
+          startIcon={favorited ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          onClick={() => favorited ? removeFavorite(cafe.id) : addFavorite(cafe)}
           sx={{
             borderColor: "#b23a62",
             borderWidth: "1.5px",
@@ -164,7 +158,7 @@ const CafePopup: React.FC<CafePopupProps> = ({ cafe }) => {
             },
           }}
         >
-          Save
+          { favorited ? "Saved" : "Save" }
         </Button>
 
         <Button

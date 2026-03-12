@@ -1,3 +1,5 @@
+import { Map, Popup } from "maplibre-gl";
+
 export interface NewCoffeeShop {
   id: string;
   name: string;
@@ -91,4 +93,20 @@ export type UpdateCafeDialogProps = {
 export type NewCafeDialogProps = {
   open: boolean;
   onClose: () => void;
+};
+
+export interface FavoritesModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export interface CafePopupProps {
+  cafe: NewCoffeeShop;
+  coordinates: any;
+}
+
+export interface CafeScrollerProps {
+  visibleCafes: NewCoffeeShop[];
+  map: Map | null;
+  popupRef: React.RefObject<Popup>;
 };
