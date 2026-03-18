@@ -22,6 +22,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { useState, ChangeEvent } from "react";
 import { NewCoffeeShop, BathroomAccess, NewCafeDialogProps } from "../../types.ts";
+import { getNeighborhoodForCafe } from "./mapComponents/mapFns.tsx";
 
 // TODO: make alt milk charge a boolean instead (fe, be, db)
 
@@ -146,7 +147,11 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
 
   const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: checked }));
+      setFormData(prev => ({
+      ...prev,
+      [name]: checked,
+      ...(name === "bathroom" && !checked ? { bathroom_access: "" } : {}),
+    }));
   };
 
   const handleSearch = async () => {
@@ -193,7 +198,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
       name: formData.name,
       address: formData.address || undefined,
       coordinates: [parseFloat(formData.longitude), parseFloat(formData.latitude)],
-      neighborhood: formData.neighborhood || undefined,
+      neighborhood: getNeighborhoodForCafe([parseFloat(formData.longitude), parseFloat(formData.latitude)]) || formData.neighborhood || undefined,
       website: formData.website || undefined,
       opening_hours: formData.opening_hours || undefined,
       phone: formData.phone || undefined,

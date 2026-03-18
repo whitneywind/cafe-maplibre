@@ -83,6 +83,7 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
     [Math.min(...lngs), Math.min(...lats)],
     [Math.max(...lngs), Math.max(...lats)],
   ] as [[number, number], [number, number]];
+  
   map.fitBounds(bounds, {
     padding: 100,
     maxZoom: 16,

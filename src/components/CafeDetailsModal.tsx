@@ -196,19 +196,17 @@ const CafeDetailsModal: React.FC = () => {
                     {coffee_rec && (
                         <Chip
                             label="Coffee Recommended"
-                            sx={{ fontWeight: "bold", color: "#73492b", bgcolor: "transparent", border: "none" }}
+                            sx={{ fontWeight: "bold", color: "#5d361b", bgcolor: "transparent", border: "none" }}
                         />
                     )}
                     {matcha_rec && matcha && (
                         <Chip
-                            icon={<SpaIcon />}
                             label="Matcha Recommended"
                             sx={{ fontWeight: "bold", color: "#358725", bgcolor: "transparent", border: "none" }}
                         />
                     )}
                     {specialty && (
                         <Chip
-                            icon={<LocalCafeIcon sx={{ color: "#6f4e37 !important" }} />}
                             label="Specialty Coffee"
                             sx={{ fontWeight: "bold", color: "#6f4e37", bgcolor: "transparent", border: "none" }}
                         />
