@@ -9,10 +9,11 @@ import { flyToCafe, showCafePopup } from "./mapFns";
 import useMapStore from "../../store/useMapStore";
 
 
-const CafeScroller: React.FC<CafeScrollerProps> = ({ visibleCafes, map }) => {
+const CafeScroller: React.FC<CafeScrollerProps> = ({ map }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
   const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
+  const visibleCafes = useMapStore((state) => state.visibleCafes);
 
   const scrollerOpen = useMapStore((state) => state.scrollerOpen);
   const openScroller = useMapStore((state) => state.openScroller);

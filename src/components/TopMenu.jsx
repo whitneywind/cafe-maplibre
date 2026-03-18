@@ -7,11 +7,13 @@ import "../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog";
 import useMapStore from "../store/useMapStore";
 import FavoritesModal from "./FavoritesModal";
+import SearchModal from "./SearchModal";
 
 
 const TopMenu = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const map = useMapStore((state) => state.map);
   const neighborhoods = useMapStore((state) => state.neighborhoods);
@@ -25,9 +27,9 @@ const TopMenu = () => {
     );
 
     return neighborhoods?.features
-      .filter((f) => f.properties?.name && neighborhoodsWithCafes.has(f.properties.name))
-      .sort((a, b) => a.properties.name > b.properties.name ? 1 : -1)
-      || [];
+    .filter((f) => f.properties?.name && neighborhoodsWithCafes.has(f.properties.name))
+    .sort((a, b) => a.properties.name > b.properties.name ? 1 : -1)
+    || [];
   }, [neighborhoods, cafes]);
 
   const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
@@ -77,11 +79,10 @@ const TopMenu = () => {
 
           <Button
             color="inherit"
-            onClick={handleDialogOpen}
+            onClick={() => setSearchOpen(true)}
             sx={{
               ml: 1,
-              pl: { xs: "1rem", sm: "3rem", md: "4rem" },
-              pr: { xs: "1.5rem", sm: "4rem", md: "5rem" }, 
+              px: { xs: "1.5rem", sm: "2.5rem", md: "3rem" }, 
               fontSize: "0.95rem",
               textTransform: "none",
               letterSpacing: 1,
@@ -97,7 +98,7 @@ const TopMenu = () => {
             options={neighborhoodOptions}
             getOptionLabel={(option) => option?.properties.name || ""}
               sx={{
-                minWidth: 100,
+                minWidth: 120,
                 width: "auto",
                 mx: "10px",
                 "& .MuiInputBase-root": {
@@ -183,11 +184,8 @@ const TopMenu = () => {
         </Toolbar>
       </AppBar>
 
-      <NewCafeDialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-      />
-
+      <NewCafeDialog open={dialogOpen} onClose={handleDialogClose} />
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <FavoritesModal open={favoritesOpen} onClose={() => setFavoritesOpen(false)} />
     </>
   );

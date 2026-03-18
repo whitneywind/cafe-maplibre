@@ -8,6 +8,26 @@ import { Feature, MultiPolygon, Point } from "geojson";
 import CafePopup from "./CafePopup";
 import UpdateCafeDialog from "./UpdateCafeDialog";
 
+// todo: use this in showselectedneighborhood and in searchmodal
+export function fitMapToBounds(
+  map: Map,
+  lngs: number[],
+  lats: number[],
+  options?: { maxZoom?: number; pitch?: number }
+) {
+  const mapHeight = map.getContainer().clientHeight;
+  const yOffset = mapHeight * 0.05;
+
+  map.fitBounds(
+    [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
+    {
+      padding: 100,
+      maxZoom: options?.maxZoom ?? 14,
+      pitch: options?.pitch ?? 0,
+      offset: [0, -yOffset],
+    }
+  );
+}
 
 // fn to determine the neighborhood for a given cafe
 export const getNeighborhoodForCafe = (cafeCoordinates: Coordinates) => {
@@ -66,6 +86,7 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
   map.fitBounds(bounds, {
     padding: 100,
     maxZoom: 16,
+    pitch: 0,
     offset: [0, -yOffset] // to account for cafe scroller on bottom
   });
 
@@ -99,6 +120,7 @@ export function flyToCafe(map: Map, cafe: NewCoffeeShop, zoom = 14, popupRef?: P
   map.flyTo({
     center: cafe.coordinates,
     zoom,
+    pitch: 0,
     speed: 0.7,
     curve: 1.8,
     essential: true,
@@ -288,4 +310,37 @@ export const fetchNeighborhoods = async (map: maplibregl.Map | null) => {
   } catch (error) {
     console.error("Error fetching neighborhoods:", error);
   }
+};
+
+export function applySearchFilters(map: Map, filters: {
+  name?: string;
+  neighborhood?: any;
+  activeFilters?: string[];
+  filteredIds?: string[];  // ✅ add this
+}) {
+  if (!map) return;
+
+  const { neighborhood, activeFilters = [], filteredIds } = filters;
+  const hasFilters = filteredIds !== undefined;
+
+  if (!hasFilters) {
+    // reset
+    map.setFilter("regular-cafes", ["!=", ["get", "specialty"], true]);
+    map.setFilter("specialty-cafes", ["==", ["get", "specialty"], true]);
+    map.setLayoutProperty("polygon-layer", "visibility", "none");
+    return;
+  }
+
+  // filter by exact IDs from the search results
+  const regularFilter = ["all",
+    ["in", ["get", "id"], ["literal", filteredIds]],
+    ["!=", ["get", "specialty"], true]
+  ];
+  const specialtyFilter = ["all",
+    ["in", ["get", "id"], ["literal", filteredIds]],
+    ["==", ["get", "specialty"], true]
+  ];
+
+  map.setFilter("regular-cafes", regularFilter as any);
+  map.setFilter("specialty-cafes", specialtyFilter as any);
 };

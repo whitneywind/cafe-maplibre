@@ -5,7 +5,7 @@ import CafeScroller from "./mapComponents/CafeScroller.tsx"
 import coffeeSVG from "../assets/icons/coffee2.svg";
 import specialtySVG from "../assets/icons/specialty.svg";
 import useMapStore from "../store/useMapStore";
-import { fetchCafes, fetchNeighborhoods, flyToCafe, showCafePopup, showSelectedNeighborhood } from "./mapComponents/mapFns.js";
+import { fetchCafes, fetchNeighborhoods, flyToCafe, showCafePopup, showSelectedNeighborhood, applySearchFilters } from "./mapComponents/mapFns.js";
 
 
 export default function MapComponent() {
@@ -13,7 +13,12 @@ export default function MapComponent() {
   const map = useMapStore((state) => state.map);
   const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
   const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
-  const [visibleCafes, setVisibleCafes] = useState([]);
+  // const [visibleCafes, setVisibleCafes] = useState([]);
+  const setVisibleCafes = useMapStore((state) => state.setVisibleCafes);
+  const searchFiltersActive = useMapStore((state) => state.searchFiltersActive);
+  const setSearchFiltersActive = useMapStore((state) => state.setSearchFiltersActive);
+  const cafes = useMapStore((state) => state.cafes);
+
   const mapContainer = useRef(null);
 
   useEffect(() => {
@@ -34,7 +39,7 @@ export default function MapComponent() {
             tileSize: 256,
             attribution:
               '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-            maxzoom: 19
+            maxzoom: 18
           }
         },
         layers: [
@@ -155,20 +160,15 @@ export default function MapComponent() {
 
         // update cafes visible in bottom scroller when map moves
         const updateVisibleCafes = () => {
-          const bounds = newMap.getBounds();
-          const features = newMap.querySourceFeatures("cafes");
-
-          const visible = features.filter((f) => {
-            const [lng, lat] = f.geometry.coordinates;
-            return bounds.contains([lng, lat]);
-          });
+            const features = newMap.queryRenderedFeatures(undefined, {
+              layers: ["regular-cafes", "specialty-cafes"],
+            });
 
           const processedCafes = Array.from(
             new Map(
-              visible.map((f) => {
+              features.map((f) => {
                 const coordinates = f.geometry.coordinates;
-                // const neighborhood = getNeighborhoodForCafe(coordinates); // calculates neighborhood
-                const neighborhood = f.properties.neighborhood; // get neighborhood from cafe property
+                const neighborhood = f.properties.neighborhood;
 
                 return [
                   f.properties.id || f.properties.name,
@@ -279,30 +279,35 @@ export default function MapComponent() {
         // onLoad={onLoad}
       />
 
-      {selectedNeighborhood && (
+      {(searchFiltersActive || selectedNeighborhood) && (
         <button
-          onClick={() => setSelectedNeighborhood(null)}
+          onClick={() => {
+            setVisibleCafes(cafes);
+            setSelectedNeighborhood(null);
+            if (map) applySearchFilters(map, {});
+            setSearchFiltersActive(false);
+          }}
           style={{
-          position: "absolute",
-          bottom: "150px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          padding: "8px 16px",
-          backgroundColor: "#b23a48",
-          color: "#fff",
-          border: "none",
-          borderRadius: "20px",
-          cursor: "pointer",
-          fontSize: "0.9em",
-          zIndex: 1000,
-          boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+            position: "absolute",
+            bottom: "150px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            padding: "8px 16px",
+            backgroundColor: "#b23a48",
+            color: "#fff",
+            border: "none",
+            borderRadius: "20px",
+            cursor: "pointer",
+            fontSize: "0.9em",
+            zIndex: 1000,
+            boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
           }}
         >
-          Clear Neighborhood
+          Clear Filters
         </button>
       )}
       
-      <CafeScroller map={map} visibleCafes={visibleCafes} />
+      <CafeScroller map={map} />
     </>
   );
 }

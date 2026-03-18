@@ -42,7 +42,6 @@ export interface NewCoffeeShop {
   created_at?: string;
 }
 
-
 export type BathroomAccess = "open" | "needs-key-code" | "unavailable";
 
 export type Coordinates = [number, number];
@@ -58,6 +57,10 @@ export interface Neighborhood {
     coordinates: number[][][][]; 
     // Structure: [ [ [ [lng, lat], ... ] ] ] for multi-polygons
   };
+  properties: {
+    id: number;
+    name: string;
+  }
 }
 
 export interface NeighborhoodCollection {
@@ -110,3 +113,8 @@ export interface CafeScrollerProps {
   map: Map | null;
   popupRef: React.RefObject<Popup>;
 };
+
+export interface SearchModalProps {
+  open: boolean;
+  onClose: () => void;
+}

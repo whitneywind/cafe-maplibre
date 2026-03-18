@@ -195,19 +195,15 @@ const CafeDetailsModal: React.FC = () => {
                 <Box sx={{ mt: 1, display: "flex", justifyContent: "center", gap: 2 }}>
                     {coffee_rec && (
                         <Chip
-                            icon={<LocalCafeIcon />}
                             label="Coffee Recommended"
-                            color="error"
-                            sx={{ fontWeight: "bold" }}
+                            sx={{ fontWeight: "bold", color: "#73492b", bgcolor: "transparent", border: "none" }}
                         />
                     )}
                     {matcha_rec && matcha && (
                         <Chip
                             icon={<SpaIcon />}
                             label="Matcha Recommended"
-                            color="info"
-                            variant="outlined"
-                            sx={{ fontWeight: "bold" }}
+                            sx={{ fontWeight: "bold", color: "#358725", bgcolor: "transparent", border: "none" }}
                         />
                     )}
                     {specialty && (
@@ -286,7 +282,7 @@ const CafeDetailsModal: React.FC = () => {
                         </Box>
                     </Grid>
 
-                    {/* right column: Location + Contact stacked */}
+                    {/* right column: location + contact stacked */}
                     <Grid size={{ xs: 12, sm: 4 }} container direction="column" spacing={2} sx={{ order: { xs: 3, sm: 2 } }}>
 
                         {/* location */}
@@ -320,7 +316,7 @@ const CafeDetailsModal: React.FC = () => {
                             </Box>
                         </Grid>
 
-                        {/* contact & notes */}
+                        {/* contact & buttons */}
                         <Grid size={{ xs: 12 }}>
                             <Box
                                 sx={{
@@ -416,7 +412,7 @@ const CafeDetailsModal: React.FC = () => {
                                     </Box>
                                 </Grid>
 
-                            {/* right Column: Milks & Popular Items */}
+                            {/* right column: milks & popular items */}
                             <Grid size={{ xs: 12, sm: 6 }}>
                                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                     {specialty && (
@@ -427,7 +423,7 @@ const CafeDetailsModal: React.FC = () => {
                                     />
                                     )}
                                     
-                                    {/* alt Milks */}
+                                    {/* alt milks */}
                                     <InfoLine 
                                         icon={<FavoriteBorderIcon sx={{ color: "#b23a48" }} />} 
                                         label="Alt Milks" 
@@ -446,7 +442,7 @@ const CafeDetailsModal: React.FC = () => {
                                         )}
                                     />
 
-                                    {/* popular Items */}
+                                    {/* popular items */}
                                     <InfoLine 
                                         icon={<StarIcon sx={{ color: "#ed6c02" }} />} 
                                         label="Popular Items" 

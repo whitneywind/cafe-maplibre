@@ -9,6 +9,12 @@ interface MapStore {
   cafes: NewCoffeeShop[];
   setCafes: (cafes: NewCoffeeShop[]) => void;
 
+  visibleCafes: NewCoffeeShop[];
+  setVisibleCafes: (cafes: NewCoffeeShop[]) => void;
+
+  searchFiltersActive: boolean;
+  setSearchFiltersActive: (active: boolean) => void;
+
   cafeDetailsOpen: boolean;
   selectedCafe: NewCoffeeShop | null;
   updateSelectedCafe: (cafe: NewCoffeeShop) => void;
@@ -45,6 +51,12 @@ const useMapStore = create<MapStore>((set, get) => ({
 
   cafes: [],
   setCafes: (cafes) => set({ cafes }),
+
+  visibleCafes: [],
+  setVisibleCafes: (cafes) => set({ visibleCafes: cafes }),
+
+  searchFiltersActive: false,
+  setSearchFiltersActive: (active) => set({ searchFiltersActive: active }),
 
   cafeDetailsOpen: false,
   selectedCafe: null,
