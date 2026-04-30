@@ -42,7 +42,7 @@ export interface NewCoffeeShop {
   created_at?: string;
 }
 
-export type BathroomAccess = "open" | "needs-key-code" | "unavailable";
+export type BathroomAccess = "open" | "key-required" | "password-required" | "unavailable";
 
 export type Coordinates = [number, number];
 

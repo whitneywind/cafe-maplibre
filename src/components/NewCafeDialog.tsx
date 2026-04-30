@@ -110,7 +110,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
     parking: "",
     closest_metro: "",
     bathroom: false,
-    bathroom_access: "" as BathroomAccess | "",
+    bathroom_access: "",
 
     specialty: false,
     coffee_rec: false,
@@ -150,7 +150,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
       setFormData(prev => ({
       ...prev,
       [name]: checked,
-      ...(name === "bathroom" && !checked ? { bathroom_access: "" } : {}),
+      ...(name === "bathroom" && !checked ? { bathroom_access: undefined } : {}),
     }));
   };
 
@@ -206,7 +206,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
       parking: formData.parking || undefined,
       closest_metro: formData.closest_metro || undefined,
       bathroom: formData.bathroom ?? undefined,
-      bathroom_access: formData.bathroom_access || undefined,
+      bathroom_access: (formData.bathroom && formData.bathroom_access) ? formData.bathroom_access as BathroomAccess : undefined,
       specialty: formData.specialty,
       coffee_rec: formData.coffee_rec,
       matcha_rec: formData.matcha_rec,
@@ -256,7 +256,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
         parking: "",
         closest_metro: "",
         bathroom: false,
-        bathroom_access: "" as BathroomAccess | "",
+        bathroom_access: "",
         specialty: false,
         coffee_rec: false,
         matcha_rec: false,
@@ -460,10 +460,10 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
                   onChange={handleTextChange}
                   sx={{ minWidth: 160 }}
                 >
-                  <MenuItem value="free">Free</MenuItem>
-                  <MenuItem value="paid">Requires Code/Key</MenuItem>
-                  <MenuItem value="paid">Paid</MenuItem>
-                  <MenuItem value="paid">Outside cafe</MenuItem>
+                  <MenuItem value="open">Open</MenuItem>
+                  <MenuItem value="key-required">Requires Key</MenuItem>
+                  <MenuItem value="password-required">Requires Password</MenuItem>
+                  <MenuItem value="unavailable">Unavailable</MenuItem>
                 </TextField>
               )}
             </Box>

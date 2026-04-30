@@ -3,6 +3,19 @@ import pool from "../db/pool.js";
 
 const router = Router();
 
+const BATHROOM_ACCESS_VALUES = new Set([
+  "open",
+  "key-required",
+  "password-required",
+  "unavailable",
+]);
+
+const normalizeBathroomAccess = (value) => {
+  return typeof value === "string" && BATHROOM_ACCESS_VALUES.has(value)
+    ? value
+    : null;
+};
+
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(`
@@ -63,6 +76,8 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
+  const normalizedBathroomAccess = normalizeBathroomAccess(bathroom_access);
+
   try {
     await pool.query(
       `INSERT INTO cafes (
@@ -99,7 +114,7 @@ router.post("/", async (req, res) => {
         latte_price || null,
         Array.isArray(popular_items) ? popular_items : null,
         bathroom ?? null,
-        bathroom_access || null,
+        normalizedBathroomAccess,
         indoor_seating ?? null,
         outdoor_seating ?? null,
         wifi ?? null,
@@ -163,6 +178,8 @@ router.put("/:id", async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
+  const normalizedBathroomAccess = normalizeBathroomAccess(bathroom_access);
+
   try {
     const result = await pool.query(
       `UPDATE cafes
@@ -214,7 +231,7 @@ router.put("/:id", async (req, res) => {
         latte_price || null,
         Array.isArray(popular_items) ? popular_items : null,
         bathroom ?? null,
-        bathroom_access || null,
+        normalizedBathroomAccess,
         indoor_seating ?? null,
         outdoor_seating ?? null,
         wifi ?? null,

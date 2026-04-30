@@ -1,5 +1,3 @@
-# React + JS/TS + PostgreSQL
-
 # Coffeeshop Map
 
 An interactive map for coffeeshops to explore, filter, and save spots across Los Angeles neighborhoods.
