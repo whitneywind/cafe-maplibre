@@ -330,7 +330,8 @@ export function applySearchFilters(map: Map, filters: {
 }) {
   if (!map) return;
 
-  const { neighborhood, activeFilters = [], filteredIds } = filters;
+  // const { neighborhood, activeFilters = [], filteredIds } = filters;
+  const { filteredIds } = filters;
   const hasFilters = filteredIds !== undefined;
 
   if (!hasFilters) {
