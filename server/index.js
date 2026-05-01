@@ -4,6 +4,8 @@ import cors from "cors";
 import cafesRouter from "./routes/cafes.js";
 import neighborhoodsRouter from "./routes/neighborhoods.js";
 import { adminAuth } from "./middleware/adminAuth.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
@@ -56,6 +58,15 @@ app.get("/api/geocode", async (req, res) => {
     console.error("Geocode proxy error:", err);
     res.status(500).json({ error: "Failed to fetch geocoding data" });
   }
+});
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// serve frontend
+app.use(express.static(path.join(__dirname, "../dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
 const port = process.env.PORT || 3000;
