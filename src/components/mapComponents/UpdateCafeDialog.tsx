@@ -52,11 +52,19 @@ export default function UpdateCafeDialog({
     const updatedCafe = { ...formData, popular_items: popularItemsArray };
 
     try {
-        const res = await fetch(`http://localhost:3000/api/cafes/${formData.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedCafe),
-        });
+      const res = await fetch(`/api/cafes/${formData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-secret": import.meta.env.VITE_ADMIN_SECRET,
+        },
+        body: JSON.stringify(updatedCafe),
+      });
+        // const res = await fetch(`http://localhost:3000/api/cafes/${formData.id}`, {
+        //     method: "PUT",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify(updatedCafe),
+        // });
 
         if (!res.ok) {
             throw new Error("Failed to update cafe");

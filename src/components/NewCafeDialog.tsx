@@ -227,11 +227,19 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/api/cafes", {
+      const res = await fetch("/api/cafes", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-secret": import.meta.env.VITE_ADMIN_SECRET,
+        },
         body: JSON.stringify(newCafe),
       });
+      // const res = await fetch("http://localhost:3000/api/cafes", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(newCafe),
+      // });
 
       if (!res.ok) {
         throw new Error("Failed to add cafe");

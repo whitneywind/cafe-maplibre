@@ -177,9 +177,15 @@ export async function deleteCafe(
 ) {
   try {
     // delete from DB
-    const res = await fetch(`http://localhost:3000/api/cafes/${id}`, {
+    const res = await fetch(`/api/cafes/${id}`, {
       method: "DELETE",
+      headers: {
+        "x-admin-secret": import.meta.env.VITE_ADMIN_SECRET,
+      },
     });
+    // const res = await fetch(`http://localhost:3000/api/cafes/${id}`, {
+    //   method: "DELETE",
+    // });
 
     if (!res.ok) {
       throw new Error(`Failed to delete cafe: ${res.statusText}`);
@@ -263,7 +269,8 @@ export const fetchCafes = async (map: maplibregl.Map | null) => {
   if (!map) return;
 
   try {
-    const response = await fetch("http://localhost:3000/api/cafes");
+    const response = await fetch("/api/cafes");
+    // const response = await fetch("http://localhost:3000/api/cafes");
     if (!response.ok) {
       throw new Error(`Failed to fetch cafes: ${response.statusText}`);
     }
@@ -291,7 +298,9 @@ export const fetchNeighborhoods = async (map: maplibregl.Map | null) => {
   const setNeighborhoods = useMapStore.getState().setNeighborhoods;
 
   try {
-    const response = await fetch("http://localhost:3000/api/neighborhoods");
+    const response = await fetch("/api/neighborhoods");
+
+    // const response = await fetch("http://localhost:3000/api/neighborhoods");
       if (!response.ok) {
       throw new Error(`Failed to fetch neighborhoods: ${response.statusText}`);
     }

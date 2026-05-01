@@ -1,5 +1,6 @@
 import { Router } from "express";
 import pool from "../db/pool.js";
+import { adminAuth } from "../middleware/adminAuth.js";
 
 const router = Router();
 
@@ -38,7 +39,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", adminAuth, async (req, res) => {
   const {
     id,
     name,
@@ -139,7 +140,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", adminAuth, async (req, res) => {
   const { id } = req.params;
 
   const {
@@ -261,7 +262,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", adminAuth, async (req, res) => {
   const { id } = req.params;
   console.log("id in cafes.js: ", id)
 

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cafesRouter from "./routes/cafes.js";
 import neighborhoodsRouter from "./routes/neighborhoods.js";
+import { adminAuth } from "./middleware/adminAuth.js";
 
 dotenv.config();
 
