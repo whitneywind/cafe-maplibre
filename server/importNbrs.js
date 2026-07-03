@@ -15,7 +15,10 @@ const data = JSON.parse(rawData);
 
 async function importNeighborhoods() {
   for (const feature of data.features) {
-    const name = feature.name || "unknown";
+    const name =
+      feature.name ||
+      feature.properties?.name ||
+      "unknown";
     const geojsonString = JSON.stringify(feature.geometry);
 
     try {
