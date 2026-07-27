@@ -4,14 +4,15 @@ dotenv.config();
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import pool from "./db/pool.js";
+import pool from "../db/pool.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const jsonPath = path.join(__dirname, "../src/assets/neighborhoods/nbrs.json");
+const jsonPath = path.join(__dirname, "../../src/assets/neighborhoods/nbrhd_boundaries.json");
 const rawData = fs.readFileSync(jsonPath, "utf8");
 const data = JSON.parse(rawData);
+console.log(`Found ${data.features.length} features.`);
 
 async function importNeighborhoods() {
   for (const feature of data.features) {
@@ -19,7 +20,17 @@ async function importNeighborhoods() {
       feature.name ||
       feature.properties?.name ||
       "unknown";
-    const geojsonString = JSON.stringify(feature.geometry);
+    
+    let geometry = feature.geometry;
+
+    if (geometry.type === "Polygon") {
+      geometry = {
+        type: "MultiPolygon",
+        coordinates: [geometry.coordinates],
+      };
+    }
+
+    const geojsonString = JSON.stringify(geometry);
 
     try {
       await pool.query(

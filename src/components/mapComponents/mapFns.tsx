@@ -300,12 +300,14 @@ export const fetchNeighborhoods = async (map: maplibregl.Map | null) => {
   try {
     const response = await fetch("/api/neighborhoods");
 
-    // const response = await fetch("http://localhost:3000/api/neighborhoods");
-      if (!response.ok) {
+    if (!response.ok) {
       throw new Error(`Failed to fetch neighborhoods: ${response.statusText}`);
     }
 
     const neighborhoodsGeoJSON = await response.json();
+
+    // console.log(neighborhoodsGeoJSON.features.length);
+    // console.log(neighborhoodsGeoJSON); 
 
     // set in zustand
     setNeighborhoods(neighborhoodsGeoJSON);
@@ -326,11 +328,10 @@ export function applySearchFilters(map: Map, filters: {
   name?: string;
   neighborhood?: any;
   activeFilters?: string[];
-  filteredIds?: string[];  // ✅ add this
+  filteredIds?: string[];
 }) {
   if (!map) return;
 
-  // const { neighborhood, activeFilters = [], filteredIds } = filters;
   const { filteredIds } = filters;
   const hasFilters = filteredIds !== undefined;
 

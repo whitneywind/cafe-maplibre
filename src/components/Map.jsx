@@ -13,7 +13,6 @@ export default function MapComponent() {
   const map = useMapStore((state) => state.map);
   const selectedNeighborhood = useMapStore((state) => state.selectedNeighborhood);
   const setSelectedNeighborhood = useMapStore((state) => state.setSelectedNeighborhood);
-  // const [visibleCafes, setVisibleCafes] = useState([]);
   const setVisibleCafes = useMapStore((state) => state.setVisibleCafes);
   const searchFiltersActive = useMapStore((state) => state.searchFiltersActive);
   const setSearchFiltersActive = useMapStore((state) => state.setSearchFiltersActive);

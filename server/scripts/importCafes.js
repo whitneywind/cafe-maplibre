@@ -4,21 +4,19 @@ dotenv.config();
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import pool from "./db/pool.js";
+import pool from "../db/pool.js";
 
 // this was used for initial db seeding and isnt part of the active site
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const jsonPath = path.join(__dirname, "../src/assets/json/ccafes.json");
 
-// Load your JSON file
-// const rawData = fs.readFileSync("../src/assets/json/ccafes.json");
+// load JSON 
 const rawData = fs.readFileSync(jsonPath, "utf8");
 const data = JSON.parse(rawData);
 
-// Map JSON features to your DB columns
+// map JSON features to DB columns
 function transformFeature(feature) {
   const p = feature.properties;
 
