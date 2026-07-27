@@ -1,4 +1,4 @@
-import useMapStore from "../../store/useMapStore";
+import useMapStore from "../../stores/useMapStore";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import maplibregl from "maplibre-gl";
 import { Map, LngLatLike, Popup } from "maplibre-gl";

@@ -4,8 +4,9 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import CafeScroller from "./mapComponents/CafeScroller.tsx"
 import coffeeSVG from "../assets/icons/coffee2.svg";
 import specialtySVG from "../assets/icons/specialty.svg";
-import useMapStore from "../store/useMapStore";
+import useMapStore from "../stores/useMapStore.ts";
 import { fetchCafes, fetchNeighborhoods, flyToCafe, showCafePopup, showSelectedNeighborhood, applySearchFilters } from "./mapComponents/mapFns.js";
+import { useAuthStore } from "../stores/authStore.js";
 
 
 export default function MapComponent() {
@@ -17,6 +18,9 @@ export default function MapComponent() {
   const searchFiltersActive = useMapStore((state) => state.searchFiltersActive);
   const setSearchFiltersActive = useMapStore((state) => state.setSearchFiltersActive);
   const cafes = useMapStore((state) => state.cafes);
+
+  // const { user } = useAuthStore();
+  // console.log(user);
 
   const mapContainer = useRef(null);
 

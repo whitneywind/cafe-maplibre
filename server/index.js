@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cafesRouter from "./routes/cafes.js";
 import neighborhoodsRouter from "./routes/neighborhoods.js";
+import usersRouter from "./routes/users.js";
 import { adminAuth } from "./middleware/adminAuth.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 // API routes
 app.use("/api/cafes", cafesRouter);
 app.use("/api/neighborhoods", neighborhoodsRouter);
+app.use('/api/users', usersRouter);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });

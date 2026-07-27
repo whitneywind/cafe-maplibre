@@ -6,7 +6,7 @@ import SpaIcon from "@mui/icons-material/Spa"; // matcha stand-in
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import { CafeScrollerProps, NewCoffeeShop } from "../../../types";
 import { flyToCafe, showCafePopup } from "./mapFns";
-import useMapStore from "../../store/useMapStore";
+import useMapStore from "../../stores/useMapStore";
 
 
 const CafeScroller: React.FC<CafeScrollerProps> = ({ map }) => {

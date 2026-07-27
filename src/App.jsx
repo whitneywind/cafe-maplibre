@@ -3,7 +3,7 @@ import "./App.css";
 import CafeDetailsModal from "./components/CafeDetailsModal";
 import MapComponent from "./components/Map";
 import TopMenu from "./components/TopMenu";
-import useMapStore from "./store/useMapStore";
+import useMapStore from "./stores/useMapStore";
 
 function App() {
     const cafeDetailsOpen = useMapStore((state) => state.cafeDetailsOpen);

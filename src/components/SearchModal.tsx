@@ -4,7 +4,7 @@ import {
   Autocomplete, Chip, Button, List, ListItem, ListItemButton, ListItemText
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import useMapStore from "../store/useMapStore";
+import useMapStore from "../stores/useMapStore";
 import { applySearchFilters, flyToCafe, showCafePopup } from "./mapComponents/mapFns";
 import { SearchModalProps } from "../../types";
 

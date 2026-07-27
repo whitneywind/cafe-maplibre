@@ -8,7 +8,7 @@ import {
   IconButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import useMapStore from "../store/useMapStore";
+import useMapStore from "../stores/useMapStore";
 import { flyToCafe, showCafePopup } from "./mapComponents/mapFns";
 import { FavoritesModalProps } from "../../types";
 

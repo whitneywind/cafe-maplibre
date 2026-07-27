@@ -1,5 +1,7 @@
 import { Router } from "express";
 import pool from "../db/pool.js";
+import { requireAuth } from '../middleware/requireAuth.js';
+import { requireRole } from '../middleware/requireRole.js';
 
 const router = Router();
 
@@ -32,7 +34,7 @@ router.get("/", async (req, res) => {
 });
 
 // POST /neighborhoods
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, requireRole('admin', 'moderator'), async (req, res) => {
   const { name, geometry } = req.body;
 
   try {

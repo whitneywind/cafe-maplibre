@@ -14,7 +14,7 @@ import {
 import { useState, ChangeEvent } from "react";
 import { NewCoffeeShop, UpdateCafeDialogProps } from "../../../types.ts";
 import { deleteCafe } from "./mapFns.tsx";
-import useMapStore from "../../store/useMapStore.ts";
+import useMapStore from "../../stores/useMapStore.ts";
 import { ALT_MILK_OPTIONS, AmenityCheckbox, Section } from "../NewCafeDialog.tsx";
 import { normalizeCafe } from "../../utils/dataNormalization.ts";
 

@@ -8,7 +8,7 @@ import DeckIcon from "@mui/icons-material/Deck";
 import { CafePopupProps } from "../../../types";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import useMapStore from "../../store/useMapStore";
+import useMapStore from "../../stores/useMapStore";
 import { focusCafeIfNeeded } from "./mapFns";
 
 

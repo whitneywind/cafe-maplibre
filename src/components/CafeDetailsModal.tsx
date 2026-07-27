@@ -18,7 +18,7 @@ import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import MapIcon from '@mui/icons-material/Map';
-import useMapStore from "../store/useMapStore";
+import useMapStore from "../stores/useMapStore";
 import { showUpdateCafeDialog } from "./mapComponents/mapFns";
 import WcIcon from "@mui/icons-material/Wc";
 import ChairIcon from "@mui/icons-material/Chair";

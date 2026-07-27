@@ -5,9 +5,10 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import CoffeeIcon from "@mui/icons-material/Coffee";
 import "../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog";
-import useMapStore from "../store/useMapStore";
+import useMapStore from "../stores/useMapStore";
 import FavoritesModal from "./FavoritesModal";
 import SearchModal from "./SearchModal";
+import { AuthMenu } from "./AuthMenu";
 
 
 const TopMenu = () => {
@@ -180,6 +181,8 @@ const TopMenu = () => {
           <IconButton color="inherit" onClick={() => setFavoritesOpen(true)} sx={{ ml: 1 }}>
             <FavoriteIcon />
           </IconButton>
+
+          <AuthMenu />
 
         </Toolbar>
       </AppBar>

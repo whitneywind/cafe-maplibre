@@ -1,6 +1,7 @@
 import { Router } from "express";
 import pool from "../db/pool.js";
-import { adminAuth } from "../middleware/adminAuth.js";
+import { requireAuth } from '../middleware/requireAuth.js';
+import { requireRole } from '../middleware/requireRole.js';
 
 const router = Router();
 
@@ -39,7 +40,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", adminAuth, async (req, res) => {
+router.post("/", requireAuth, requireRole('admin', 'moderator'), async (req, res) => {
   const {
     id,
     name,
@@ -140,7 +141,7 @@ router.post("/", adminAuth, async (req, res) => {
   }
 });
 
-router.put("/:id", adminAuth, async (req, res) => {
+router.put("/:id", requireAuth, requireRole('admin', 'moderator'), async (req, res) => {
   const { id } = req.params;
 
   const {
@@ -262,9 +263,8 @@ router.put("/:id", adminAuth, async (req, res) => {
   }
 });
 
-router.delete("/:id", adminAuth, async (req, res) => {
+router.delete("/:id", requireAuth, requireRole('admin', 'moderator'), async (req, res) => {
   const { id } = req.params;
-  console.log("id in cafes.js: ", id)
 
   try {
     const result = await pool.query(

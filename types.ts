@@ -69,23 +69,41 @@ export interface NeighborhoodCollection {
 }
 
 export interface User {
-  id: number;
+  id: string;              // UUID to match Supabase auth.users.id
   email: string;
-  passwordHash: string;
-  createdAt: string; // or Date if parse timestamps
+  createdAt: string;       // ISO timestamp
 
-  name?: string;
-  homeNeighborhood?: string;
-  bio?: string;
-  lastLogin?: string; // or Date
-  isAdmin: boolean;
+  name?: string | null;
+  homeNeighborhood?: string | null;
+  bio?: string | null;
+  role: 'user' | 'moderator' | 'admin';
 }
 
 export interface UserFavorite {
-  userId: number;
-  cafeId: string;
-  createdAt: string;
+  userId: string;   // UUID that references User.id
+  cafeId: string;   // matches Cafe.id (text)
+  createdAt: string; // ISO timestamp
 }
+
+// // old user types
+// export interface User {
+//   id: number;
+//   email: string;
+//   passwordHash: string;
+//   createdAt: string; // or Date if parse timestamps
+
+//   name?: string;
+//   homeNeighborhood?: string;
+//   bio?: string;
+//   lastLogin?: string; // or Date
+//   isAdmin: boolean;
+// }
+
+// export interface UserFavorite {
+//   userId: number;
+//   cafeId: string;
+//   createdAt: string;
+// }
 
 export type UpdateCafeDialogProps = {
   open: boolean;
