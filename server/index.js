@@ -11,12 +11,11 @@ dotenv.config();
 
 const app = express();
 
-// enable CORS for all origins (i'll restrict this later)
+// enable CORS for all origins (i'll restrict this later) ?
 app.use(cors());
 
 // basic middleware
 app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   console.log("Incoming request:", req.method, req.url);
@@ -43,7 +42,7 @@ app.get("/api/geocode", async (req, res) => {
       {
         headers: {
           "User-Agent": "coffeeshopmap", 
-          "Referer": "http://localhost:3000",
+          // "Referer": "http://localhost:3000", // TODO: ???
         },
   }
     );

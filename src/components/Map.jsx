@@ -6,7 +6,6 @@ import coffeeSVG from "../assets/icons/coffee2.svg";
 import specialtySVG from "../assets/icons/specialty.svg";
 import useMapStore from "../stores/useMapStore.ts";
 import { fetchCafes, fetchNeighborhoods, flyToCafe, showCafePopup, showSelectedNeighborhood, applySearchFilters } from "./mapComponents/mapFns.js";
-import { useAuthStore } from "../stores/authStore.js";
 
 
 export default function MapComponent() {
@@ -244,7 +243,7 @@ export default function MapComponent() {
         positionOptions: {
           enableHighAccuracy: true,
         },
-        trackUserLocation: false, // we only want a one-time fly
+        trackUserLocation: false, // only want a one-time fly
         showAccuracyCircle: false,
         showUserLocation: true,
       });

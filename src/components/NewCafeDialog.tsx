@@ -23,6 +23,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useState, ChangeEvent } from "react";
 import { NewCoffeeShop, BathroomAccess, NewCafeDialogProps } from "../../types.ts";
 import { getNeighborhoodForCafe } from "./mapComponents/mapFns.tsx";
+import useAuthStore from "../stores/useAuthStore.ts";
 
 // TODO: make alt milk charge a boolean instead (fe, be, db)
 
@@ -138,7 +139,11 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
   const [searchResults, setSearchResults] = useState<Array<{ display_name: string; lat: string; lon: string }>>([]);
   const [loading, setLoading] = useState(false);
   const [popularItemsInput, setPopularItemsInput] = useState(""); // it is an arr in the form and db but a str for input here
-  
+  const [submittedMessage, setSubmittedMessage] = useState<string | null>(null);
+
+  const { session, role, openAuthModal } = useAuthStore();
+  const loggedIn = !!session;
+  const isPrivileged = role === "admin" || role === "moderator";
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -180,6 +185,10 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
   };
 
   const handleSubmit = async () => {
+    if (!loggedIn) {
+      openAuthModal("Log in to submit your cafe suggestion.");
+      return;
+    }
     const { name, address, latitude, longitude } = formData;
 
     if (!name || !address || !latitude || !longitude) {
@@ -227,26 +236,39 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
     };
 
     try {
-      const res = await fetch("/api/cafes", {
+      if (!session || !session.access_token) {
+        throw new Error("no access to add cafe");
+      }
+
+      const endpoint = isPrivileged ? "/api/cafes" : "/api/cafes/suggest";
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-secret": import.meta.env.VITE_ADMIN_SECRET,
+          Authorization: `Bearer ${session?.access_token}`,
         },
         body: JSON.stringify(newCafe),
       });
-      // const res = await fetch("http://localhost:3000/api/cafes", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(newCafe),
-      // });
+
+      if (res.status === 429) {
+        const data = await res.json();
+        setSubmittedMessage(data.error);
+        return;
+      }
 
       if (!res.ok) {
         throw new Error("Failed to add cafe");
       }
 
-      const result = await res.json();
-      console.log("Cafe added:", result);
+      setSubmittedMessage(
+        isPrivileged ? null : "Cafe suggestion submitted for review." // TODO: make this show somewhere
+      );
+
+      if (isPrivileged) {
+        // const result = await res.json();
+        console.log("Cafe addded");
+      }
 
       onClose();
 
@@ -309,7 +331,10 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
       </DialogTitle>
 
       <IconButton
-        onClick={onClose}
+        onClick={(e) => {
+          e.currentTarget.blur();
+          onClose();
+        }}
         sx={{ position: "absolute", top: 12, right: 12 }}
       >
         <CloseIcon />
@@ -635,7 +660,10 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
 
       <DialogActions sx={{ px: 3, pb: 3 }}>
         <Button
-          onClick={onClose}
+          onClick={(e) => {
+            e.currentTarget.blur();
+            onClose();
+          }}
           variant="outlined"
           sx={{
             textTransform: "none",
@@ -645,18 +673,34 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
         >
           Cancel
         </Button>
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          sx={{
-            backgroundColor: "#b23a48",
-            "&:hover": { backgroundColor: "#942d39" },
-            textTransform: "none",
-            fontWeight: "bold",
-          }}
-        >
-          Submit
-        </Button>
+
+        {loggedIn ? (
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            sx={{
+              backgroundColor: "#b23a48",
+              "&:hover": { backgroundColor: "#942d39" },
+              textTransform: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Submit
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={() => openAuthModal("Log in to submit your cafe suggestion.")}
+            sx={{
+              backgroundColor: "#b23a48",
+              "&:hover": { backgroundColor: "#942d39" },
+              textTransform: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Log in to Submit
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

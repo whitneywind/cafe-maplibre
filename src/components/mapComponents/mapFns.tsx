@@ -174,38 +174,52 @@ export function focusCafeIfNeeded(
 export async function deleteCafe(
   map: maplibregl.Map,
   id: string | number,
+  accessToken?: string,
 ) {
   try {
-    // delete from DB
+    if (!accessToken) {
+      throw new Error("no access token");
+    }
+
+    // delete from db
     const res = await fetch(`/api/cafes/${id}`, {
       method: "DELETE",
       headers: {
-        "x-admin-secret": import.meta.env.VITE_ADMIN_SECRET,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
-    // const res = await fetch(`http://localhost:3000/api/cafes/${id}`, {
-    //   method: "DELETE",
-    // });
 
     if (!res.ok) {
       throw new Error(`Failed to delete cafe: ${res.statusText}`);
     }
 
-    // update the source in the map
-    const source = map.getSource("cafes") as any;
-    if (!source || !source._data) return;
+    // filter w/store cafe data
+    const { cafes, setCafes, visibleCafes, setVisibleCafes } = useMapStore.getState();
 
-    const newData = {
-      ...source._data,
-      features: source._data.features.filter(
-        (f: any) => f.properties.id !== id
-      ),
-    };
+    const newCafes = cafes.filter((c) => c.id !== String(id));
+    setCafes(newCafes);
 
-    source.setData(newData);
+    const newVisibleCafes = visibleCafes.filter((c) => c.id !== String(id));
+    setVisibleCafes(newVisibleCafes);
+
+    // rebuild geojson from store and push to map
+    const source = map.getSource("cafes") as maplibregl.GeoJSONSource;
+    if (source) {
+      const newGeoJSON = {
+        type: "FeatureCollection" as const,
+        features: newCafes.map((c) => ({
+          type: "Feature" as const,
+          geometry: {
+            type: "Point" as const,
+            coordinates: c.coordinates,
+          },
+          properties: { ...c },
+        })),
+      };
+      source.setData(newGeoJSON);
+    }
     
     useMapStore.getState().currentCafePopup?.remove();
-
 
     console.log(`Cafe ${id} removed from map + DB`);
   } catch (error) {
@@ -231,7 +245,6 @@ export function showCafePopup(map: maplibregl.Map, cafe: any) {
   );
 
   const zoom = map.getZoom();
-
   const minZoom = 10;
   const maxZoom = 14;
   const minOffset = 20;
@@ -305,9 +318,6 @@ export const fetchNeighborhoods = async (map: maplibregl.Map | null) => {
     }
 
     const neighborhoodsGeoJSON = await response.json();
-
-    // console.log(neighborhoodsGeoJSON.features.length);
-    // console.log(neighborhoodsGeoJSON); 
 
     // set in zustand
     setNeighborhoods(neighborhoodsGeoJSON);

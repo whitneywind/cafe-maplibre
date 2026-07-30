@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Avatar, Menu, MenuItem, Typography, Tooltip, IconButton, Button } from '@mui/material';
-import { useAuthStore } from '../stores/authStore';
+import useAuthStore from '../stores/useAuthStore.ts';
 import { AuthModal } from './AuthModal';
 
 export const AuthMenu = () => {
-  const { user, signOut } = useAuthStore();
-  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const { user, signOut, openAuthModal } = useAuthStore();
   const [menuAnchor, setMenuAnchor] = useState(null);
 
   if (!user) {
@@ -13,7 +12,7 @@ export const AuthMenu = () => {
       <>
         <Button
           color="inherit"
-          onClick={() => setAuthModalOpen(true)}
+          onClick={() => openAuthModal()}
           sx={{
             ml: 1,
             fontSize: '0.8rem',
@@ -23,7 +22,6 @@ export const AuthMenu = () => {
         >
           Log in
         </Button>
-        <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
       </>
     );
   }

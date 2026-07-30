@@ -9,6 +9,7 @@ import useMapStore from "../stores/useMapStore";
 import FavoritesModal from "./FavoritesModal";
 import SearchModal from "./SearchModal";
 import { AuthMenu } from "./AuthMenu";
+import useAuthStore from "../stores/useAuthStore";
 
 
 const TopMenu = () => {
@@ -19,6 +20,9 @@ const TopMenu = () => {
   const map = useMapStore((state) => state.map);
   const neighborhoods = useMapStore((state) => state.neighborhoods);
   const cafes = useMapStore((state) => state.cafes);
+
+  const { session, openAuthModal } = useAuthStore();
+  const loggedIn = !!session;
 
   const neighborhoodOptions = useMemo(() => {
     if (!neighborhoods?.features) return [];
@@ -172,13 +176,22 @@ const TopMenu = () => {
 
           <IconButton
             color="inherit"
-            onClick={handleDialogOpen}
+            onClick={(e) => {
+              e.currentTarget.blur();
+              handleDialogOpen();
+            }}
             sx={{ ml: 1 }}
           >
             <AddIcon />
           </IconButton>
 
-          <IconButton color="inherit" onClick={() => setFavoritesOpen(true)} sx={{ ml: 1 }}>
+          <IconButton 
+            color="inherit"
+            onClick={(e) => {
+              e.currentTarget.blur();
+              setFavoritesOpen(true);
+            }}
+          >
             <FavoriteIcon />
           </IconButton>
 

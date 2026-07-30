@@ -12,6 +12,37 @@ const BATHROOM_ACCESS_VALUES = new Set([
   "unavailable",
 ]);
 
+const EDITABLE_FIELDS = [
+  "name",
+  "address",
+  "neighborhood",
+  "roaster",
+  "in_house_roast",
+  "specialty",
+  "coffee_rec",
+  "matcha_rec",
+  "matcha",
+  "matcha_brand",
+  "alt_milks",
+  "alt_milks_cost",
+  "latte_price",
+  "popular_items",
+  "bathroom",
+  "bathroom_access",
+  "indoor_seating",
+  "outdoor_seating",
+  "wifi",
+  "outlets",
+  "laptop_friendly",
+  "parking",
+  "closest_metro",
+  "opening_hours",
+  "website",
+  "phone",
+  "instagram",
+  "notes",
+];
+
 const normalizeBathroomAccess = (value) => {
   return typeof value === "string" && BATHROOM_ACCESS_VALUES.has(value)
     ? value
@@ -271,7 +302,6 @@ router.delete("/:id", requireAuth, requireRole('admin', 'moderator'), async (req
       "DELETE FROM cafes WHERE id = $1 RETURNING *",
       [id]
     );
-    console.log("result: ", result)
 
     if (result.rowCount === 0) {
       return res.status(404).json({ message: "Cafe not found" });
@@ -284,4 +314,177 @@ router.delete("/:id", requireAuth, requireRole('admin', 'moderator'), async (req
   }
 });
 
+// non-admin users suggesting new cafes
+router.post("/suggest", requireAuth, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const cafeData = req.body;
+
+    console.log("suggestion user: ", userId)
+
+    if (
+      !cafeData.name ||
+      !cafeData.coordinates ||
+      cafeData.coordinates.length !== 2
+    ) {
+      return res.status(400).json({
+        error: "Missing required fields",
+      });
+    }
+
+    if (cafeData.bathroom_access) {
+      cafeData.bathroom_access = normalizeBathroomAccess(cafeData.bathroom_access);
+    }
+
+    const { rows } = await pool.query(
+      `SELECT COUNT(*) FROM cafe_suggestions
+      WHERE user_id = $1 AND created_at > now() - interval '7 days'`,
+      [userId]
+    );
+
+    if (parseInt(rows[0].count, 10) >= 5) {
+      return res.status(429).json({ error: "You've reached your weekly limit of 5 cafe suggestions." });
+    }
+
+    const inserted = await pool.query(
+      `INSERT INTO cafe_suggestions (user_id, cafe_data) VALUES ($1, $2) RETURNING id, created_at`,
+      [userId, cafeData]
+    );
+
+    res.status(201).json({
+      id: inserted.rows[0].id,
+      message: "Cafe suggestion submitted for review."
+    });
+
+  } catch (err) {
+    console.error("Error creating cafe suggestion:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+// non-admin users requesting edits to existing cafes
+router.post("/:id/edit-requests", requireAuth, async (req, res) => {
+  try {
+    const cafeId = req.params.id;
+    const userId = req.userId;
+    const { changes } = req.body;
+
+    if (!changes || typeof changes !== "object" || Object.keys(changes).length === 0) {
+      return res.status(400).json({
+        error: "No changes submitted",
+      });
+    }
+
+    // verify cafe exists
+    const cafeResult = await pool.query(
+      `SELECT id FROM cafes WHERE id = $1`,
+      [cafeId]
+    );
+
+    if (cafeResult.rows.length === 0) {
+      return res.status(404).json({
+        error: "Cafe not found",
+      });
+    }
+
+    const filteredChanges = Object.fromEntries(
+      Object.entries(changes).filter(([key]) =>
+        EDITABLE_FIELDS.includes(key)
+      )
+    );
+
+    if (Object.keys(filteredChanges).length === 0) {
+      return res.status(400).json({
+        error: "No valid editable fields submitted",
+      });
+    }
+
+    const { rows: existing } = await pool.query(
+      `
+      SELECT id
+      FROM edit_requests
+      WHERE user_id = $1
+        AND cafe_id = $2
+        AND status = 'pending'
+      `,
+      [userId, cafeId]
+    );
+
+    if (existing.length > 0) {
+      return res.status(400).json({
+        error: "You already have a pending edit request for this cafe.",
+      });
+    }
+
+
+    // max 5 edit suggestions per week
+    const { rows } = await pool.query(
+      `
+      SELECT COUNT(*)
+      FROM edit_requests
+      WHERE user_id = $1
+        AND created_at > now() - interval '7 days'
+      `,
+      [userId]
+    );
+
+    if (parseInt(rows[0].count, 10) >= 5) {
+      return res.status(429).json({
+        error: "You've reached your weekly limit of 5 edit requests.",
+      });
+    }
+
+
+    const inserted = await pool.query(
+      `
+      INSERT INTO edit_requests (
+        cafe_id,
+        user_id,
+        changes
+      )
+      VALUES ($1, $2, $3)
+      RETURNING id, created_at
+      `,
+      [
+        cafeId,
+        userId,
+        filteredChanges,
+      ]
+    );
+
+    res.status(201).json({
+      id: inserted.rows[0].id,
+      message: "Edit request submitted for review.",
+    });
+
+  } catch (err) {
+    console.error("Error creating edit request:", err);
+    res.status(500).json({
+      error: "Database error",
+    });
+  }
+});
+
 export default router;
+
+
+// // public
+// GET /api/cafes
+
+// // Authenticated users
+// POST /api/cafes/suggest
+// POST /api/cafes/:id/edit-requests
+
+// // Admin/moderator only
+// POST /api/cafes
+// PUT /api/cafes/:id
+// DELETE /api/cafes/:id
+
+// GET /api/cafes/suggestions
+// GET /api/cafes/edit-requests
+
+// PATCH /api/cafes/suggestions/:id/approve
+// PATCH /api/cafes/suggestions/:id/reject
+
+// PATCH /api/cafes/edit-requests/:id/approve
+// PATCH /api/cafes/edit-requests/:id/reject

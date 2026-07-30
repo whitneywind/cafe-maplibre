@@ -11,6 +11,7 @@ router.get('/me', requireAuth, async (req, res) => {
        FROM users WHERE id = $1`,
       [req.userId]
     );
+    
     res.json(rows[0]);
   } catch (err) {
     console.error(err);

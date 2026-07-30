@@ -6,5 +6,5 @@ export const supabase = createClient(
 );
 
 if (import.meta.env.DEV) {
-  window.supabase = supabase; // for debug only
+  (window as any).supabase = supabase; // for debug only
 }

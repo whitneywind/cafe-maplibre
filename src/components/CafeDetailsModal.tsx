@@ -26,7 +26,13 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import StarIcon from "@mui/icons-material/Star";
 import { normalizeStringArray } from "../utils/dataNormalization";
 
-const InfoItem = ({ icon, label, value }: { icon: any, label: string, value?: string }) => (
+type InfoItemProps = {
+  icon: React.ReactNode;
+  label: string;
+  value?: string;
+};
+
+const InfoItem = ({ icon, label, value }: InfoItemProps) => (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: "white", px: 1.5, py: 0.5, borderRadius: 2, border: "1px solid #eaeaea" }}>
         {icon}
         <Typography variant="body2" sx={{ fontWeight: 500 }}>

@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, TextField, Button, Box, Typography } from '@mui/material';
 import { supabase } from '../lib/supabase';
+import useAuthStore from '../stores/useAuthStore';
 
-export const AuthModal = ({ open, onClose }) => {
+export const AuthModal = () => {
+  const open = useAuthStore((s) => s.authModalOpen);
+  const promptMessage = useAuthStore((s) => s.authModalMessage);
+  const closeAuthModal = useAuthStore((s) => s.closeAuthModal);
+
   const [mode, setMode] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +24,7 @@ export const AuthModal = ({ open, onClose }) => {
 
   const handleClose = () => {
     reset();
-    onClose();
+    closeAuthModal();
   };
 
   const handleSubmit = async (e) => {
@@ -51,6 +56,11 @@ export const AuthModal = ({ open, onClose }) => {
     <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
       <DialogTitle>{mode === 'login' ? 'Log in' : 'Sign up'}</DialogTitle>
       <DialogContent>
+        {promptMessage && (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {promptMessage}
+          </Typography>
+        )}
         <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           <TextField
             label="Email"

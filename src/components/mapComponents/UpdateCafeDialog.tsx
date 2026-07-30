@@ -17,6 +17,7 @@ import { deleteCafe } from "./mapFns.tsx";
 import useMapStore from "../../stores/useMapStore.ts";
 import { ALT_MILK_OPTIONS, AmenityCheckbox, Section } from "../NewCafeDialog.tsx";
 import { normalizeCafe } from "../../utils/dataNormalization.ts";
+import useAuthStore from "../../stores/useAuthStore.ts";
 
 export default function UpdateCafeDialog({
   open,
@@ -31,6 +32,7 @@ export default function UpdateCafeDialog({
   const map = useMapStore((state) => state.map);
   const updateSelectedCafe = useMapStore((state) => state.updateSelectedCafe);
 
+  const { session } = useAuthStore();
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -50,33 +52,73 @@ export default function UpdateCafeDialog({
       .map(s => s.replace(/ /g, "_"));
 
     const updatedCafe = { ...formData, popular_items: popularItemsArray };
+    const { session, role } = useAuthStore.getState();
 
     try {
-      const res = await fetch(`/api/cafes/${formData.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-secret": import.meta.env.VITE_ADMIN_SECRET,
-        },
-        body: JSON.stringify(updatedCafe),
-      });
-        // const res = await fetch(`http://localhost:3000/api/cafes/${formData.id}`, {
-        //     method: "PUT",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify(updatedCafe),
-        // });
+      if (!session || !session.access_token) {
+        throw new Error("no access to update");
+      }
 
-        if (!res.ok) {
-            throw new Error("Failed to update cafe");
+      const isAdmin = role === "admin" || role === "moderator";
+      const url = isAdmin
+        ? `/api/cafes/${formData.id}`
+        : `/api/cafes/${formData.id}/edit-requests`;
+      const method = isAdmin ? "PUT" : "POST";
+
+      let body: Record<string, unknown>;
+
+      if (isAdmin) {
+        body = updatedCafe;
+      } else {
+        // only include fields that actually changed vs the original cafe
+        const original = normalizeCafe(cafe) as Record<string, unknown>;
+        const changes: Record<string, unknown> = {};
+
+        for (const key of Object.keys(updatedCafe)) {
+          const newVal = (updatedCafe as Record<string, unknown>)[key];
+          const oldVal = original?.[key];
+
+          const changed = Array.isArray(newVal)
+            ? JSON.stringify(newVal) !== JSON.stringify(oldVal)
+            : newVal !== oldVal;
+
+          if (changed) {
+            changes[key] = newVal;
+          }
         }
 
-        updateSelectedCafe(updatedCafe as unknown as NewCoffeeShop);
+        if (Object.keys(changes).length === 0) {
+          alert("No changes to submit.");
+          return;
+        }
 
-        // const result = await res.json();
-        onClose();
+        body = { changes };
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(errBody.error || "Failed to update cafe");
+      }
+
+      if (isAdmin) {
+        updateSelectedCafe(updatedCafe as unknown as NewCoffeeShop);
+      } else {
+        alert("edit was submitted for review"); // TODO: make snackbar or something
+      }
+
+      onClose();
     } catch (error) {
-        console.error(error);
-        alert("There was a problem updating the cafe");
+      console.error(error);
+      alert(error instanceof Error ? error.message : "There was a problem updating the cafe");
     }
   };
 
@@ -89,7 +131,7 @@ export default function UpdateCafeDialog({
     
     if (window.confirm(`Are you sure you want to delete ${formData.name}?`)) {
         try {
-            await deleteCafe(map, formData.id);
+            await deleteCafe(map, formData.id, session?.access_token);
             onClose();
         } catch (error) {
            console.error(error); 

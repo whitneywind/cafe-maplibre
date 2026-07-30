@@ -15,6 +15,8 @@ export async function requireAuth(req, res, next) {
       issuer: `${process.env.SUPABASE_URL}/auth/v1`,
     });
 
+    console.log("JWT payload:", payload); // TEMP
+
     req.userId = payload.sub;
     req.userEmail = payload.email;
 
