@@ -254,6 +254,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
       if (res.status === 429) {
         const data = await res.json();
         setSubmittedMessage(data.error);
+        console.log(submittedMessage);
         return;
       }
 

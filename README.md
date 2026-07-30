@@ -5,11 +5,11 @@ Coffeeshop Map lets you browse LA cafes on an interactive map, search by name, f
 
 ## Tech Stack
 
-- **Frontend:** React, TypeScript, JavaScript, Material UI
-- **Geo:** MapLibre, Turf.js
+- **Frontend:** React, TypeScript, JavaScript, MUI
+- **Geo:** MapLibre, Turf.js, Nominatim
 - **State:** Zustand
 - **Backend:** Node.js / Express
-- **Database:** PostgreSQL
+- **Database:** PostgreSQL, Supabase
 
 ![Map overview](./src/assets/mdJpgs/overview.jpg)
 ![Map search](./src/assets/mdJpgs/search.jpg)
