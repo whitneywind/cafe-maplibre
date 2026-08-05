@@ -8,9 +8,9 @@ import {
   IconButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import useMapStore from "../stores/useMapStore";
-import { flyToCafe, showCafePopup } from "./mapComponents/mapFns";
-import { FavoritesModalProps } from "../../types";
+import useMapStore from "../../stores/useMapStore";
+import { flyToCafe, showCafePopup } from "../mapComponents/mapFns";
+import { FavoritesModalProps } from "../../../types";
 
 
 const FavoritesModal: React.FC<FavoritesModalProps> = ({ open, onClose }) => {

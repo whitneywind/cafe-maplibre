@@ -18,13 +18,16 @@ import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import MapIcon from '@mui/icons-material/Map';
-import useMapStore from "../stores/useMapStore";
-import { showUpdateCafeDialog } from "./mapComponents/mapFns";
+import useMapStore from "../../stores/useMapStore";
+import { showUpdateCafeDialog } from "../mapComponents/mapFns";
 import WcIcon from "@mui/icons-material/Wc";
 import ChairIcon from "@mui/icons-material/Chair";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import StarIcon from "@mui/icons-material/Star";
-import { normalizeStringArray } from "../utils/dataNormalization";
+import { normalizeStringArray } from "../../utils/dataNormalization";
+import CoffeeMakerIcon from "@mui/icons-material/CoffeeMaker";
+
+// todo: fix special items display
 
 type InfoItemProps = {
   icon: React.ReactNode;
@@ -52,7 +55,7 @@ const InfoLine = ({
     value: string, 
     secondaryAction?: React.ReactNode 
 }) => (
-    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
         {icon}
         <Box>
             <Typography variant="caption" sx={{ color: "text.secondary", display: "block", lineHeight: 1 }}>
@@ -61,7 +64,7 @@ const InfoLine = ({
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 {value}
             </Typography>
-            {secondaryAction} {/* Renders the "Suggest" link if provided */}
+            {secondaryAction}
         </Box>
     </Box>
 );
@@ -93,7 +96,6 @@ const normalizeInstagramUrl = (url: string): string | null => {
     return null;
   }
 };
-
 
 const CafeDetailsModal: React.FC = () => {
     const { cafeDetailsOpen, selectedCafe, closeCafeDetails } = useMapStore();
@@ -137,7 +139,17 @@ const CafeDetailsModal: React.FC = () => {
 
     const normalizedPopularItems = normalizeStringArray(popular_items, true);
 
-    const hasAmenities = bathroom || indoor_seating || outdoor_seating || wifi || outlets || laptop_friendly || parking;
+    const amenitiesCount = [
+        bathroom,
+        indoor_seating,
+        outdoor_seating,
+        wifi,
+        outlets,
+        laptop_friendly,
+        parking,
+    ].filter(Boolean).length;
+
+    const hasAmenities = amenitiesCount >= 4;
 
     const handleUpdateClick = () => {
         const dialogContainer = document.createElement("div");
@@ -255,8 +267,8 @@ const CafeDetailsModal: React.FC = () => {
                 <Grid container spacing={2} sx={{ alignItems: "stretch"}}>
 
                     {/* amenities */}
-                    <Grid size={{ xs: 12, sm: 8 }} sx={{ order: { xs: hasAmenities ? 2 : 4, sm: hasAmenities ? 1 : 3 }, display: "flex", flexDirection: "column" }}>
-                        <Box sx={{ p: 2.5, bgcolor: "#f7f7f7", borderRadius: 3, flexGrow: 1, border: "1px solid #eee" }}>
+                    <Grid size={{ xs: 12, sm: 8 }} sx={{ order: { xs: hasAmenities ? 2 : 4, sm: hasAmenities ? 1 : 2 }, display: "flex", flexDirection: "column" }}>
+                        <Box sx={{ p: 2.5, bgcolor: "#f7f7f7", borderRadius: 3, flexGrow: 1, border: "1px solid #eee", display: "flex", flexDirection: "column", justifyContent: hasAmenities ? "flex-start" : "center", }}>
                             <Typography fontWeight="800" variant="subtitle1" gutterBottom sx={{ color: "#444", mb: 2 }}>
                             Amenities
                             </Typography>
@@ -271,7 +283,7 @@ const CafeDetailsModal: React.FC = () => {
                                 {parking && <InfoItem icon={<LocalParkingIcon fontSize="small" />} label="Parking" value={parking} />}
                             </Box>
                             ) : (
-                            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1, py: 2, color: "text.secondary" }}>
+                            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexGrow: 1, gap: 1, py: 2, pb: 5, color: "text.secondary" }}>
                                 <Typography variant="body2">No amenity info yet.</Typography>
                                 <Button
                                 variant="outlined"
@@ -287,7 +299,7 @@ const CafeDetailsModal: React.FC = () => {
                     </Grid>
 
                     {/* right column: location + contact stacked */}
-                    <Grid size={{ xs: 12, sm: 4 }} container direction="column" spacing={2} sx={{ order: { xs: 3, sm: 2 } }}>
+                    <Grid size={{ xs: 12, sm: 4 }} container direction="column" spacing={2} sx={{ order: { xs: 3, sm: hasAmenities ? 2 : 3 } }}>
 
                         {/* location */}
                         <Grid size={{ xs: 12}}>
@@ -383,93 +395,97 @@ const CafeDetailsModal: React.FC = () => {
                     </Grid>
 
                     {/* drinks & specials */}
-                    <Grid size={{ xs: 12 }} sx={{ order: { xs: 1, sm: 3 } }}>
+                    <Grid size={{ xs: 12 }} sx={{ order: { xs: 1, sm: hasAmenities ? 3 : 1 } }}>
                         <Box sx={{ p: 2.5, bgcolor: "#fdf8f4", borderRadius: 3, border: "1px solid #f3e5d8" }}>
                             <Typography fontWeight="800" variant="subtitle1" gutterBottom sx={{ color: "#8d5d46", mb: 2 }}>
                                 Drinks & Specials
                             </Typography>
                             <Grid container spacing={3}>
-                                {/* left Column: coffee & matcha */}
+
+                                {/* left column: coffee & matcha */}
                                 <Grid size={{ xs: 12, sm: 6 }}>
                                     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                         <InfoLine 
-                                            icon={<LocalCafeIcon sx={{ color: "#8d5d46" }} />} 
+                                            icon={<CoffeeMakerIcon sx={{ color: "#8d5d46" }} />} 
                                             label="Coffee" 
                                             value={`${roaster || "Espresso-based"}`} 
                                         />
                                         <InfoLine 
-                                            icon={<AttachMoneyIcon sx={{ color: "#2e7d32" }} />} 
+                                            icon={<AttachMoneyIcon sx={{ color: "#6b8e23" }} />} 
                                             label="Latte Price" 
                                             value={latte_price || ""} 
                                             secondaryAction={!latte_price && (
-                                                <Typography variant="caption" onClick={handleUpdateClick} sx={{ ...addActionStyle, color: "#2e7d32" }}
+                                                <Typography variant="caption" onClick={handleUpdateClick} sx={{ ...addActionStyle, color: "#6b8e23" }}
                                                 >
                                                     + Add price
                                                 </Typography>
                                             )}
                                         />
-                                        <InfoLine 
-                                            icon={<SpaIcon sx={{ color: "#6b8e23" }} />} 
-                                            label="Matcha Brand" 
-                                            value={matcha_brand || "Various"} 
-                                        />
+                                        {matcha_brand && matcha_brand.length > 0 && (
+                                            <InfoLine 
+                                                icon={<SpaIcon sx={{ color: "#6b8e23" }} />} 
+                                                label="Matcha Brand" 
+                                                value={matcha_brand || "Various"} 
+                                            />
+                                        )}
                                     </Box>
                                 </Grid>
 
-                            {/* right column: milks & popular items */}
-                            <Grid size={{ xs: 12, sm: 6 }}>
-                                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                    {specialty && (
-                                        <InfoLine 
-                                            icon={<LocalCafeIcon sx={{ color: "#b23a48" }} />} 
-                                            label="Specialty Coffee Status" 
-                                            value={" Specialty Coffee"} 
-                                    />
-                                    )}
-                                    
-                                    {/* alt milks */}
-                                    <InfoLine 
-                                        icon={<FavoriteBorderIcon sx={{ color: "#b23a48" }} />} 
-                                        label="Alt Milks" 
-                                        value={normalizedAltMilks.length > 0 
-                                            ? `${normalizedAltMilks.join(", ")}${alt_milks_cost ? ` (${alt_milks_cost})` : ""}` 
-                                            : ""
-                                        } 
-                                        secondaryAction={normalizedAltMilks.length === 0 && (
-                                            <Typography 
-                                                variant="caption" 
-                                                onClick={handleUpdateClick}
-                                                sx={{ ...addActionStyle, color: "#b23a48" }}
-                                            >
-                                                + Add options
-                                            </Typography>
+                                {/* right column: milks & popular items */}
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                        {specialty && (
+                                            <InfoLine 
+                                                icon={<LocalCafeIcon sx={{ color: "#b23a48" }} />} 
+                                                label="Specialty Coffee Status" 
+                                                value={"Specialty Coffee"} 
+                                            />
+                                        )}    
+                                        
+                                        {/* alt milks */}
+                                        {(!specialty || normalizedAltMilks && normalizedAltMilks.length > 0) && (
+                                            <InfoLine 
+                                                icon={<FavoriteBorderIcon sx={{ color: "#8d5d46" }} />} 
+                                                label="Alt Milks" 
+                                                value={normalizedAltMilks.length > 0 
+                                                    ? `${normalizedAltMilks.join(", ")}${alt_milks_cost ? ` (${alt_milks_cost})` : ""}` 
+                                                    : ""
+                                                } 
+                                                secondaryAction={normalizedAltMilks.length === 0 && (
+                                                    <Typography 
+                                                        variant="caption" 
+                                                        onClick={handleUpdateClick}
+                                                        sx={{ ...addActionStyle, color: "#8d5d46" }}
+                                                    >
+                                                        + Add options
+                                                    </Typography>
+                                                )}
+                                            />
                                         )}
-                                    />
 
-                                    {/* popular items */}
-                                    <InfoLine 
-                                        icon={<StarIcon sx={{ color: "#ed6c02" }} />} 
-                                        label="Popular Items" 
-                                        value={normalizedPopularItems.length > 0 
-                                            ? normalizedPopularItems.join(", ") 
-                                            : ""
-                                        } 
-                                        secondaryAction={normalizedPopularItems.length === 0 && (
-                                            <Typography 
-                                                variant="caption" 
-                                                onClick={handleUpdateClick}
-                                                sx={{ ...addActionStyle, color: "#ed6c02" }}
-                                            >
-                                                + Suggest Item
-                                            </Typography>
-                                        )}
-                                    />
-                                </Box>
-                            </Grid>
+                                        {/* popular items */}
+                                        <InfoLine 
+                                            icon={<StarIcon sx={{ color: "#8d5d46" }} />} 
+                                            label="Popular Items" 
+                                            value={normalizedPopularItems.length > 0 
+                                                ? normalizedPopularItems.join(", ") 
+                                                : ""
+                                            } 
+                                            secondaryAction={normalizedPopularItems.length === 0 && (
+                                                <Typography 
+                                                    variant="caption" 
+                                                    onClick={handleUpdateClick}
+                                                    sx={{ ...addActionStyle, color: "#8d5d46" }}
+                                                >
+                                                    + Suggest Item
+                                                </Typography>
+                                            )}
+                                        />
+                                    </Box>
+                                </Grid>
                             </Grid>
                         </Box>
                     </Grid>
-
                 </Grid>
             </Box>
         </Modal>

@@ -3,13 +3,13 @@ import { AppBar, Toolbar, Button, TextField, Autocomplete, Box, IconButton } fro
 import AddIcon from "@mui/icons-material/Add";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CoffeeIcon from "@mui/icons-material/Coffee";
-import "../styles/MenuBar.css";
+import "../../styles/MenuBar.css";
 import NewCafeDialog from "./NewCafeDialog";
-import useMapStore from "../stores/useMapStore";
+import useMapStore from "../../stores/useMapStore";
 import FavoritesModal from "./FavoritesModal";
 import SearchModal from "./SearchModal";
-import { AuthMenu } from "./AuthMenu";
-import useAuthStore from "../stores/useAuthStore";
+import { AuthMenu } from "../authComponents/AuthMenu";
+import useAuthStore from "../../stores/useAuthStore";
 
 
 const TopMenu = () => {
@@ -58,6 +58,7 @@ const TopMenu = () => {
       <AppBar
         position="static"
         sx={{ backgroundColor: "#b23a48" }}
+        // sx={{ backgroundColor: "#410d13" }} better for dark theme?
         className="top-menu"
       >
         <Toolbar disableGutters sx={{ px: 0.5 }}>

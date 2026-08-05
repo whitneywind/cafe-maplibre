@@ -15,12 +15,12 @@ export async function requireAuth(req, res, next) {
       issuer: `${process.env.SUPABASE_URL}/auth/v1`,
     });
 
-    console.log("JWT payload:", payload); // TEMP
-
     req.userId = payload.sub;
     req.userEmail = payload.email;
 
-    // sync into neon db
+    // sync into neon db  
+    // TODO: if local db connected this will only sync with local db and vice versa
+    // fix so other dbs get synced
     await pool.query(
       `INSERT INTO users (id, email) VALUES ($1, $2)
        ON CONFLICT (id) DO NOTHING`,

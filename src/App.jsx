@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import "./App.css";
-import CafeDetailsModal from "./components/CafeDetailsModal";
-import MapComponent from "./components/Map";
-import TopMenu from "./components/TopMenu";
+import CafeDetailsModal from "./components/ui/CafeDetailsModal";
+import MapComponent from "./components/mapComponents/Map";
+import TopMenu from "./components/ui/TopMenu";
 import useMapStore from "./stores/useMapStore";
 import useAuthStore from "./stores/useAuthStore";
-import { AuthModal } from "./components/AuthModal";
+import { AuthModal } from "./components/authComponents/AuthModal";
 
 function App() {
     const cafeDetailsOpen = useMapStore((state) => state.cafeDetailsOpen);

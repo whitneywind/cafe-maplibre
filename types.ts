@@ -85,25 +85,45 @@ export interface UserFavorite {
   createdAt: string; // ISO timestamp
 }
 
-// // old user types
-// export interface User {
-//   id: number;
-//   email: string;
-//   passwordHash: string;
-//   createdAt: string; // or Date if parse timestamps
+export interface CafeFormData {
+  name: string;
+  address?: string;
+  latitude?: string;
+  longitude?: string;
+  neighborhood?: string;
+  website?: string;
+  opening_hours?: string;
+  phone?: string;
+  instagram?: string;
+  parking?: string;
+  closest_metro?: string;
+  bathroom?: boolean;
+  bathroom_access?: string;
+  specialty?: boolean;
+  coffee_rec?: boolean;
+  matcha_rec?: boolean;
+  roaster?: string;
+  in_house_roast?: boolean;
+  matcha?: boolean;
+  matcha_brand?: string;
+  indoor_seating?: boolean;
+  outdoor_seating?: boolean;
+  wifi?: boolean;
+  outlets?: boolean;
+  laptop_friendly?: boolean;
+  alt_milks?: string[];
+  alt_milks_cost?: string;
+  latte_price?: string;
+  notes?: string;
+}
 
-//   name?: string;
-//   homeNeighborhood?: string;
-//   bio?: string;
-//   lastLogin?: string; // or Date
-//   isAdmin: boolean;
-// }
-
-// export interface UserFavorite {
-//   userId: number;
-//   cafeId: string;
-//   createdAt: string;
-// }
+export interface CafeFormFieldsProps {
+  formData: CafeFormData;
+  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  popularItemsInput: string;
+  setPopularItemsInput: (val: string) => void;
+  locationSlot?: React.ReactNode;
+}
 
 export type UpdateCafeDialogProps = {
   open: boolean;

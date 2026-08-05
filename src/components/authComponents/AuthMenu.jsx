@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Avatar, Menu, MenuItem, Typography, Tooltip, IconButton, Button } from '@mui/material';
-import useAuthStore from '../stores/useAuthStore.ts';
+import useAuthStore from '../../stores/useAuthStore.ts';
 import { AuthModal } from './AuthModal';
 
 export const AuthMenu = () => {

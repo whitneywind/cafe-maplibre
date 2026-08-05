@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, TextField, Button, Box, Typography } from '@mui/material';
-import { supabase } from '../lib/supabase';
-import useAuthStore from '../stores/useAuthStore';
+import { supabase } from '../../lib/supabase';
+import useAuthStore from '../../stores/useAuthStore';
 
 export const AuthModal = () => {
   const open = useAuthStore((s) => s.authModalOpen);
