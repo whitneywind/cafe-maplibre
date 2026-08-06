@@ -18,6 +18,7 @@ export default function MapComponent() {
   const setVisibleCafes = useMapStore((state) => state.setVisibleCafes);
   const searchFiltersActive = useMapStore((state) => state.searchFiltersActive);
   const setSearchFiltersActive = useMapStore((state) => state.setSearchFiltersActive);
+  const scrollerOpen = useMapStore((state) => state.scrollerOpen);
   const cafes = useMapStore((state) => state.cafes);
 
   const mapContainer = useRef(null);
@@ -195,7 +196,7 @@ export default function MapComponent() {
         </button>
       )}
 
-      <BasemapSwitcher current={basemapId} onChange={handleBasemapChange} />
+      <BasemapSwitcher current={basemapId} onChange={handleBasemapChange} scrollerOpen={scrollerOpen} />
       <CafeScroller map={map} />
     </>
   );

@@ -196,7 +196,9 @@ export async function deleteCafe(
     // filter w/store cafe data
     const { cafes, setCafes, visibleCafes, setVisibleCafes } = useMapStore.getState();
 
-    const newCafes = cafes.filter((c) => c.id !== String(id));
+    const newCafes = cafes.filter((c) => {
+      c.id !== String(id)
+    });
     setCafes(newCafes);
 
     const newVisibleCafes = visibleCafes.filter((c) => c.id !== String(id));
@@ -288,14 +290,23 @@ export const fetchCafes = async (map: maplibregl.Map | null) => {
       throw new Error(`Failed to fetch cafes: ${response.statusText}`);
     }
     const cafesGeoJSON = await response.json();
+
+    const approvedFeatures = cafesGeoJSON.features.filter(
+      (f: any) => f.properties?.status === "approved"
+    );
+    const approvedGeoJSON = {
+      ...cafesGeoJSON,
+      features: approvedFeatures,
+    };
+
     const source = map.getSource("cafes") as maplibregl.GeoJSONSource;
 
     if (source) {
-      source.setData(cafesGeoJSON);
+      source.setData(approvedGeoJSON);
     }
 
     // store in zustand
-    useMapStore.getState().setCafes(cafesGeoJSON.features.map((f: any) => ({
+    useMapStore.getState().setCafes(approvedFeatures.map((f: any) => ({
       ...f.properties,
       coordinates: f.geometry.coordinates,
     })));

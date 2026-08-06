@@ -7,9 +7,10 @@ import { useState } from "react";
 type Props = {
   current: BasemapId;
   onChange: (id: BasemapId) => void;
+  scrollerOpen: boolean;
 };
 
-export default function BasemapSwitcher({ current, onChange }: Props) {
+export default function BasemapSwitcher({ current, onChange, scrollerOpen }: Props) {
     const [open, setOpen] = useState(false);
 
     const handleSelect = (id: BasemapId) => {
@@ -20,12 +21,16 @@ export default function BasemapSwitcher({ current, onChange }: Props) {
   return (
     <ClickAwayListener onClickAway={() => setOpen(false)}>
       <div>
-        <TriggerButton onClick={() => setOpen((prev) => !prev)} aria-label="Change map style">
+        <TriggerButton
+          scrollerOpen={scrollerOpen}
+          onClick={() => setOpen((prev) => !prev)}
+          aria-label="Change map style"
+        >
           <TriggerSwatch color={basemaps[current].swatch} />
         </TriggerButton>
 
         <Grow in={open} style={{ transformOrigin: "bottom right" }}>
-          <OptionsPanel elevation={0} sx={{ display: open ? "flex" : "none" }}>
+          <OptionsPanel scrollerOpen={scrollerOpen} elevation={0} sx={{ display: open ? "flex" : "none" }}>
             {Object.entries(basemaps).map(([id, { label, swatch }]) => (
               <OptionRow
                 key={id}
@@ -44,9 +49,11 @@ export default function BasemapSwitcher({ current, onChange }: Props) {
 }
 
 // the little pill visible at all times
-const TriggerButton = styled(ButtonBase)(() => ({
+export const TriggerButton = styled(ButtonBase, {
+  shouldForwardProp: (prop) => prop !== "scrollerOpen",
+})<{ scrollerOpen: boolean }>(({ scrollerOpen }) => ({
   position: "absolute",
-  bottom: "145px",
+  bottom: scrollerOpen ? "112px" : "32px",
   right: 16,
   // zIndex: theme.zIndex.tooltip,
   width: 44,
@@ -57,7 +64,7 @@ const TriggerButton = styled(ButtonBase)(() => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  transition: "transform 0.15s ease, box-shadow 0.15s ease",
+  transition: "bottom 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease",
   "&:hover": {
     transform: "scale(1.06)",
     boxShadow: "0 4px 14px rgba(0,0,0,0.3)",
@@ -74,11 +81,12 @@ const TriggerSwatch = styled("span")<{ color: string }>(({ color }) => ({
 }));
 
 // the popover panel with option list
-const OptionsPanel = styled(Paper)(({ theme }) => ({
-  position: "absolute",
-  bottom: "197px",
+export const OptionsPanel = styled(Paper, {
+  shouldForwardProp: (prop) => prop !== "scrollerOpen",
+})<{ scrollerOpen: boolean }>(({ scrollerOpen }) => ({  position: "absolute",
+  bottom: scrollerOpen ? "165px" : "86px",
   right: 16,
-  zIndex: theme.zIndex.tooltip,
+  // zIndex: theme.zIndex.tooltip,
   borderRadius: 18,
   padding: "6px",
   display: "flex",
@@ -87,7 +95,7 @@ const OptionsPanel = styled(Paper)(({ theme }) => ({
   backgroundColor: "rgba(255,255,255,0.97)",
   boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
   transformOrigin: "bottom right",
-}));
+  transition: "bottom 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease",}));
 
 const OptionRow = styled(ButtonBase)<{ selected?: boolean }>(({ selected }) => ({
   display: "flex",

@@ -36,7 +36,11 @@ export async function loadCafeLayers(map: MLMap) {
       id: "regular-cafes",
       type: "symbol",
       source: "cafes",
-      filter: ["!=", ["get", "specialty"], true],
+      // filter: ["!=", ["get", "specialty"], true],
+      filter: ["all",
+        ["==", ["get", "status"], "approved"],
+        ["!=", ["get", "specialty"], true]
+      ],
       layout: {
         "icon-image": "cafe-icon",
         "icon-size": ["interpolate", ["linear"], ["zoom"], 0, 0.1, 12, 0.14, 16, 0.45],
@@ -50,7 +54,11 @@ export async function loadCafeLayers(map: MLMap) {
       id: "specialty-cafes",
       type: "symbol",
       source: "cafes",
-      filter: ["==", ["get", "specialty"], true],
+      // filter: ["==", ["get", "specialty"], true],
+      filter: ["all",
+        ["==", ["get", "status"], "approved"],
+        ["==", ["get", "specialty"], true]
+      ],
       layout: {
         "icon-image": "specialty-cafe-icon",
         "icon-size": ["interpolate", ["linear"], ["zoom"], 0, 0.2, 12, 0.34, 16, 1.1],
@@ -131,7 +139,7 @@ export const basemaps: Record<BasemapId, { label: string; swatch: string; style:
 
   darkMatter: {
     label: "Dark",
-    swatch: "#2b2b2b",
+    swatch: "#535353",
     style: {
       version: 8,
       sources: {
