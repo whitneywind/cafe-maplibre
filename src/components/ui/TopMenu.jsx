@@ -65,23 +65,6 @@ const TopMenu = () => {
           pt: 0.75,
           pb: 0.75,
           position: "relative",
-          // zIndex: 1, // uncomment to show scallops
-          // "&::after": {
-          //   content: '""',
-          //   position: "absolute",
-          //   top: "calc(100% - 1px)", // 1px overlap eliminates gap/white line
-          //   left: 0,
-          //   right: 0,
-          //   height: "10px",
-          //   backgroundColor: "#c94f5c",
-          //   WebkitMaskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 18' preserveAspectRatio='none'%3E%3Cpath d='M0 0 Q 20 18 40 18 Q 60 18 80 0 Z' fill='%23000'/%3E%3C/svg%3E")`,
-          //   maskImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 18' preserveAspectRatio='none'%3E%3Cpath d='M0 0 Q 20 18 40 18 Q 60 18 80 0 Z' fill='%23000'/%3E%3C/svg%3E")`,
-          //   WebkitMaskSize: "110px 10px", // higher first num will make wider scallops
-          //   maskSize: "110px 10px", // needs to match^
-          //   WebkitMaskRepeat: "repeat-x",
-          //   maskRepeat: "repeat-x",
-          //   pointerEvents: "none",
-          // },
         }}
         className="top-menu"
       >
