@@ -73,15 +73,47 @@ export async function loadCafeLayers(map: MLMap) {
   }
   await fetchNeighborhoods(map);
 
+  // if (!map.getLayer("polygon-layer")) {
+  //   map.addLayer({
+  //     id: "polygon-layer",
+  //     type: "fill",
+  //     source: "neighborhoods",
+  //     // paint: { "fill-color": "#c97d5a", "fill-opacity": 0.135 },
+  //     paint: {
+  //       "fill-color": "#8FA89A",
+  //       "fill-opacity": 0.235,
+  //       "fill-outline-color": "#657C70",
+  //     },
+  //   });
+  //   map.setLayoutProperty("polygon-layer", "visibility", "none");
+  // }
+
   if (!map.getLayer("polygon-layer")) {
-    map.addLayer({
-      id: "polygon-layer",
-      type: "fill",
-      source: "neighborhoods",
-      paint: { "fill-color": "#c97d5a", "fill-opacity": 0.135 },
-    });
-    map.setLayoutProperty("polygon-layer", "visibility", "none");
-  }
+  map.addLayer({
+    id: "polygon-layer",
+    type: "fill",
+    source: "neighborhoods",
+    paint: {
+      "fill-color": "#B8A58A",
+      "fill-opacity": 0.135
+    },
+  });
+
+  map.addLayer({
+    id: "polygon-outline",
+    type: "line",
+    source: "neighborhoods",
+    paint: {
+      "line-color": "#B8A58A",
+      "line-width": 3.5,
+      "line-opacity": 0.45,
+      "line-dasharray": [2, 2],
+    },
+  });
+
+  map.setLayoutProperty("polygon-layer", "visibility", "none");
+  map.setLayoutProperty("polygon-outline", "visibility", "none");
+}
 }
 
 // basemaps:

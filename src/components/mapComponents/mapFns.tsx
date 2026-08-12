@@ -92,9 +92,11 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
   });
 
   map.setLayoutProperty("polygon-layer", "visibility", "visible");
+  map.setLayoutProperty("polygon-outline", "visibility", "visible");
 
   // only show selected neighborhood
   map.setFilter("polygon-layer", ["==", ["get", "name"], neighborhoodFeature.properties.name]);
+  map.setFilter("polygon-outline", ["==", ["get", "name"], neighborhoodFeature.properties.name]);
 
   // only show cafes in selected neighborhood
   map.setFilter("regular-cafes", [
@@ -361,6 +363,7 @@ export function applySearchFilters(map: Map, filters: {
     map.setFilter("regular-cafes", ["!=", ["get", "specialty"], true]);
     map.setFilter("specialty-cafes", ["==", ["get", "specialty"], true]);
     map.setLayoutProperty("polygon-layer", "visibility", "none");
+    map.setLayoutProperty("polygon-outline", "visibility", "none");
     return;
   }
 

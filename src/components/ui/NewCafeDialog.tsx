@@ -194,14 +194,8 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 3,
-          p: 1,
-        },
-      }}
+      maxWidth="sm"
+
     >
       <DialogTitle sx={{ textAlign: "center", pb: 1, color: "#b23a48", fontWeight: "bold", fontSize: "2rem",}}>
         Suggest a New Cafe
@@ -283,7 +277,7 @@ export default function NewCafeDialog({ open, onClose }: NewCafeDialogProps) {
         />
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 3 }}>
+      <DialogActions sx={{ px: 3, py: 2, }}>
         <Button
           onClick={(e) => {
             e.currentTarget.blur();

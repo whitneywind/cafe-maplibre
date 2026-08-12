@@ -155,6 +155,10 @@ export default function MapComponent() {
     // style.load fires once the new style + its sources have finished loading
     map.once("style.load", () => {
       loadCafeLayers(map);
+
+      // clear any search filters or selected nbrhd
+      if (selectedNeighborhood) setSelectedNeighborhood(null);
+      if (searchFiltersActive) setSearchFiltersActive(false);
     });
   };
 

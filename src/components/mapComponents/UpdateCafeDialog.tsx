@@ -21,6 +21,7 @@ export default function UpdateCafeDialog({
   const updateSelectedCafe = useMapStore((state) => state.updateSelectedCafe);
 
   const { session } = useAuthStore();
+  const loggedIn = !!session;
 
   const handleSubmit = async () => {
     const popularItemsArray = popularItemsInput
@@ -119,7 +120,7 @@ export default function UpdateCafeDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3, p: 1 } }}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm">
       <DialogTitle
         sx={{
           textAlign: "center",
@@ -141,10 +142,19 @@ export default function UpdateCafeDialog({
         />
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 3 }}>
-        <Button color="error" onClick={handleDelete}>Delete</Button>
-        <Button onClick={onClose} variant="outlined" sx={{ textTransform: "none", borderColor: "#999", color: "#666" }}>Cancel</Button>
-        <Button variant="contained" onClick={handleSubmit} sx={{ backgroundColor: "#b23a48", "&:hover": { backgroundColor: "#942d39" }, textTransform: "none", fontWeight: "bold" }}>Update</Button>
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        {loggedIn ? (
+          <>
+            <Button color="error" onClick={handleDelete}>Delete</Button>
+            <Button onClick={onClose} variant="outlined" sx={{ textTransform: "none", borderColor: "#999", color: "#666" }}>Cancel</Button>
+            <Button variant="contained" onClick={handleSubmit} sx={{ backgroundColor: "#b23a48", "&:hover": { backgroundColor: "#942d39" }, textTransform: "none", fontWeight: "bold" }}>Update</Button>
+          </>
+        ) : (
+          <>
+            <Button onClick={onClose}  variant="contained" sx={{ backgroundColor: "#b23a48", "&:hover": { backgroundColor: "#942d39" }, textTransform: "none", fontWeight: "bold" }}>Cancel</Button>
+            <Button variant="contained" sx={{ backgroundColor: "#b23a48", "&:hover": { backgroundColor: "#942d39" }, textTransform: "none", fontWeight: "bold" }}>Log In to Suggest or Remove</Button>
+          </>
+        )}
       </DialogActions>
     </Dialog>
   );
