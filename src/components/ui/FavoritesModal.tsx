@@ -3,7 +3,6 @@ import {
   Box,
   Typography,
   Stack,
-  Tooltip,
   Modal,
   IconButton,
 } from "@mui/material";
