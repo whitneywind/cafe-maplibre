@@ -60,7 +60,10 @@ export function showSelectedNeighborhood(map: Map, neighborhoodFeature: any) {
   if (!neighborhoodFeature) {
     // clear filter and hide polygons
     map.setFilter("polygon-layer", null);
+    map.setFilter("polygon-outline", null);
+
     map.setLayoutProperty("polygon-layer", "visibility", "none");
+    map.setLayoutProperty("polygon-outline", "visibility", "none");
 
     // clear cafe filters to show all cafes
     map.setFilter("regular-cafes", ["!=", ["get", "specialty"], true]);

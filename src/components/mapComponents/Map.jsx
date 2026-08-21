@@ -2,12 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl, { NavigationControl, GeolocateControl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import CafeScroller from "./CafeScroller.tsx"
-import coffeeSVG from "../../assets/icons/coffee2.svg";
-import specialtySVG from "../../assets/icons/specialty.svg";
 import { loadCafeLayers, basemaps } from "./mapLayers.ts"; 
 import BasemapSwitcher from "./BasemapSwitcher";
 import useMapStore from "../../stores/useMapStore.ts";
-import { fetchCafes, fetchNeighborhoods, flyToCafe, showCafePopup, showSelectedNeighborhood, applySearchFilters } from "./mapFns.js";
+import { flyToCafe, showCafePopup, showSelectedNeighborhood, applySearchFilters } from "./mapFns.js";
 
 
 export default function MapComponent() {

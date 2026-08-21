@@ -136,30 +136,6 @@ const TopMenu = () => {
                 },
                 "& .MuiSvgIcon-root": { color: "rgba(255,255,255,0.85)", fontSize: 18 },
               }}
-              // sx={{
-              //   display: { xs: "none", md: "inline-flex" },
-              //   width: { xs: 110, sm: 140, md: 160 },
-              //   "& .MuiInputBase-root": {
-              //     height: 36,
-              //     color: "white",
-              //     fontSize: "0.85rem",
-              //     backgroundColor: "rgba(255, 255, 255, 0.15)",
-              //     borderRadius: "3px",
-              //     paddingLeft: "12px !important",
-              //     paddingRight: "8px !important",
-              //     transition: "all 0.2s ease-in-out",
-              //     "& fieldset": { border: "none" },
-              //     "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.25)" },
-              //     "&.Mui-focused": {
-              //       backgroundColor: "rgba(255, 255, 255, 0.25)",
-              //       boxShadow: "0 0 0 2px rgba(255,255,255,0.3)",
-              //     },
-              //   },
-              //   "& .MuiSvgIcon-root": {
-              //     color: "rgba(255, 255, 255, 0.8)",
-              //     fontSize: 18,
-              //   },
-              // }}
               renderInput={(params) => (
                 <TextField
                   {...params}
