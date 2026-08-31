@@ -3,6 +3,7 @@ import type { Map as MLMap } from "maplibre-gl";
 import coffeeSVG from "../../assets/icons/coffee2.svg";
 import specialtySVG from "../../assets/icons/specialty.svg";
 import { fetchCafes, fetchNeighborhoods } from "./mapFns.js";
+const CARTO_KEY = import.meta.env.VITE_CARTO_API_KEY;
 
 export async function loadCafeLayers(map: MLMap) {
   // icons
@@ -117,10 +118,10 @@ export const basemaps: Record<BasemapId, { label: string; swatch: string; style:
         basemap: {
           type: "raster",
           tiles: [
-            "https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
-            "https://cartodb-basemaps-b.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
-            "https://cartodb-basemaps-c.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
-            "https://cartodb-basemaps-d.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
+            `https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
+            `https://cartodb-basemaps-b.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
+            `https://cartodb-basemaps-c.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
+            `https://cartodb-basemaps-d.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
           ],
           tileSize: 256,
           attribution,
@@ -140,10 +141,10 @@ export const basemaps: Record<BasemapId, { label: string; swatch: string; style:
         basemap: {
           type: "raster",
           tiles: [
-            "https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/light_all/{z}/{x}/{y}.png",
-            "https://cartodb-basemaps-b.global.ssl.fastly.net/rastertiles/light_all/{z}/{x}/{y}.png",
-            "https://cartodb-basemaps-c.global.ssl.fastly.net/rastertiles/light_all/{z}/{x}/{y}.png",
-            "https://cartodb-basemaps-d.global.ssl.fastly.net/rastertiles/light_all/{z}/{x}/{y}.png",
+            `https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/light_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
+            `https://cartodb-basemaps-b.global.ssl.fastly.net/rastertiles/light_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
+            `https://cartodb-basemaps-c.global.ssl.fastly.net/rastertiles/light_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
+            `https://cartodb-basemaps-d.global.ssl.fastly.net/rastertiles/light_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
           ],
           tileSize: 256,
           attribution,
@@ -163,10 +164,10 @@ export const basemaps: Record<BasemapId, { label: string; swatch: string; style:
         basemap: {
           type: "raster",
           tiles: [
-            "https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png",
-            "https://cartodb-basemaps-b.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png",
-            "https://cartodb-basemaps-c.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png",
-            "https://cartodb-basemaps-d.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png",
+            `https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
+            `https://cartodb-basemaps-b.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
+            `https://cartodb-basemaps-c.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
+            `https://cartodb-basemaps-d.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
           ],
           tileSize: 256,
           attribution,
